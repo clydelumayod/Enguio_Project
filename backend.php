@@ -5,7 +5,7 @@ header("Access-Control-Allow-Methods: POST, GET, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type");
 header("Content-Type: application/json");
 
-include 'conn.php';
+include 'index.php';
 
 $data = json_decode(file_get_contents("php://input"), true);
 
@@ -415,40 +415,43 @@ switch ($action) {
         }
         break;
 
-    case 'get_products':
-        try {
-            $stmt = $conn->prepare("
-                SELECT 
-                    p.*,
-                    s.supplier_name,
-                    b.brand,
-                    l.location_name,
-                    batch.batch as batch_reference,
-                    batch.entry_date,
-                    batch.entry_by
-                FROM tbl_product p 
-                LEFT JOIN tbl_supplier s ON p.supplier_id = s.supplier_id 
-                LEFT JOIN tbl_brand b ON p.brand_id = b.brand_id 
-                LEFT JOIN tbl_location l ON p.location_id = l.location_id
-                LEFT JOIN tbl_batch batch ON p.batch_id = batch.batch_id
-                WHERE p.status != 'archived' OR p.status IS NULL
-                ORDER BY p.product_id DESC
-            ");
-            $stmt->execute();
-            $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            
-            echo json_encode([
-                "success" => true,
-                "data" => $products
-            ]);
-        } catch (Exception $e) {
-            echo json_encode([
-                "success" => false,
-                "message" => "Database error: " . $e->getMessage(),
-                "data" => []
-            ]);
-        }
-        break;
+   case 'get_products':
+    try {
+        $stmt = $conn->prepare("
+            SELECT 
+                p.*,
+                s.supplier_name,
+                b.brand,
+                l.location_name,
+                batch.batch as batch_reference,
+                batch.entry_date,
+                batch.entry_by
+            FROM tbl_product p 
+            LEFT JOIN tbl_supplier s ON p.supplier_id = s.supplier_id 
+            LEFT JOIN tbl_brand b ON p.brand_id = b.brand_id 
+            LEFT JOIN tbl_location l ON p.location_id = l.location_id
+            LEFT JOIN tbl_batch batch ON p.batch_id = batch.batch_id
+            WHERE (p.status IS NULL OR p.status <> 'archived')
+            ORDER BY p.product_id DESC
+        ");
+        $stmt->execute();
+        $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // Optional: Debug log
+        // error_log(json_encode($products));
+
+        echo json_encode([
+            "success" => true,
+            "data" => $products
+        ]);
+    } catch (Exception $e) {
+        echo json_encode([
+            "success" => false,
+            "message" => "Database error: " . $e->getMessage(),
+            "data" => []
+        ]);
+    }
+    break;
 
     case 'get_suppliers':
         try {
@@ -774,4 +777,4 @@ switch ($action) {
         break;
     
 }
-?>
+?>  
