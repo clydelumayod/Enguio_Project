@@ -1,24 +1,3 @@
-
-<?php
-$servername = "localhost";
-$dbname = "enguio";
-$username = "root";
-$password = "";
-
-try {
-    $conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
-    // Set the PDO error mode to exception
-    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    
-    // echo "Connected successfully"; // Uncomment this line for debugging
-} catch (PDOException $e) {
-    echo "Connection failed: " . $e->getMessage();
-}
-?>
-
-
-index.php
-
 <?php
 session_start(); 
 header("Access-Control-Allow-Origin: *");
@@ -26,7 +5,18 @@ header("Access-Control-Allow-Methods: POST, GET, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type");
 header("Content-Type: application/json");
 
-include 'conn.php';
+$servername = "localhost";
+$dbname = "enguio";
+$username = "root";
+$password = "";
+
+try {
+    $conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
+    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+} catch (PDOException $e) {
+    echo json_encode(["success" => false, "message" => "Connection failed: " . $e->getMessage()]);
+    exit;
+}
 
 $data = json_decode(file_get_contents("php://input"), true);
 
@@ -36,6 +26,16 @@ if (!isset($data['action'])) {
 }
 
 $action = $data['action'];
+
+// TEMPORARY: Delete all brands
+try {
+    $conn->exec("DELETE FROM tbl_brand");
+    $conn->exec("ALTER TABLE tbl_brand AUTO_INCREMENT = 1");
+    echo json_encode(["success" => true, "message" => "All brands deleted!"]);
+} catch (Exception $e) {
+    echo json_encode(["success" => false, "message" => $e->getMessage()]);
+}
+exit;
 
 switch ($action) {
     case 'add_employee':
@@ -259,7 +259,12 @@ switch ($action) {
         $stmt->bindParam(":brand", $brand_name, PDO::PARAM_STR);
 
         if ($stmt->execute()) {
-            echo json_encode(["success" => true, "message" => "Brand added successfully"]);
+            $brand_id = $conn->lastInsertId();
+            echo json_encode([
+                "success" => true, 
+                "message" => "Brand added successfully",
+                "brand_id" => $brand_id
+            ]);
         } else {
             // Return specific database error
             echo json_encode([
@@ -331,110 +336,123 @@ switch ($action) {
     }
     break;
 
-    case 'add_product':
+    case 'clearBrands':
         try {
-            // Extract and sanitize data
-            $product_name = isset($data['product_name']) ? trim($data['product_name']) : '';
-            $category = isset($data['category']) ? trim($data['category']) : '';
-            $barcode = isset($data['barcode']) ? trim($data['barcode']) : '';
-            $description = isset($data['description']) ? trim($data['description']) : '';
-            $variation = isset($data['variation']) ? trim($data['variation']) : '';
-            $prescription = isset($data['prescription']) ? intval($data['prescription']) : 0;
-            $bulk = isset($data['bulk']) ? intval($data['bulk']) : 0;
-            $quantity = isset($data['quantity']) ? intval($data['quantity']) : 0;
-            $unit_price = isset($data['unit_price']) ? floatval($data['unit_price']) : 0;
-            $supplier_id = isset($data['supplier_id']) ? intval($data['supplier_id']) : 0;
-            $brand_id = isset($data['brand_id']) ? intval($data['brand_id']) : 1;
-            $expiration = isset($data['expiration']) ? trim($data['expiration']) : null;
-            $status = isset($data['status']) ? trim($data['status']) : 'active';
-            $stock_status = isset($data['stock_status']) ? trim($data['stock_status']) : 'in stock';
+            // Delete all records from tbl_brand
+            $stmt = $conn->prepare("DELETE FROM tbl_brand");
             
-            // Handle location_id - convert location name to ID if needed
-            $location_id = null;
-            if (isset($data['location_id'])) {
-                $location_id = intval($data['location_id']);
-            } elseif (isset($data['location'])) {
-                // If location name is provided, find the location_id
-                $locStmt = $conn->prepare("SELECT location_id FROM tbl_location WHERE location_name = ?");
-                $locStmt->execute([trim($data['location'])]);
-                $location = $locStmt->fetch(PDO::FETCH_ASSOC);
-                $location_id = $location ? $location['location_id'] : 2; // Default to warehouse (ID 2)
+            if ($stmt->execute()) {
+                // Reset auto-increment counter
+                $resetStmt = $conn->prepare("ALTER TABLE tbl_brand AUTO_INCREMENT = 1");
+                $resetStmt->execute();
+                
+                echo json_encode([
+                    "success" => true, 
+                    "message" => "All brands cleared successfully"
+                ]);
             } else {
-                $location_id = 2; // Default to warehouse
+                echo json_encode([
+                    "success" => false, 
+                    "message" => "Failed to clear brands"
+                ]);
             }
-            
-            // Handle batch_id - create or find existing batch
-            $batch_id = null;
-            if (isset($data['batch_id'])) {
-                $batch_id = intval($data['batch_id']);
-            } elseif (isset($data['batch']) || isset($data['reference'])) {
-                $batch_reference = isset($data['batch']) ? $data['batch'] : $data['reference'];
-                
-                // Check if batch already exists
+        } catch (Exception $e) {
+            echo json_encode([
+                "success" => false, 
+                "message" => "Database error: " . $e->getMessage()
+            ]);
+        }
+        break;
+
+        case 'add_product':
+            try {
+                $product_name = $data['product_name'] ?? '';
+                $category = $data['category'] ?? '';
+                $barcode = $data['barcode'] ?? '';
+                $description = $data['description'] ?? '';
+                $variation = $data['variation'] ?? '';
+                $prescription = $data['prescription'] ?? 0;
+                $bulk = $data['bulk'] ?? 0;
+                $expiration = $data['expiration'] ?? null;
+                $quantity = $data['quantity'] ?? 0;
+                $unit_price = $data['unit_price'] ?? 0;
+                $brand_name = $data['brand'] ?? '';
+                $supplier_id = $data['supplier_id'] ?? 0;
+                $location = $data['location'] ?? 'Warehouse';
+                $reference = $data['reference'] ?? null;
+                $entry_by = $data['entry_by'] ?? 'admin';
+                $order_no = $data['order_no'] ?? '';
+                $status = $data['status'] ?? 'active';
+                $stock_status = $data['stock_status'] ?? 'in stock';
+        
+                // LOCATION
+                $locStmt = $conn->prepare("SELECT location_id FROM tbl_location WHERE location_name = ?");
+                $locStmt->execute([$location]);
+                $loc = $locStmt->fetch(PDO::FETCH_ASSOC);
+                $location_id = $loc ? $loc['location_id'] : 2;
+        
+                // BATCH
                 $batchStmt = $conn->prepare("SELECT batch_id FROM tbl_batch WHERE batch = ?");
-                $batchStmt->execute([$batch_reference]);
+                $batchStmt->execute([$reference]);
                 $existingBatch = $batchStmt->fetch(PDO::FETCH_ASSOC);
-                
                 if ($existingBatch) {
                     $batch_id = $existingBatch['batch_id'];
                 } else {
-                    // Create new batch
-                    $newBatchStmt = $conn->prepare("
-                        INSERT INTO tbl_batch (batch, supplier_id, location_id, entry_date, entry_time, entry_by, order_no) 
-                        VALUES (?, ?, ?, CURDATE(), CURTIME(), ?, ?)
-                    ");
-                    $entry_by = isset($data['entry_by']) ? $data['entry_by'] : 'admin';
-                    $order_no = isset($data['order_no']) ? $data['order_no'] : '';
-                    
-                    $newBatchStmt->execute([$batch_reference, $supplier_id, $location_id, $entry_by, $order_no]);
+                    $stmt = $conn->prepare("INSERT INTO tbl_batch (batch, supplier_id, location_id, entry_date, entry_time, entry_by, order_no)
+                                            VALUES (?, ?, ?, CURDATE(), CURTIME(), ?, ?)");
+                    $stmt->execute([$reference, $supplier_id, $location_id, $entry_by, $order_no]);
                     $batch_id = $conn->lastInsertId();
                 }
-            }
-            
-            // Prepare insert statement for product
-            $stmt = $conn->prepare("
-                INSERT INTO tbl_product (
+        
+                // BRAND
+                if (!empty($brand_name)) {
+                    $conn->exec("DELETE FROM tbl_brand");
+                    $brandInsertStmt = $conn->prepare("INSERT INTO tbl_brand (brand) VALUES (?)");
+                    $brandInsertStmt->execute([$brand_name]);
+                    $brand_id = $conn->lastInsertId();
+                } else {
+                    $brand_id = 1;
+                }
+        
+                // INSERT PRODUCT
+                $stmt = $conn->prepare("INSERT INTO tbl_product (
                     product_name, category, barcode, description, prescription, bulk,
                     expiration, quantity, unit_price, brand_id, supplier_id,
                     location_id, batch_id, status, Variation, stock_status
                 ) VALUES (
                     :product_name, :category, :barcode, :description, :prescription, :bulk,
                     :expiration, :quantity, :unit_price, :brand_id, :supplier_id,
-                    :location_id, :batch_id, :status, :variation, :stock_status
-                )
-            ");
-    
-            // Bind parameters
-            $stmt->bindParam(':product_name', $product_name);
-            $stmt->bindParam(':category', $category);
-            $stmt->bindParam(':barcode', $barcode);
-            $stmt->bindParam(':description', $description);
-            $stmt->bindParam(':prescription', $prescription);
-            $stmt->bindParam(':bulk', $bulk);
-            $stmt->bindParam(':expiration', $expiration);
-            $stmt->bindParam(':quantity', $quantity);
-            $stmt->bindParam(':unit_price', $unit_price);
-            $stmt->bindParam(':brand_id', $brand_id);
-            $stmt->bindParam(':supplier_id', $supplier_id);
-            $stmt->bindParam(':location_id', $location_id);
-            $stmt->bindParam(':batch_id', $batch_id);
-            $stmt->bindParam(':status', $status);
-            $stmt->bindParam(':variation', $variation);
-            $stmt->bindParam(':stock_status', $stock_status);
-    
-            if ($stmt->execute()) {
+                    :location_id, :batch_id, :status, :Variation, :stock_status
+                )");
+        
+                $stmt->execute([
+                    ':product_name' => $product_name,
+                    ':category' => $category,
+                    ':barcode' => $barcode,
+                    ':description' => $description,
+                    ':prescription' => $prescription,
+                    ':bulk' => $bulk,
+                    ':expiration' => $expiration,
+                    ':quantity' => $quantity,
+                    ':unit_price' => $unit_price,
+                    ':brand_id' => $brand_id,
+                    ':supplier_id' => $supplier_id,
+                    ':location_id' => $location_id,
+                    ':batch_id' => $batch_id,
+                    ':status' => $status,
+                    ':Variation' => $variation,
+                    ':stock_status' => $stock_status
+                ]);
+        
                 echo json_encode(["success" => true, "message" => "Product added successfully"]);
-            } else {
-                echo json_encode(["success" => false, "message" => "Failed to add product"]);
+            } catch (Exception $e) {
+                echo json_encode([
+                    "success" => false,
+                    "message" => "Database error: " . $e->getMessage()
+                ]);
             }
-    
-        } catch (Exception $e) {
-            echo json_encode([
-                "success" => false,
-                "message" => "Database error: " . $e->getMessage()
-            ]);
-        }
-        break;
+            break;
+        
 
     case 'get_products':
         try {
@@ -792,6 +810,9 @@ switch ($action) {
                 "data" => []
             ]);
         }
+
+        default:
+        echo json_encode(["success" => false, "message" => "Invalid action: " . $action]);
         break;
     
 }

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
@@ -20,6 +19,40 @@ import {
   Trash2,
 } from "lucide-react";
 
+// API Configuratio
+
+// API function
+// ✅ Paste this near the top of Warehouse.js
+
+async function handleApiCall(action, data = {}) {
+  try {
+    const response = await fetch("http://localhost/capstone_api/backend.php", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        action,
+        ...data,
+      }),
+    });
+
+    if (!response.ok) {
+      const text = await response.text();
+      console.error("❌ Server error:", response.status, text);
+      return { success: false, message: `Server error ${response.status}` };
+    }
+
+    const result = await response.json();
+    return result;
+  } catch (error) {
+    console.error("❌ handleApiCall failed:", error);
+    return {
+      success: false,
+      message: error.message || "Unknown error",
+    };
+  }
+}
 
 function Warehouse() {
     // State Management
@@ -183,185 +216,8 @@ function Warehouse() {
     // Edit form data
     const [editFormData, setEditFormData] = useState({})
   
-    // API Configuration - UPDATED to match your backend
-    const API_BASE_URL = "http://localhost/capstone_api/backend.php"
   
     // FIXED API Functions with better error handling
-    async function handleApiCall(action, data = {}) {
-    const payload = { action, ...data };
-    console.log("🚀 API Call Payload:", payload);
-  
-    try {
-      const response = await axios.post(API_BASE_URL, payload, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        timeout: 10000,
-      });
-  
-      const resData = response.data;
-      console.log("✅ API Success Response:", resData);
-  
-      if (resData && typeof resData === "object") {
-        if (!resData.success) {
-          console.warn("⚠️ API responded with failure:", resData.message || resData);
-        }
-        return resData;
-      } else {
-        console.warn("⚠️ Unexpected API response format:", resData);
-        return {
-          success: false,
-          message: "Unexpected response format",
-          data: resData,
-        };
-      }
-    } catch (error) {
-      console.error("❌ API Call Error:", error);
-  
-      if (error.response) {
-        console.error("❌ Server responded with error:", error.response.data);
-        return {
-          success: false,
-          message:
-            error.response.data?.message || `Server error: ${error.response.status}`,
-          error: error.response.data,
-        };
-      } else if (error.request) {
-        console.error("❌ No response received:", error.request);
-        return {
-          success: false,
-          message: "No response from server. Is it running?",
-          error: "NO_RESPONSE",
-        };
-      } else {
-        console.error("❌ Axios setup error:", error.message);
-        return {
-          success: false,
-          message: error.message,
-          error: "REQUEST_SETUP_ERROR",
-        };
-      }
-    }
-  }
-  
-  
-    // FIXED Data Loading Functions
-    function loadData(dataType) {
-      switch (dataType) {
-        case "suppliers":
-          handleApiCall("get_suppliers")
-            .then((response) => {
-              console.log("Suppliers response:", response.data)
-              let suppliersArray = []
-  
-              if (response.success && Array.isArray(response.data)) {
-                suppliersArray = response.data
-              } else if (Array.isArray(response.data)) {
-                suppliersArray = response.data
-              }
-  
-              setSuppliersData(suppliersArray)
-              updateStats("totalSuppliers", suppliersArray.length)
-              console.log("Suppliers loaded:", suppliersArray.length)
-            })
-            .catch((error) => {
-              console.error("Error loading suppliers:", error)
-              toast.error("Failed to load suppliers")
-              setSuppliersData([])
-            })
-          break
-            case "products":
-                handleApiCall("get_products")
-              .then((response) => {
-                let productsArray = [];
-  
-                if (Array.isArray(response.data)) {
-                  productsArray = response.data;
-                } else if (response.data && Array.isArray(response.data.data)) {
-                  productsArray = response.data.data;
-                }
-  
-                  const activeProducts = productsArray.filter(
-                    (product) => (product.status || "").toLowerCase() !== "archived"
-                  );
-  
-                  setInventoryData(activeProducts);
-                  updateStats("totalProducts", activeProducts.length);
-                })
-                .catch((error) => {
-                  console.error("Error loading products:", error);
-                  toast.error("Failed to load products");
-                  setInventoryData([]);
-                });
-              break;
-  
-  
-  
-        case "batches":
-          handleApiCall("get_batches")
-            .then((response) => {
-              console.log("Batches response:", response.data)
-              let batchesArray = []
-  
-              if (Array.isArray(response.data)) {
-                batchesArray = response.data
-              } else if (response.data && Array.isArray(response.data.data)) {
-                batchesArray = response.data.data
-              }
-  
-              setBatchData(batchesArray)
-              console.log("Batches loaded:", batchesArray.length)
-            })
-            .catch((error) => {
-              console.error("Error loading batches:", error)
-              toast.error("Failed to load batches")
-              setBatchData([])
-            })
-          break
-  
-        case "brands":
-          // Load brands from your database
-          handleApiCall("get_brands")
-            .then((response) => {
-              console.log("Brands response:", response.data)
-              let brandsArray = []
-  
-              if (Array.isArray(response.data)) {
-                brandsArray = response.data
-              } else if (response.data && Array.isArray(response.data.data)) {
-                brandsArray = response.data.data
-              }
-  
-              setBrandsData(brandsArray)
-              console.log("Brands loaded:", brandsArray.length)
-            })
-            .catch((error) => {
-              console.error("Error loading brands:", error)
-              // Set default brands if API fails
-              setBrandsData([
-                { brand_id: 23, brand: "dawdawdaw" },
-                { brand_id: 24, brand: "trust" },
-                { brand_id: 25, brand: "rightmid" },
-                { brand_id: 26, brand: "daw" },
-                { brand_id: 27, brand: "dwa" },
-                { brand_id: 28, brand: "dawd" },
-              ])
-            })
-          break
-  
-        case "all":
-          loadData("suppliers")
-          loadData("products")
-          loadData("batches")
-          loadData("brands")
-          break
-  
-        default:
-          console.error("Unknown data type:", dataType)
-      }
-    }
-  
-    // FIXED CRUD Operations with better error handling
     async function handleCrudOperation(operation, data) {
       switch (operation) {
         case "DELETE_PRODUCT":
@@ -499,39 +355,47 @@ function Warehouse() {
     
               if (selectedBrand?.brand_id) {
                 brand_id = parseInt(selectedBrand.brand_id);
+              } else {
+                // ✅ Brand handling (clear and insert)
+                // This logic should ideally be handled by your backend API
+                // For now, we'll just use a default brand_id or handle it via backend
+                // If you want to insert a new brand, you'd call a backend endpoint here
+                // For example: const response = await handleApiCall("add_brand", { brand_name: item.brand });
+                // Then, if response.success, update brandsData and get the new brand_id
+                // For now, we'll just use a default or assume it's handled by backend
+                brand_id = 1; // Default brand_id
               }
     
               const productData = {
                 product_name: item.title?.trim() || `Product ${i + 1}`,
                 category: item.category?.trim() || "General",
                 barcode: item.sku?.trim() || `AUTO-${Date.now()}-${i}`,
-                description: `${item.title?.trim() || "Product"} - ${item.s_code?.trim() || "No Code"}`,
+                description: `${item.title?.trim() || "Product"} - ${
+                  item.s_code?.trim() || "No Code"
+                }`,
                 variation: item.variation?.trim() || "",
                 prescription: formOptions.prescriptionAttachment ? 1 : 0,
                 bulk: formOptions.bulk ? 1 : 0,
                 quantity: Number.parseInt(item.unit_qty) || 0,
                 unit_price: Number.parseFloat(item.rate) || 0,
                 supplier_id: parseInt(headerData.supplier_id),
-                location: headerData.location, // Send location name, backend will convert to ID
-                reference: headerData.reference, // Send batch reference, backend will create/find batch
+                location: headerData.location,
+                reference: headerData.reference,
                 brand_id,
                 expiration: headerData.expiration || null,
                 entry_by: headerData.entry_by || "admin",
                 order_no: headerData.order_no || "",
                 status: "active",
-                stock_status: "in stock"
+                stock_status: "in stock",
               };
-              
     
               try {
                 const result = await handleApiCall("add_product", productData);
                 results.push(result);
     
                 if (!result.success) {
-             
                   console.log("📤 Sent product data:", productData);
                   console.log("📥 Server response:", result);
-  
                 }
               } catch (error) {
                 console.error(`❌ Product ${i + 1} error:`, error.message);
@@ -568,8 +432,128 @@ function Warehouse() {
     
         default:
           console.error("Unknown CRUD operation:", operation);
+          toast.error("Unknown operation: " + operation);
       }
     }
+    
+  
+    // FIXED Data Loading Functions
+    function loadData(dataType) {
+      switch (dataType) {
+        case "suppliers":
+          handleApiCall("get_suppliers")
+            .then((response) => {
+              console.log("Suppliers response:", response.data)
+              let suppliersArray = []
+  
+              if (response.success && Array.isArray(response.data)) {
+                suppliersArray = response.data
+              } else if (Array.isArray(response.data)) {
+                suppliersArray = response.data
+              }
+  
+              setSuppliersData(suppliersArray)
+              updateStats("totalSuppliers", suppliersArray.length)
+              console.log("Suppliers loaded:", suppliersArray.length)
+            })
+            .catch((error) => {
+              console.error("Error loading suppliers:", error)
+              toast.error("Failed to load suppliers")
+              setSuppliersData([])
+            })
+          break
+            case "products":
+                handleApiCall("get_products")
+              .then((response) => {
+                let productsArray = [];
+  
+                if (Array.isArray(response.data)) {
+                  productsArray = response.data;
+                } else if (response.data && Array.isArray(response.data.data)) {
+                  productsArray = response.data.data;
+                }
+  
+                  const activeProducts = productsArray.filter(
+                    (product) => (product.status || "").toLowerCase() !== "archived"
+                  );
+  
+                  setInventoryData(activeProducts);
+                  updateStats("totalProducts", activeProducts.length);
+                })
+                .catch((error) => {
+                  console.error("Error loading products:", error);
+                  toast.error("Failed to load products");
+                  setInventoryData([]);
+                });
+              break;
+  
+  
+  
+        case "batches":
+          handleApiCall("get_batches")
+            .then((response) => {
+              console.log("Batches response:", response.data)
+              let batchesArray = []
+  
+              if (Array.isArray(response.data)) {
+                batchesArray = response.data
+              } else if (response.data && Array.isArray(response.data.data)) {
+                batchesArray = response.data.data
+              }
+  
+              setBatchData(batchesArray)
+              console.log("Batches loaded:", batchesArray.length)
+            })
+            .catch((error) => {
+              console.error("Error loading batches:", error)
+              toast.error("Failed to load batches")
+              setBatchData([])
+            })
+          break
+  
+        case "brands":
+          // Load brands from your database
+          handleApiCall("get_brands")
+            .then((response) => {
+              console.log("Brands response:", response.data)
+              let brandsArray = []
+  
+              if (Array.isArray(response.data)) {
+                brandsArray = response.data
+              } else if (response.data && Array.isArray(response.data.data)) {
+                brandsArray = response.data.data
+              }
+  
+              setBrandsData(brandsArray)
+              console.log("Brands loaded:", brandsArray.length)
+            })
+            .catch((error) => {
+              console.error("Error loading brands:", error)
+              // Set default brands if API fails
+              setBrandsData([
+                { brand_id: 23, brand: "dawdawdaw" },
+                { brand_id: 24, brand: "trust" },
+                { brand_id: 25, brand: "rightmid" },
+                { brand_id: 26, brand: "daw" },
+                { brand_id: 27, brand: "dwa" },
+                { brand_id: 28, brand: "dawd" },
+              ])
+            })
+          break
+  
+        case "all":
+          loadData("suppliers")
+          loadData("products")
+          loadData("batches")
+          loadData("brands")
+          break
+  
+        default:
+          console.error("Unknown data type:", dataType)
+      }
+    }
+  
+
     
     function updateStats(statName, value) {
       setStats((prev) => ({
@@ -624,6 +608,7 @@ function Warehouse() {
           disc: "",
           status: "In Stocks",
           l_total: "",
+          description: "",
           variation: "",
         },
       ])
