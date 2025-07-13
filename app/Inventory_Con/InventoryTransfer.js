@@ -188,18 +188,28 @@ function InventoryTransfer() {
       try {
         const response = await axios.post("http://localhost/capstone_api/backend.php", {
           action: "get_inventory_staff",
-        })
-        if (response.data.success) {
-          setStaff(response.data.data)
+        });
+        if (response.data && response.data.success) {
+          setStaff(response.data.data);
         } else {
-          console.error("Failed to load inventory staff")
+          console.error("Failed to load inventory staff", response.data);
+          // Optionally show a toast or alert here
         }
       } catch (err) {
-        console.error("Error loading staff:", err)
+        if (err.response && err.response.data) {
+          // Server responded with a status outside 2xx
+          console.error("Server error:", err.response.data);
+        } else if (err.request) {
+          // No response received
+          console.error("No response from server:", err.request);
+        } else {
+          // Something else happened
+          console.error("Error loading staff:", err.message);
+        }
       }
-    }
-    fetchStaff()
-  }, [])
+    };
+    fetchStaff();
+  }, []);
 
   useEffect(() => {
     loadTransfers()

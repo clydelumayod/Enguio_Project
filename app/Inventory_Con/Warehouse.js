@@ -816,7 +816,7 @@ function Warehouse() {
           <td className="border border-gray-300 px-2 py-1">
             <input
               type="text"
-              value={item.title}
+              value={item.title || ""}
               onChange={(e) => updateLineItem(item.id, "title", e.target.value)}
               placeholder={`Product ${index + 1}`}
               className="w-full border-0 p-1 h-8 text-sm focus:outline-none"
@@ -825,7 +825,7 @@ function Warehouse() {
           <td className="border border-gray-300 px-2 py-1">
             <input
               type="text"
-              value={item.sku}
+              value={item.sku || ""}
               onChange={(e) => updateLineItem(item.id, "sku", e.target.value)}
               placeholder={`ITE10000${index + 1}`}
               className="w-full border-0 p-1 h-8 text-sm font-mono focus:outline-none"
@@ -834,7 +834,7 @@ function Warehouse() {
           <td className="border border-gray-300 px-2 py-1">
             <input
               type="text"
-              value={item.category}
+              value={item.category || ""}
               onChange={(e) => updateLineItem(item.id, "category", e.target.value)}
               placeholder="Category"
               className="w-full border-0 p-1 h-8 text-sm focus:outline-none"
@@ -843,7 +843,7 @@ function Warehouse() {
           <td className="border border-gray-300 px-2 py-1">
             <input
               type="text"
-              value={item.s_code}
+              value={item.s_code || ""}
               onChange={(e) => updateLineItem(item.id, "s_code", e.target.value)}
               placeholder="SUP-1001"
               className="w-full border-0 p-1 h-8 text-sm focus:outline-none"
@@ -852,7 +852,7 @@ function Warehouse() {
           <td className="border border-gray-300 px-2 py-1">
             <input
               type="text"
-              value={item.brand}
+              value={item.brand || ""}
               onChange={(e) => updateLineItem(item.id, "brand", e.target.value)}
               placeholder="Enter Brand"
               className="w-full border-0 p-1 h-8 text-sm focus:outline-none"
@@ -874,7 +874,7 @@ function Warehouse() {
           <td className="border border-gray-300 px-2 py-1">
             <input
               type="number"
-              value={item.unit_qty}
+              value={item.unit_qty || ""}
               onChange={(e) => updateLineItem(item.id, "unit_qty", e.target.value)}
               placeholder="1"
               className="w-full border-0 p-1 h-8 text-sm focus:outline-none"
@@ -883,7 +883,7 @@ function Warehouse() {
           <td className="border border-gray-300 px-2 py-1">
             <input
               type="text"
-              value={item.c_stock}
+              value={item.c_stock || ""}
               onChange={(e) => updateLineItem(item.id, "c_stock", e.target.value)}
               placeholder="500"
               className="w-full border-0 p-1 h-8 text-sm focus:outline-none"
@@ -893,7 +893,7 @@ function Warehouse() {
             <input
               type="number"
               step="0.01"
-              value={item.rate}
+              value={item.rate || ""}
               onChange={(e) => updateLineItem(item.id, "rate", e.target.value)}
               placeholder="500.00"
               className="w-full border-0 p-1 h-8 text-sm focus:outline-none"
@@ -903,7 +903,7 @@ function Warehouse() {
             <input
               type="number"
               step="0.01"
-              value={item.disc}
+              value={item.disc || ""}
               onChange={(e) => updateLineItem(item.id, "disc", e.target.value)}
               placeholder="0"
               className="w-full border-0 p-1 h-8 text-sm focus:outline-none"
@@ -923,7 +923,7 @@ function Warehouse() {
               <td className="border border-gray-300 px-2 py-1">
                   <input
               type="text"
-              value={item.description}
+              value={item.description || ""}
               onChange={(e) => updateLineItem(item.id, "description", e.target.value)}
               placeholder="Description"
               className="w-full border-0 p-1 h-8 text-sm focus:outline-none"
@@ -933,7 +933,7 @@ function Warehouse() {
           <td className="border border-gray-300 px-2 py-1">
                   <input
               type="text"
-              value={item.variation}
+              value={item.variation || ""}
               onChange={(e) => updateLineItem(item.id, "variation", e.target.value)}
   
               placeholder="Variation  "
