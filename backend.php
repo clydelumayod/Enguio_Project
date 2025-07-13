@@ -1,20 +1,58 @@
 <?php
-session_start(); 
+// Start output buffering to prevent unwanted output
+ob_start();
+
+session_start();
+
+// CORS and content-type headers
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: POST, GET, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type");
 header("Content-Type: application/json");
 
+// Show PHP errors for debugging (optional - remove in production)
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+
+// Log errors to a file for debugging
+ini_set('log_errors', 1);
+ini_set('error_log', 'php_errors.log');
+
+// Include DB connection
 include 'index.php';
 
-$data = json_decode(file_get_contents("php://input"), true);
+// Clear any output that might have been generated
+ob_clean();
 
-if (!isset($data['action'])) {
-    echo json_encode(["success" => false, "message" => "Missing action"]);
+// Read and decode incoming JSON request
+$rawData = file_get_contents("php://input");
+error_log("Raw input: " . $rawData);
+
+$data = json_decode($rawData, true);
+
+// Check if JSON is valid
+if (json_last_error() !== JSON_ERROR_NONE) {
+    error_log("JSON decode error: " . json_last_error_msg());
+    echo json_encode([
+        "success" => false,
+        "message" => "Invalid JSON input: " . json_last_error_msg(),
+        "raw" => $rawData
+    ]);
     exit;
 }
 
+// Check if 'action' is set
+if (!isset($data['action'])) {
+    echo json_encode([
+        "success" => false,
+        "message" => "Missing action"
+    ]);
+    exit;
+}
+
+// Action handler
 $action = $data['action'];
+error_log("Processing action: " . $action);
 
 switch ($action) {
     case 'add_employee':
@@ -310,6 +348,48 @@ switch ($action) {
     }
     break;
 
+    case 'add_brand':
+        try {
+            $brand_name = isset($data['brand_name']) ? trim($data['brand_name']) : '';
+            
+            if (empty($brand_name)) {
+                echo json_encode(["success" => false, "message" => "Brand name is required"]);
+                break;
+            }
+            
+            // Check if brand already exists
+            $checkStmt = $conn->prepare("SELECT brand_id FROM tbl_brand WHERE brand = ?");
+            $checkStmt->execute([$brand_name]);
+            $existingBrand = $checkStmt->fetch(PDO::FETCH_ASSOC);
+            
+            if ($existingBrand) {
+                echo json_encode([
+                    "success" => true, 
+                    "brand_id" => $existingBrand['brand_id'],
+                    "message" => "Brand already exists"
+                ]);
+                break;
+            }
+            
+            // Insert new brand
+            $stmt = $conn->prepare("INSERT INTO tbl_brand (brand) VALUES (?)");
+            $stmt->execute([$brand_name]);
+            $brand_id = $conn->lastInsertId();
+            
+            echo json_encode([
+                "success" => true, 
+                "brand_id" => $brand_id,
+                "message" => "Brand added successfully"
+            ]);
+            
+        } catch (Exception $e) {
+            echo json_encode([
+                "success" => false, 
+                "message" => "Database error: " . $e->getMessage()
+            ]);
+        }
+        break;
+
     case 'add_product':
         try {
             // Extract and sanitize data
@@ -323,10 +403,13 @@ switch ($action) {
             $quantity = isset($data['quantity']) ? intval($data['quantity']) : 0;
             $unit_price = isset($data['unit_price']) ? floatval($data['unit_price']) : 0;
             $supplier_id = isset($data['supplier_id']) ? intval($data['supplier_id']) : 0;
-            $brand_id = isset($data['brand_id']) ? intval($data['brand_id']) : 1;
+            $brand_id = isset($data['brand_id']) ? intval($data['brand_id']) : 30; // Default to first brand (30)
             $expiration = isset($data['expiration']) ? trim($data['expiration']) : null;
             $status = isset($data['status']) ? trim($data['status']) : 'active';
             $stock_status = isset($data['stock_status']) ? trim($data['stock_status']) : 'in stock';
+            $reference = isset($data['reference']) ? trim($data['reference']) : '';
+            $entry_by = isset($data['entry_by']) ? trim($data['entry_by']) : 'admin';
+            $order_no = isset($data['order_no']) ? trim($data['order_no']) : '';
             
             // Handle location_id - convert location name to ID if needed
             $location_id = null;
@@ -342,32 +425,31 @@ switch ($action) {
                 $location_id = 2; // Default to warehouse
             }
             
-            // Handle batch_id - create or find existing batch
+            // Validate brand_id exists
+            $brandCheckStmt = $conn->prepare("SELECT brand_id FROM tbl_brand WHERE brand_id = ?");
+            $brandCheckStmt->execute([$brand_id]);
+            if (!$brandCheckStmt->fetch()) {
+                // If brand_id doesn't exist, use the first available brand
+                $firstBrandStmt = $conn->prepare("SELECT brand_id FROM tbl_brand ORDER BY brand_id LIMIT 1");
+                $firstBrandStmt->execute();
+                $firstBrand = $firstBrandStmt->fetch(PDO::FETCH_ASSOC);
+                $brand_id = $firstBrand ? $firstBrand['brand_id'] : 30;
+            }
+            
+            // Start transaction
+            $conn->beginTransaction();
+            
+            // Create batch record first
             $batch_id = null;
-            if (isset($data['batch_id'])) {
-                $batch_id = intval($data['batch_id']);
-            } elseif (isset($data['batch']) || isset($data['reference'])) {
-                $batch_reference = isset($data['batch']) ? $data['batch'] : $data['reference'];
-                
-                // Check if batch already exists
-                $batchStmt = $conn->prepare("SELECT batch_id FROM tbl_batch WHERE batch = ?");
-                $batchStmt->execute([$batch_reference]);
-                $existingBatch = $batchStmt->fetch(PDO::FETCH_ASSOC);
-                
-                if ($existingBatch) {
-                    $batch_id = $existingBatch['batch_id'];
-                } else {
-                    // Create new batch
-                    $newBatchStmt = $conn->prepare("
-                        INSERT INTO tbl_batch (batch, supplier_id, location_id, entry_date, entry_time, entry_by, order_no) 
-                        VALUES (?, ?, ?, CURDATE(), CURTIME(), ?, ?)
-                    ");
-                    $entry_by = isset($data['entry_by']) ? $data['entry_by'] : 'admin';
-                    $order_no = isset($data['order_no']) ? $data['order_no'] : '';
-                    
-                    $newBatchStmt->execute([$batch_reference, $supplier_id, $location_id, $entry_by, $order_no]);
-                    $batch_id = $conn->lastInsertId();
-                }
+            if ($reference) {
+                $batchStmt = $conn->prepare("
+                    INSERT INTO tbl_batch (
+                        batch, supplier_id, location_id, entry_date, entry_time, 
+                        entry_by, order_no
+                    ) VALUES (?, ?, ?, CURDATE(), CURTIME(), ?, ?)
+                ");
+                $batchStmt->execute([$reference, $supplier_id, $location_id, $entry_by, $order_no]);
+                $batch_id = $conn->lastInsertId();
             }
             
             // Prepare insert statement for product
@@ -402,12 +484,17 @@ switch ($action) {
             $stmt->bindParam(':stock_status', $stock_status);
     
             if ($stmt->execute()) {
+                $conn->commit();
                 echo json_encode(["success" => true, "message" => "Product added successfully"]);
             } else {
+                $conn->rollback();
                 echo json_encode(["success" => false, "message" => "Failed to add product"]);
             }
     
         } catch (Exception $e) {
+            if (isset($conn)) {
+                $conn->rollback();
+            }
             echo json_encode([
                 "success" => false,
                 "message" => "Database error: " . $e->getMessage()
@@ -548,14 +635,14 @@ switch ($action) {
                     th.note,
                     sl.location_name as source_location_name,
                     dl.location_name as destination_location_name,
-                    e.name as employee_name,
+                    e.Fname as employee_name,
                     COUNT(td.product_id) as total_products,
-                    SUM(td.quantity * p.unit_price) as total_value
+                    SUM(td.qty * p.unit_price) as total_value
                 FROM tbl_transfer_header th
                 LEFT JOIN tbl_location sl ON th.source_location_id = sl.location_id
                 LEFT JOIN tbl_location dl ON th.destination_location_id = dl.location_id
                 LEFT JOIN tbl_employee e ON th.employee_id = e.emp_id
-                LEFT JOIN tbl_transfer_detail td ON th.transfer_header_id = td.transfer_header_id
+                LEFT JOIN tbl_transfer_dtl td ON th.transfer_header_id = td.transfer_header_id
                 LEFT JOIN tbl_product p ON td.product_id = p.product_id
                 GROUP BY th.transfer_header_id
                 ORDER BY th.transfer_header_id DESC
@@ -568,9 +655,12 @@ switch ($action) {
                 $stmt2 = $conn->prepare("
                     SELECT 
                         p.product_name, p.category, p.barcode, p.unit_price,
-                        td.quantity as qty
-                    FROM tbl_transfer_detail td
+                        p.Variation, p.description, p.brand_id,
+                        b.brand,
+                        td.qty as qty
+                    FROM tbl_transfer_dtl td
                     JOIN tbl_product p ON td.product_id = p.product_id
+                    LEFT JOIN tbl_brand b ON p.brand_id = b.brand_id
                     WHERE td.transfer_header_id = ?
                 ");
                 $stmt2->execute([$transfer['transfer_header_id']]);
@@ -606,6 +696,34 @@ switch ($action) {
             // Start transaction
             $conn->beginTransaction();
             
+            // Validate product quantities before transfer
+            foreach ($products as $product) {
+                $product_id = $product['product_id'];
+                $transfer_qty = $product['quantity'];
+                
+                // Check current quantity - look for product regardless of location first
+                $checkStmt = $conn->prepare("
+                    SELECT quantity, product_name, location_id 
+                    FROM tbl_product 
+                    WHERE product_id = ?
+                ");
+                $checkStmt->execute([$product_id]);
+                $currentProduct = $checkStmt->fetch(PDO::FETCH_ASSOC);
+                
+                if (!$currentProduct) {
+                    throw new Exception("Product not found in database - Product ID: " . $product_id);
+                }
+                
+                if ($currentProduct['quantity'] < $transfer_qty) {
+                    throw new Exception("Insufficient quantity for product: " . $currentProduct['product_name'] . 
+                                     ". Available: " . $currentProduct['quantity'] . ", Requested: " . $transfer_qty);
+                }
+                
+                // Log for debugging
+                error_log("Transfer validation - Product ID: $product_id, Name: " . $currentProduct['product_name'] . 
+                         ", Available: " . $currentProduct['quantity'] . ", Requested: $transfer_qty");
+            }
+            
             // Insert transfer header
             $stmt = $conn->prepare("
                 INSERT INTO tbl_transfer_header (
@@ -616,23 +734,57 @@ switch ($action) {
             $stmt->execute([$source_location_id, $destination_location_id, $employee_id, $status]);
             $transfer_header_id = $conn->lastInsertId();
             
-            // Insert transfer details
+            // Insert transfer details and update product quantities
             $stmt2 = $conn->prepare("
-                INSERT INTO tbl_transfer_detail (
-                    transfer_header_id, product_id, quantity
+                INSERT INTO tbl_transfer_dtl (
+                    transfer_header_id, product_id, qty
                 ) VALUES (?, ?, ?)
             ");
             
+            $updateStmt = $conn->prepare("
+                UPDATE tbl_product 
+                SET quantity = quantity - ? 
+                WHERE product_id = ?
+            ");
+            
             foreach ($products as $product) {
+                $product_id = $product['product_id'];
+                $transfer_qty = $product['quantity'];
+                
+                // Insert transfer detail
                 $stmt2->execute([
                     $transfer_header_id,
-                    $product['product_id'],
-                    $product['quantity']
+                    $product_id,
+                    $transfer_qty
                 ]);
+                
+                // Update product quantity (decrease)
+                $updateStmt->execute([$transfer_qty, $product_id]);
+                
+                // Log the quantity update
+                error_log("Transfer quantity update - Product ID: $product_id, Reduced by: $transfer_qty");
+                
+                // Update stock status based on new quantity
+                $updateStockStatusStmt = $conn->prepare("
+                    UPDATE tbl_product 
+                    SET stock_status = CASE 
+                        WHEN quantity <= 0 THEN 'out of stock'
+                        WHEN quantity <= 10 THEN 'low stock'
+                        ELSE 'in stock'
+                    END
+                    WHERE product_id = ?
+                ");
+                $updateStockStatusStmt->execute([$product_id]);
+                
+                // Log the stock status update
+                error_log("Transfer stock status update - Product ID: $product_id");
             }
             
             $conn->commit();
-            echo json_encode(["success" => true, "message" => "Transfer created successfully"]);
+            echo json_encode([
+                "success" => true, 
+                "message" => "Transfer created successfully. Product quantities updated in source location."
+            ]);
             
         } catch (Exception $e) {
             $conn->rollback();
@@ -738,6 +890,191 @@ switch ($action) {
         }
         break;
 
+    case 'update_transfer_status':
+        try {
+            $transfer_header_id = $data['transfer_header_id'] ?? 0;
+            $new_status = $data['status'] ?? '';
+            $employee_id = $data['employee_id'] ?? 0;
+            $notes = $data['notes'] ?? '';
+            
+            if (!$transfer_header_id || !$new_status) {
+                echo json_encode(["success" => false, "message" => "Transfer ID and status are required"]);
+                break;
+            }
+            
+            // Start transaction
+            $conn->beginTransaction();
+            
+            // Update transfer status
+            $stmt = $conn->prepare("
+                UPDATE tbl_transfer_header 
+                SET status = ? 
+                WHERE transfer_header_id = ?
+            ");
+            $stmt->execute([$new_status, $transfer_header_id]);
+            
+            // If status is "Completed", add products to destination location
+            if ($new_status === 'Completed') {
+                // Get transfer details
+                $transferStmt = $conn->prepare("
+                    SELECT th.source_location_id, th.destination_location_id, td.product_id, td.qty
+                    FROM tbl_transfer_header th
+                    JOIN tbl_transfer_dtl td ON th.transfer_header_id = td.transfer_header_id
+                    WHERE th.transfer_header_id = ?
+                ");
+                $transferStmt->execute([$transfer_header_id]);
+                $transferDetails = $transferStmt->fetchAll(PDO::FETCH_ASSOC);
+                
+                foreach ($transferDetails as $detail) {
+                    $product_id = $detail['product_id'];
+                    $qty = $detail['qty'];
+                    $destination_location_id = $detail['destination_location_id'];
+                    
+                    // Get the original product details
+                    $productStmt = $conn->prepare("
+                        SELECT product_name, category, barcode, description, prescription, bulk,
+                               expiration, unit_price, brand_id, supplier_id, batch_id, status, Variation
+                        FROM tbl_product 
+                        WHERE product_id = ?
+                        LIMIT 1
+                    ");
+                    $productStmt->execute([$product_id]);
+                    $productDetails = $productStmt->fetch(PDO::FETCH_ASSOC);
+                    
+                    if ($productDetails) {
+                        // Check if product exists in destination location
+                        $checkStmt = $conn->prepare("
+                            SELECT product_id, quantity 
+                            FROM tbl_product 
+                            WHERE product_id = ? AND location_id = ?
+                        ");
+                        $checkStmt->execute([$product_id, $destination_location_id]);
+                        $existingProduct = $checkStmt->fetch(PDO::FETCH_ASSOC);
+                        
+                        if ($existingProduct) {
+                            // Update existing product quantity
+                            $updateStmt = $conn->prepare("
+                                UPDATE tbl_product 
+                                SET quantity = quantity + ?,
+                                    stock_status = CASE 
+                                        WHEN quantity + ? <= 0 THEN 'out of stock'
+                                        WHEN quantity + ? <= 10 THEN 'low stock'
+                                        ELSE 'in stock'
+                                    END
+                                WHERE product_id = ? AND location_id = ?
+                            ");
+                            $updateStmt->execute([$qty, $qty, $qty, $product_id, $destination_location_id]);
+                        } else {
+                            // Create new product entry in destination location
+                            $insertStmt = $conn->prepare("
+                                INSERT INTO tbl_product (
+                                    product_name, category, barcode, description, prescription, bulk,
+                                    expiration, quantity, unit_price, brand_id, supplier_id,
+                                    location_id, batch_id, status, Variation, stock_status
+                                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                            ");
+                            $insertStmt->execute([
+                                $productDetails['product_name'],
+                                $productDetails['category'],
+                                $productDetails['barcode'],
+                                $productDetails['description'],
+                                $productDetails['prescription'],
+                                $productDetails['bulk'],
+                                $productDetails['expiration'],
+                                $qty,
+                                $productDetails['unit_price'],
+                                $productDetails['brand_id'],
+                                $productDetails['supplier_id'],
+                                $destination_location_id,
+                                $productDetails['batch_id'],
+                                $productDetails['status'],
+                                $productDetails['Variation'],
+                                $qty <= 0 ? 'out of stock' : ($qty <= 10 ? 'low stock' : 'in stock')
+                            ]);
+                        }
+                    }
+                }
+            }
+            
+            // Log the status change
+            $logStmt = $conn->prepare("
+                INSERT INTO tbl_transfer_log (
+                    transfer_header_id, status, employee_id, notes, log_date
+                ) VALUES (?, ?, ?, ?, NOW())
+            ");
+            $logStmt->execute([$transfer_header_id, $new_status, $employee_id, $notes]);
+            
+            $conn->commit();
+            echo json_encode([
+                "success" => true, 
+                "message" => "Transfer status updated to " . $new_status . 
+                            ($new_status === 'Completed' ? ". Products added to destination location." : "")
+            ]);
+            
+        } catch (Exception $e) {
+            if (isset($conn)) {
+                $conn->rollback();
+            }
+            echo json_encode(["success" => false, "message" => "Database error: " . $e->getMessage()]);
+        }
+        break;
+
+    case 'delete_transfer':
+        try {
+            $transfer_header_id = $data['transfer_header_id'] ?? 0;
+            
+            if (!$transfer_header_id) {
+                echo json_encode(["success" => false, "message" => "Transfer ID is required"]);
+                break;
+            }
+            
+            // Start transaction
+            $conn->beginTransaction();
+            
+            // Get transfer details to restore quantities
+            $transferStmt = $conn->prepare("
+                SELECT th.source_location_id, td.product_id, td.qty
+                FROM tbl_transfer_header th
+                JOIN tbl_transfer_dtl td ON th.transfer_header_id = td.transfer_header_id
+                WHERE th.transfer_header_id = ?
+            ");
+            $transferStmt->execute([$transfer_header_id]);
+            $transferDetails = $transferStmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            // Restore quantities to source location
+            foreach ($transferDetails as $detail) {
+                $updateStmt = $conn->prepare("
+                    UPDATE tbl_product 
+                    SET quantity = quantity + ?,
+                        stock_status = CASE 
+                            WHEN quantity + ? <= 0 THEN 'out of stock'
+                            WHEN quantity + ? <= 10 THEN 'low stock'
+                            ELSE 'in stock'
+                        END
+                    WHERE product_id = ?
+                ");
+                $updateStmt->execute([$detail['qty'], $detail['qty'], $detail['qty'], $detail['product_id']]);
+            }
+            
+            // Delete transfer details
+            $deleteDetailsStmt = $conn->prepare("DELETE FROM tbl_transfer_dtl WHERE transfer_header_id = ?");
+            $deleteDetailsStmt->execute([$transfer_header_id]);
+            
+            // Delete transfer header
+            $deleteHeaderStmt = $conn->prepare("DELETE FROM tbl_transfer_header WHERE transfer_header_id = ?");
+            $deleteHeaderStmt->execute([$transfer_header_id]);
+            
+            $conn->commit();
+            echo json_encode(["success" => true, "message" => "Transfer deleted successfully. Quantities restored to source location."]);
+            
+        } catch (Exception $e) {
+            if (isset($conn)) {
+                $conn->rollback();
+            }
+            echo json_encode(["success" => false, "message" => "Database error: " . $e->getMessage()]);
+        }
+        break;
+
     case 'get_batches':
         try {
             $stmt = $conn->prepare("
@@ -776,5 +1113,11 @@ switch ($action) {
         }
         break;
     
+    default:
+        echo json_encode(["success" => false, "message" => "Invalid action: " . $action]);
+        break;
 }
+
+// Flush the output buffer to ensure clean JSON response
+ob_end_flush();
 ?>  

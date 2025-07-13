@@ -1,0 +1,427 @@
+[13-Jul-2025 17:55:16 Europe/Berlin] Raw input: {"action":"get_suppliers"}
+[13-Jul-2025 17:55:16 Europe/Berlin] Processing action: get_suppliers
+[13-Jul-2025 17:55:53 Europe/Berlin] Raw input: 
+[13-Jul-2025 17:55:53 Europe/Berlin] JSON decode error: Syntax error
+[13-Jul-2025 17:55:53 Europe/Berlin] Raw input: 
+[13-Jul-2025 17:55:53 Europe/Berlin] JSON decode error: Syntax error
+[13-Jul-2025 17:55:53 Europe/Berlin] Raw input: 
+[13-Jul-2025 17:55:53 Europe/Berlin] Raw input: 
+[13-Jul-2025 17:55:53 Europe/Berlin] Raw input: 
+[13-Jul-2025 17:55:53 Europe/Berlin] JSON decode error: Syntax error
+[13-Jul-2025 17:55:53 Europe/Berlin] JSON decode error: Syntax error
+[13-Jul-2025 17:55:53 Europe/Berlin] JSON decode error: Syntax error
+[13-Jul-2025 17:55:53 Europe/Berlin] Raw input: 
+[13-Jul-2025 17:55:53 Europe/Berlin] JSON decode error: Syntax error
+[13-Jul-2025 17:55:53 Europe/Berlin] Raw input: 
+[13-Jul-2025 17:55:53 Europe/Berlin] JSON decode error: Syntax error
+[13-Jul-2025 17:55:54 Europe/Berlin] Raw input: 
+[13-Jul-2025 17:55:54 Europe/Berlin] JSON decode error: Syntax error
+[13-Jul-2025 17:55:54 Europe/Berlin] Raw input: {"action":"get_suppliers"}
+[13-Jul-2025 17:55:54 Europe/Berlin] Processing action: get_suppliers
+[13-Jul-2025 17:55:54 Europe/Berlin] Raw input: {"action":"get_products"}
+[13-Jul-2025 17:55:54 Europe/Berlin] Raw input: {"action":"get_brands"}
+[13-Jul-2025 17:55:54 Europe/Berlin] Raw input: {"action":"get_batches"}
+[13-Jul-2025 17:55:54 Europe/Berlin] Raw input: {"action":"get_suppliers"}
+[13-Jul-2025 17:55:54 Europe/Berlin] Processing action: get_brands
+[13-Jul-2025 17:55:54 Europe/Berlin] Processing action: get_products
+[13-Jul-2025 17:55:54 Europe/Berlin] Raw input: {"action":"get_products"}
+[13-Jul-2025 17:55:54 Europe/Berlin] Processing action: get_batches
+[13-Jul-2025 17:55:54 Europe/Berlin] Processing action: get_suppliers
+[13-Jul-2025 17:55:54 Europe/Berlin] Processing action: get_products
+[13-Jul-2025 17:55:54 Europe/Berlin] Raw input: {"action":"get_batches"}
+[13-Jul-2025 17:55:54 Europe/Berlin] Processing action: get_batches
+[13-Jul-2025 17:55:54 Europe/Berlin] Raw input: {"action":"get_brands"}
+[13-Jul-2025 17:55:54 Europe/Berlin] Processing action: get_brands
+[13-Jul-2025 17:56:26 Europe/Berlin] Raw input: 
+[13-Jul-2025 17:56:26 Europe/Berlin] JSON decode error: Syntax error
+[13-Jul-2025 17:56:26 Europe/Berlin] Raw input: {"action":"add_product","product_name":"daw","category":"daw","barcode":"11101","description":"daw - da","variation":"adaw","prescription":0,"bulk":0,"quantity":22,"unit_price":222,"supplier_id":12,"location":"Warehouse","reference":"BR-20250713-235553","brand_id":1,"expiration":"2025-07-14","entry_by":"admin","order_no":"24","status":"active","stock_status":"in stock"}
+[13-Jul-2025 17:56:26 Europe/Berlin] Processing action: add_product
+[13-Jul-2025 17:59:03 Europe/Berlin] Raw input: 
+[13-Jul-2025 17:59:03 Europe/Berlin] JSON decode error: Syntax error
+[13-Jul-2025 17:59:03 Europe/Berlin] Raw input: {"action":"add_product","product_name":"daw","category":"daw","barcode":"11101","description":"daw - da","variation":"adaw","prescription":0,"bulk":0,"quantity":22,"unit_price":222,"supplier_id":12,"location":"Warehouse","reference":"BR-20250713-235553","brand_id":1,"expiration":"2025-07-14","entry_by":"admin","order_no":"24","status":"active","stock_status":"in stock"}
+[13-Jul-2025 17:59:03 Europe/Berlin] Processing action: add_product
+[13-Jul-2025 18:00:43 Europe/Berlin] Raw input: 
+[13-Jul-2025 18:00:43 Europe/Berlin] JSON decode error: Syntax error
+[13-Jul-2025 18:00:43 Europe/Berlin] Raw input: 
+[13-Jul-2025 18:00:43 Europe/Berlin] JSON decode error: Syntax error
+[13-Jul-2025 18:00:43 Europe/Berlin] Raw input: 
+[13-Jul-2025 18:00:43 Europe/Berlin] JSON decode error: Syntax error
+[13-Jul-2025 18:00:43 Europe/Berlin] Raw input: 
+[13-Jul-2025 18:00:43 Europe/Berlin] Raw input: {"action":"get_suppliers"}
+[13-Jul-2025 18:00:43 Europe/Berlin] JSON decode error: Syntax error
+[13-Jul-2025 18:00:43 Europe/Berlin] Processing action: get_suppliers
+[13-Jul-2025 18:00:43 Europe/Berlin] Raw input: {"action":"get_suppliers"}
+[13-Jul-2025 18:00:43 Europe/Berlin] Raw input: {"action":"get_batches"}
+[13-Jul-2025 18:00:43 Europe/Berlin] Raw input: {"action":"get_products"}
+[13-Jul-2025 18:00:43 Europe/Berlin] Processing action: get_suppliers
+[13-Jul-2025 18:00:43 Europe/Berlin] Processing action: get_batches
+[13-Jul-2025 18:00:43 Europe/Berlin] Processing action: get_products
+[13-Jul-2025 18:00:43 Europe/Berlin] Raw input: {"action":"get_brands"}
+[13-Jul-2025 18:00:43 Europe/Berlin] Processing action: get_brands
+[13-Jul-2025 18:00:43 Europe/Berlin] Raw input: {"action":"get_batches"}
+[13-Jul-2025 18:00:43 Europe/Berlin] Raw input: {"action":"get_products"}
+[13-Jul-2025 18:00:43 Europe/Berlin] Processing action: get_batches
+[13-Jul-2025 18:00:43 Europe/Berlin] Processing action: get_products
+[13-Jul-2025 18:00:43 Europe/Berlin] Raw input: {"action":"get_brands"}
+[13-Jul-2025 18:00:43 Europe/Berlin] Processing action: get_brands
+[13-Jul-2025 18:01:08 Europe/Berlin] Raw input: 
+[13-Jul-2025 18:01:08 Europe/Berlin] JSON decode error: Syntax error
+[13-Jul-2025 18:01:08 Europe/Berlin] Raw input: {"action":"add_brand","brand_name":"awd2d"}
+[13-Jul-2025 18:01:08 Europe/Berlin] Processing action: add_brand
+[13-Jul-2025 18:01:08 Europe/Berlin] Raw input: {"action":"get_brands"}
+[13-Jul-2025 18:01:08 Europe/Berlin] Raw input: {"action":"add_product","product_name":"daw","category":"daw","barcode":"22244","description":"daw - ddawd","variation":"hkj","prescription":0,"bulk":0,"quantity":22,"unit_price":70,"supplier_id":14,"location":"Warehouse","reference":"BR-20250714-000043","brand_id":"42","expiration":"2025-07-28","entry_by":"admin","order_no":"24","status":"active","stock_status":"in stock"}
+[13-Jul-2025 18:01:08 Europe/Berlin] Processing action: get_brands
+[13-Jul-2025 18:01:08 Europe/Berlin] Processing action: add_product
+[13-Jul-2025 18:01:08 Europe/Berlin] Raw input: {"action":"get_products"}
+[13-Jul-2025 18:01:08 Europe/Berlin] Processing action: get_products
+[13-Jul-2025 18:01:08 Europe/Berlin] Raw input: {"action":"get_batches"}
+[13-Jul-2025 18:01:08 Europe/Berlin] Processing action: get_batches
+[13-Jul-2025 18:08:58 Europe/Berlin] Raw input: 
+[13-Jul-2025 18:08:58 Europe/Berlin] JSON decode error: Syntax error
+[13-Jul-2025 18:08:58 Europe/Berlin] Raw input: 
+[13-Jul-2025 18:08:58 Europe/Berlin] JSON decode error: Syntax error
+[13-Jul-2025 18:08:58 Europe/Berlin] Raw input: 
+[13-Jul-2025 18:08:58 Europe/Berlin] JSON decode error: Syntax error
+[13-Jul-2025 18:08:58 Europe/Berlin] Raw input: {"action":"get_transfers_with_details"}
+[13-Jul-2025 18:08:58 Europe/Berlin] Raw input: {"action":"get_inventory_staff"}
+[13-Jul-2025 18:08:58 Europe/Berlin] Processing action: get_transfers_with_details
+[13-Jul-2025 18:08:58 Europe/Berlin] Processing action: get_inventory_staff
+[13-Jul-2025 18:08:58 Europe/Berlin] Raw input: {"action":"get_products"}
+[13-Jul-2025 18:08:58 Europe/Berlin] Processing action: get_products
+[13-Jul-2025 18:08:58 Europe/Berlin] Raw input: {"action":"get_transfers_with_details"}
+[13-Jul-2025 18:08:58 Europe/Berlin] Processing action: get_transfers_with_details
+[13-Jul-2025 18:08:58 Europe/Berlin] Raw input: {"action":"get_locations"}
+[13-Jul-2025 18:08:58 Europe/Berlin] Processing action: get_locations
+[13-Jul-2025 18:08:58 Europe/Berlin] Raw input: {"action":"get_products"}
+[13-Jul-2025 18:08:58 Europe/Berlin] Processing action: get_products
+[13-Jul-2025 18:08:58 Europe/Berlin] Raw input: {"action":"get_locations"}
+[13-Jul-2025 18:08:58 Europe/Berlin] Processing action: get_locations
+[13-Jul-2025 18:08:58 Europe/Berlin] Raw input: {"action":"get_inventory_staff"}
+[13-Jul-2025 18:08:58 Europe/Berlin] Processing action: get_inventory_staff
+[13-Jul-2025 18:11:33 Europe/Berlin] Raw input: 
+[13-Jul-2025 18:11:33 Europe/Berlin] JSON decode error: Syntax error
+[13-Jul-2025 18:11:33 Europe/Berlin] Raw input: 
+[13-Jul-2025 18:11:33 Europe/Berlin] JSON decode error: Syntax error
+[13-Jul-2025 18:11:33 Europe/Berlin] Raw input: {"action":"get_transfers_with_details"}
+[13-Jul-2025 18:11:33 Europe/Berlin] Raw input: 
+[13-Jul-2025 18:11:33 Europe/Berlin] Processing action: get_transfers_with_details
+[13-Jul-2025 18:11:33 Europe/Berlin] JSON decode error: Syntax error
+[13-Jul-2025 18:11:33 Europe/Berlin] Raw input: {"action":"get_inventory_staff"}
+[13-Jul-2025 18:11:33 Europe/Berlin] Processing action: get_inventory_staff
+[13-Jul-2025 18:11:33 Europe/Berlin] Raw input: {"action":"get_products"}
+[13-Jul-2025 18:11:33 Europe/Berlin] Raw input: {"action":"get_locations"}
+[13-Jul-2025 18:11:33 Europe/Berlin] Processing action: get_products
+[13-Jul-2025 18:11:33 Europe/Berlin] Processing action: get_locations
+[13-Jul-2025 18:11:33 Europe/Berlin] Raw input: {"action":"get_locations"}
+[13-Jul-2025 18:11:33 Europe/Berlin] Processing action: get_locations
+[13-Jul-2025 18:11:33 Europe/Berlin] Raw input: {"action":"get_inventory_staff"}
+[13-Jul-2025 18:11:33 Europe/Berlin] Processing action: get_inventory_staff
+[13-Jul-2025 18:11:33 Europe/Berlin] Raw input: {"action":"get_transfers_with_details"}
+[13-Jul-2025 18:11:33 Europe/Berlin] Processing action: get_transfers_with_details
+[13-Jul-2025 18:11:33 Europe/Berlin] Raw input: {"action":"get_products"}
+[13-Jul-2025 18:11:33 Europe/Berlin] Processing action: get_products
+[13-Jul-2025 18:12:01 Europe/Berlin] Raw input: 
+[13-Jul-2025 18:12:01 Europe/Berlin] JSON decode error: Syntax error
+[13-Jul-2025 18:12:01 Europe/Berlin] Raw input: {"action":"create_transfer","source_location_id":2,"destination_location_id":3,"employee_id":19,"status":"New","delivery_date":"2025-07-15","products":[{"product_id":91,"quantity":2}]}
+[13-Jul-2025 18:12:01 Europe/Berlin] Processing action: create_transfer
+[13-Jul-2025 18:14:16 Europe/Berlin] Raw input: 
+[13-Jul-2025 18:14:16 Europe/Berlin] JSON decode error: Syntax error
+[13-Jul-2025 18:14:16 Europe/Berlin] Raw input: 
+[13-Jul-2025 18:14:16 Europe/Berlin] JSON decode error: Syntax error
+[13-Jul-2025 18:14:16 Europe/Berlin] Raw input: 
+[13-Jul-2025 18:14:16 Europe/Berlin] Raw input: {"action":"get_transfers_with_details"}
+[13-Jul-2025 18:14:16 Europe/Berlin] JSON decode error: Syntax error
+[13-Jul-2025 18:14:16 Europe/Berlin] Raw input: {"action":"get_inventory_staff"}
+[13-Jul-2025 18:14:16 Europe/Berlin] Processing action: get_transfers_with_details
+[13-Jul-2025 18:14:16 Europe/Berlin] Raw input: {"action":"get_products"}
+[13-Jul-2025 18:14:16 Europe/Berlin] Processing action: get_inventory_staff
+[13-Jul-2025 18:14:16 Europe/Berlin] Processing action: get_products
+[13-Jul-2025 18:14:16 Europe/Berlin] Raw input: {"action":"get_transfers_with_details"}
+[13-Jul-2025 18:14:16 Europe/Berlin] Processing action: get_transfers_with_details
+[13-Jul-2025 18:14:16 Europe/Berlin] Raw input: {"action":"get_locations"}
+[13-Jul-2025 18:14:16 Europe/Berlin] Processing action: get_locations
+[13-Jul-2025 18:14:16 Europe/Berlin] Raw input: {"action":"get_products"}
+[13-Jul-2025 18:14:16 Europe/Berlin] Processing action: get_products
+[13-Jul-2025 18:14:16 Europe/Berlin] Raw input: {"action":"get_locations"}
+[13-Jul-2025 18:14:16 Europe/Berlin] Processing action: get_locations
+[13-Jul-2025 18:14:16 Europe/Berlin] Raw input: {"action":"get_inventory_staff"}
+[13-Jul-2025 18:14:16 Europe/Berlin] Processing action: get_inventory_staff
+[13-Jul-2025 18:14:35 Europe/Berlin] Raw input: 
+[13-Jul-2025 18:14:35 Europe/Berlin] JSON decode error: Syntax error
+[13-Jul-2025 18:14:35 Europe/Berlin] Raw input: {"action":"create_transfer","source_location_id":2,"destination_location_id":3,"employee_id":19,"status":"New","delivery_date":"2025-07-24","products":[{"product_id":91,"quantity":2}]}
+[13-Jul-2025 18:14:35 Europe/Berlin] Processing action: create_transfer
+[13-Jul-2025 18:15:24 Europe/Berlin] Raw input: 
+[13-Jul-2025 18:15:24 Europe/Berlin] JSON decode error: Syntax error
+[13-Jul-2025 18:15:24 Europe/Berlin] Raw input: {"action":"create_transfer","source_location_id":2,"destination_location_id":3,"employee_id":19,"status":"New","delivery_date":"2025-07-24","products":[{"product_id":91,"quantity":2}]}
+[13-Jul-2025 18:15:24 Europe/Berlin] Processing action: create_transfer
+[13-Jul-2025 18:15:24 Europe/Berlin] Raw input: {"action":"get_transfers_with_details"}
+[13-Jul-2025 18:15:24 Europe/Berlin] Processing action: get_transfers_with_details
+[13-Jul-2025 18:15:24 Europe/Berlin] Raw input: {"action":"get_products"}
+[13-Jul-2025 18:15:24 Europe/Berlin] Processing action: get_products
+[13-Jul-2025 18:15:32 Europe/Berlin] Raw input: 
+[13-Jul-2025 18:15:32 Europe/Berlin] JSON decode error: Syntax error
+[13-Jul-2025 18:15:32 Europe/Berlin] Raw input: 
+[13-Jul-2025 18:15:32 Europe/Berlin] JSON decode error: Syntax error
+[13-Jul-2025 18:15:32 Europe/Berlin] Raw input: {"action":"get_transfers_with_details"}
+[13-Jul-2025 18:15:32 Europe/Berlin] Raw input: 
+[13-Jul-2025 18:15:32 Europe/Berlin] Processing action: get_transfers_with_details
+[13-Jul-2025 18:15:32 Europe/Berlin] JSON decode error: Syntax error
+[13-Jul-2025 18:15:32 Europe/Berlin] Raw input: {"action":"get_products"}
+[13-Jul-2025 18:15:32 Europe/Berlin] Raw input: {"action":"get_inventory_staff"}
+[13-Jul-2025 18:15:32 Europe/Berlin] Processing action: get_products
+[13-Jul-2025 18:15:32 Europe/Berlin] Processing action: get_inventory_staff
+[13-Jul-2025 18:15:32 Europe/Berlin] Raw input: {"action":"get_transfers_with_details"}
+[13-Jul-2025 18:15:32 Europe/Berlin] Processing action: get_transfers_with_details
+[13-Jul-2025 18:15:32 Europe/Berlin] Raw input: {"action":"get_locations"}
+[13-Jul-2025 18:15:32 Europe/Berlin] Processing action: get_locations
+[13-Jul-2025 18:15:32 Europe/Berlin] Raw input: {"action":"get_products"}
+[13-Jul-2025 18:15:32 Europe/Berlin] Raw input: {"action":"get_locations"}
+[13-Jul-2025 18:15:32 Europe/Berlin] Processing action: get_products
+[13-Jul-2025 18:15:32 Europe/Berlin] Processing action: get_locations
+[13-Jul-2025 18:15:32 Europe/Berlin] Raw input: {"action":"get_inventory_staff"}
+[13-Jul-2025 18:15:32 Europe/Berlin] Processing action: get_inventory_staff
+[13-Jul-2025 18:15:48 Europe/Berlin] Raw input: 
+[13-Jul-2025 18:15:48 Europe/Berlin] JSON decode error: Syntax error
+[13-Jul-2025 18:15:48 Europe/Berlin] Raw input: {"action":"create_transfer","source_location_id":2,"destination_location_id":3,"employee_id":19,"status":"New","delivery_date":"2025-08-07","products":[{"product_id":91,"quantity":2}]}
+[13-Jul-2025 18:15:48 Europe/Berlin] Processing action: create_transfer
+[13-Jul-2025 18:15:48 Europe/Berlin] Raw input: {"action":"get_transfers_with_details"}
+[13-Jul-2025 18:15:48 Europe/Berlin] Processing action: get_transfers_with_details
+[13-Jul-2025 18:15:48 Europe/Berlin] Raw input: {"action":"get_products"}
+[13-Jul-2025 18:15:48 Europe/Berlin] Processing action: get_products
+[13-Jul-2025 18:17:06 Europe/Berlin] Raw input: 
+[13-Jul-2025 18:17:06 Europe/Berlin] JSON decode error: Syntax error
+[13-Jul-2025 18:17:06 Europe/Berlin] Raw input: 
+[13-Jul-2025 18:17:06 Europe/Berlin] JSON decode error: Syntax error
+[13-Jul-2025 18:17:06 Europe/Berlin] Raw input: 
+[13-Jul-2025 18:17:06 Europe/Berlin] Raw input: {"action":"get_transfers_with_details"}
+[13-Jul-2025 18:17:06 Europe/Berlin] JSON decode error: Syntax error
+[13-Jul-2025 18:17:06 Europe/Berlin] Processing action: get_transfers_with_details
+[13-Jul-2025 18:17:06 Europe/Berlin] Raw input: {"action":"get_inventory_staff"}
+[13-Jul-2025 18:17:06 Europe/Berlin] Raw input: {"action":"get_products"}
+[13-Jul-2025 18:17:06 Europe/Berlin] Processing action: get_inventory_staff
+[13-Jul-2025 18:17:06 Europe/Berlin] Processing action: get_products
+[13-Jul-2025 18:17:06 Europe/Berlin] Raw input: {"action":"get_transfers_with_details"}
+[13-Jul-2025 18:17:06 Europe/Berlin] Processing action: get_transfers_with_details
+[13-Jul-2025 18:17:06 Europe/Berlin] Raw input: {"action":"get_locations"}
+[13-Jul-2025 18:17:06 Europe/Berlin] Processing action: get_locations
+[13-Jul-2025 18:17:06 Europe/Berlin] Raw input: {"action":"get_products"}
+[13-Jul-2025 18:17:06 Europe/Berlin] Processing action: get_products
+[13-Jul-2025 18:17:06 Europe/Berlin] Raw input: {"action":"get_locations"}
+[13-Jul-2025 18:17:06 Europe/Berlin] Processing action: get_locations
+[13-Jul-2025 18:17:06 Europe/Berlin] Raw input: {"action":"get_inventory_staff"}
+[13-Jul-2025 18:17:06 Europe/Berlin] Processing action: get_inventory_staff
+[13-Jul-2025 18:19:07 Europe/Berlin] Raw input: 
+[13-Jul-2025 18:19:07 Europe/Berlin] JSON decode error: Syntax error
+[13-Jul-2025 18:19:07 Europe/Berlin] Raw input: 
+[13-Jul-2025 18:19:07 Europe/Berlin] JSON decode error: Syntax error
+[13-Jul-2025 18:19:07 Europe/Berlin] Raw input: {"action":"get_transfers_with_details"}
+[13-Jul-2025 18:19:07 Europe/Berlin] Processing action: get_transfers_with_details
+[13-Jul-2025 18:19:07 Europe/Berlin] Raw input: {"action":"get_locations"}
+[13-Jul-2025 18:19:07 Europe/Berlin] Processing action: get_locations
+[13-Jul-2025 18:19:07 Europe/Berlin] Raw input: {"action":"get_inventory_staff"}
+[13-Jul-2025 18:19:07 Europe/Berlin] Processing action: get_inventory_staff
+[13-Jul-2025 18:19:07 Europe/Berlin] Raw input: {"action":"get_products"}
+[13-Jul-2025 18:19:07 Europe/Berlin] Processing action: get_products
+[13-Jul-2025 18:19:07 Europe/Berlin] Raw input: {"action":"get_products"}
+[13-Jul-2025 18:19:07 Europe/Berlin] Raw input: {"action":"get_locations"}
+[13-Jul-2025 18:19:07 Europe/Berlin] Processing action: get_products
+[13-Jul-2025 18:19:07 Europe/Berlin] Processing action: get_locations
+[13-Jul-2025 18:19:07 Europe/Berlin] Raw input: {"action":"get_inventory_staff"}
+[13-Jul-2025 18:19:07 Europe/Berlin] Raw input: {"action":"get_transfers_with_details"}
+[13-Jul-2025 18:19:07 Europe/Berlin] Processing action: get_inventory_staff
+[13-Jul-2025 18:19:07 Europe/Berlin] Processing action: get_transfers_with_details
+[13-Jul-2025 18:19:10 Europe/Berlin] Raw input: {"action":"get_transfers_with_details"}
+[13-Jul-2025 18:19:10 Europe/Berlin] Processing action: get_transfers_with_details
+[13-Jul-2025 18:19:10 Europe/Berlin] Raw input: {"action":"get_products"}
+[13-Jul-2025 18:19:10 Europe/Berlin] Processing action: get_products
+[13-Jul-2025 18:19:11 Europe/Berlin] Raw input: {"action":"get_locations"}
+[13-Jul-2025 18:19:11 Europe/Berlin] Processing action: get_locations
+[13-Jul-2025 18:19:11 Europe/Berlin] Raw input: {"action":"get_inventory_staff"}
+[13-Jul-2025 18:19:11 Europe/Berlin] Processing action: get_inventory_staff
+[13-Jul-2025 18:19:11 Europe/Berlin] Raw input: {"action":"get_transfers_with_details"}
+[13-Jul-2025 18:19:11 Europe/Berlin] Processing action: get_transfers_with_details
+[13-Jul-2025 18:19:11 Europe/Berlin] Raw input: {"action":"get_products"}
+[13-Jul-2025 18:19:11 Europe/Berlin] Processing action: get_products
+[13-Jul-2025 18:19:11 Europe/Berlin] Raw input: {"action":"get_locations"}
+[13-Jul-2025 18:19:11 Europe/Berlin] Processing action: get_locations
+[13-Jul-2025 18:19:11 Europe/Berlin] Raw input: {"action":"get_inventory_staff"}
+[13-Jul-2025 18:19:11 Europe/Berlin] Processing action: get_inventory_staff
+[13-Jul-2025 18:21:30 Europe/Berlin] Raw input: 
+[13-Jul-2025 18:21:30 Europe/Berlin] JSON decode error: Syntax error
+[13-Jul-2025 18:21:30 Europe/Berlin] Raw input: 
+[13-Jul-2025 18:21:30 Europe/Berlin] Raw input: 
+[13-Jul-2025 18:21:30 Europe/Berlin] Raw input: 
+[13-Jul-2025 18:21:30 Europe/Berlin] Raw input: 
+[13-Jul-2025 18:21:30 Europe/Berlin] Raw input: 
+[13-Jul-2025 18:21:30 Europe/Berlin] JSON decode error: Syntax error
+[13-Jul-2025 18:21:30 Europe/Berlin] JSON decode error: Syntax error
+[13-Jul-2025 18:21:30 Europe/Berlin] JSON decode error: Syntax error
+[13-Jul-2025 18:21:30 Europe/Berlin] JSON decode error: Syntax error
+[13-Jul-2025 18:21:30 Europe/Berlin] JSON decode error: Syntax error
+[13-Jul-2025 18:21:30 Europe/Berlin] Raw input: 
+[13-Jul-2025 18:21:30 Europe/Berlin] JSON decode error: Syntax error
+[13-Jul-2025 18:21:30 Europe/Berlin] Raw input: 
+[13-Jul-2025 18:21:30 Europe/Berlin] JSON decode error: Syntax error
+[13-Jul-2025 18:21:30 Europe/Berlin] Raw input: {"action":"get_transfers_with_details"}
+[13-Jul-2025 18:21:30 Europe/Berlin] Processing action: get_transfers_with_details
+[13-Jul-2025 18:21:30 Europe/Berlin] Raw input: {"action":"get_products"}
+[13-Jul-2025 18:21:30 Europe/Berlin] Raw input: {"action":"get_locations"}
+[13-Jul-2025 18:21:30 Europe/Berlin] Raw input: {"action":"get_inventory_staff"}
+[13-Jul-2025 18:21:30 Europe/Berlin] Raw input: {"action":"get_transfers_with_details"}
+[13-Jul-2025 18:21:30 Europe/Berlin] Processing action: get_products
+[13-Jul-2025 18:21:30 Europe/Berlin] Processing action: get_locations
+[13-Jul-2025 18:21:30 Europe/Berlin] Processing action: get_inventory_staff
+[13-Jul-2025 18:21:30 Europe/Berlin] Processing action: get_transfers_with_details
+[13-Jul-2025 18:21:30 Europe/Berlin] Raw input: {"action":"get_products"}
+[13-Jul-2025 18:21:30 Europe/Berlin] Processing action: get_products
+[13-Jul-2025 18:21:30 Europe/Berlin] Raw input: {"action":"get_inventory_staff"}
+[13-Jul-2025 18:21:30 Europe/Berlin] Raw input: {"action":"get_locations"}
+[13-Jul-2025 18:21:30 Europe/Berlin] Processing action: get_inventory_staff
+[13-Jul-2025 18:21:30 Europe/Berlin] Processing action: get_locations
+[13-Jul-2025 18:21:49 Europe/Berlin] Raw input: 
+[13-Jul-2025 18:21:49 Europe/Berlin] JSON decode error: Syntax error
+[13-Jul-2025 18:21:49 Europe/Berlin] Raw input: {"action":"create_transfer","source_location_id":2,"destination_location_id":3,"employee_id":21,"status":"New","delivery_date":"2025-07-25","products":[{"product_id":91,"quantity":2}]}
+[13-Jul-2025 18:21:49 Europe/Berlin] Processing action: create_transfer
+[13-Jul-2025 18:21:49 Europe/Berlin] Raw input: {"action":"get_transfers_with_details"}
+[13-Jul-2025 18:21:49 Europe/Berlin] Processing action: get_transfers_with_details
+[13-Jul-2025 18:21:49 Europe/Berlin] Raw input: {"action":"get_products"}
+[13-Jul-2025 18:21:49 Europe/Berlin] Processing action: get_products
+[13-Jul-2025 18:21:51 Europe/Berlin] Raw input: {"action":"get_suppliers"}
+[13-Jul-2025 18:21:51 Europe/Berlin] Processing action: get_suppliers
+[13-Jul-2025 18:21:51 Europe/Berlin] Raw input: {"action":"get_products"}
+[13-Jul-2025 18:21:51 Europe/Berlin] Processing action: get_products
+[13-Jul-2025 18:21:51 Europe/Berlin] Raw input: {"action":"get_batches"}
+[13-Jul-2025 18:21:51 Europe/Berlin] Raw input: {"action":"get_brands"}
+[13-Jul-2025 18:21:51 Europe/Berlin] Raw input: {"action":"get_suppliers"}
+[13-Jul-2025 18:21:51 Europe/Berlin] Processing action: get_batches
+[13-Jul-2025 18:21:51 Europe/Berlin] Raw input: {"action":"get_products"}
+[13-Jul-2025 18:21:51 Europe/Berlin] Processing action: get_brands
+[13-Jul-2025 18:21:51 Europe/Berlin] Processing action: get_suppliers
+[13-Jul-2025 18:21:51 Europe/Berlin] Processing action: get_products
+[13-Jul-2025 18:21:51 Europe/Berlin] Raw input: {"action":"get_batches"}
+[13-Jul-2025 18:21:51 Europe/Berlin] Processing action: get_batches
+[13-Jul-2025 18:21:51 Europe/Berlin] Raw input: {"action":"get_brands"}
+[13-Jul-2025 18:21:51 Europe/Berlin] Processing action: get_brands
+[13-Jul-2025 18:24:34 Europe/Berlin] Raw input: 
+[13-Jul-2025 18:24:34 Europe/Berlin] JSON decode error: Syntax error
+[13-Jul-2025 18:24:34 Europe/Berlin] Raw input: 
+[13-Jul-2025 18:24:34 Europe/Berlin] JSON decode error: Syntax error
+[13-Jul-2025 18:24:34 Europe/Berlin] Raw input: 
+[13-Jul-2025 18:24:34 Europe/Berlin] Raw input: 
+[13-Jul-2025 18:24:34 Europe/Berlin] Raw input: 
+[13-Jul-2025 18:24:34 Europe/Berlin] Raw input: 
+[13-Jul-2025 18:24:34 Europe/Berlin] JSON decode error: Syntax error
+[13-Jul-2025 18:24:34 Europe/Berlin] JSON decode error: Syntax error
+[13-Jul-2025 18:24:34 Europe/Berlin] JSON decode error: Syntax error
+[13-Jul-2025 18:24:34 Europe/Berlin] JSON decode error: Syntax error
+[13-Jul-2025 18:24:34 Europe/Berlin] Raw input: 
+[13-Jul-2025 18:24:34 Europe/Berlin] Raw input: {"action":"get_transfers_with_details"}
+[13-Jul-2025 18:24:34 Europe/Berlin] JSON decode error: Syntax error
+[13-Jul-2025 18:24:34 Europe/Berlin] Processing action: get_transfers_with_details
+[13-Jul-2025 18:24:34 Europe/Berlin] Raw input: {"action":"get_locations"}
+[13-Jul-2025 18:24:34 Europe/Berlin] Processing action: get_locations
+[13-Jul-2025 18:24:34 Europe/Berlin] Raw input: 
+[13-Jul-2025 18:24:34 Europe/Berlin] Raw input: {"action":"get_inventory_staff"}
+[13-Jul-2025 18:24:34 Europe/Berlin] JSON decode error: Syntax error
+[13-Jul-2025 18:24:34 Europe/Berlin] Processing action: get_inventory_staff
+[13-Jul-2025 18:24:34 Europe/Berlin] Raw input: {"action":"get_products"}
+[13-Jul-2025 18:24:34 Europe/Berlin] Processing action: get_products
+[13-Jul-2025 18:24:34 Europe/Berlin] Raw input: {"action":"get_products"}
+[13-Jul-2025 18:24:34 Europe/Berlin] Raw input: {"action":"get_inventory_staff"}
+[13-Jul-2025 18:24:34 Europe/Berlin] Processing action: get_products
+[13-Jul-2025 18:24:34 Europe/Berlin] Raw input: {"action":"get_transfers_with_details"}
+[13-Jul-2025 18:24:34 Europe/Berlin] Processing action: get_inventory_staff
+[13-Jul-2025 18:24:34 Europe/Berlin] Raw input: {"action":"get_locations"}
+[13-Jul-2025 18:24:34 Europe/Berlin] Processing action: get_transfers_with_details
+[13-Jul-2025 18:24:34 Europe/Berlin] Processing action: get_locations
+[13-Jul-2025 18:24:54 Europe/Berlin] Raw input: 
+[13-Jul-2025 18:24:54 Europe/Berlin] JSON decode error: Syntax error
+[13-Jul-2025 18:24:54 Europe/Berlin] Raw input: {"action":"create_transfer","source_location_id":3,"destination_location_id":2,"employee_id":21,"status":"New","delivery_date":"2025-07-29","products":[{"product_id":91,"quantity":2}]}
+[13-Jul-2025 18:24:54 Europe/Berlin] Processing action: create_transfer
+[13-Jul-2025 18:27:01 Europe/Berlin] Raw input: 
+[13-Jul-2025 18:27:01 Europe/Berlin] JSON decode error: Syntax error
+[13-Jul-2025 18:27:01 Europe/Berlin] Raw input: 
+[13-Jul-2025 18:27:01 Europe/Berlin] JSON decode error: Syntax error
+[13-Jul-2025 18:27:01 Europe/Berlin] Raw input: 
+[13-Jul-2025 18:27:01 Europe/Berlin] JSON decode error: Syntax error
+[13-Jul-2025 18:27:01 Europe/Berlin] Raw input: {"action":"get_inventory_staff"}
+[13-Jul-2025 18:27:01 Europe/Berlin] Raw input: {"action":"get_transfers_with_details"}
+[13-Jul-2025 18:27:01 Europe/Berlin] Raw input: {"action":"get_products"}
+[13-Jul-2025 18:27:01 Europe/Berlin] Processing action: get_inventory_staff
+[13-Jul-2025 18:27:01 Europe/Berlin] Processing action: get_products
+[13-Jul-2025 18:27:01 Europe/Berlin] Raw input: {"action":"get_products"}
+[13-Jul-2025 18:27:01 Europe/Berlin] Raw input: {"action":"get_locations"}
+[13-Jul-2025 18:27:01 Europe/Berlin] Processing action: get_transfers_with_details
+[13-Jul-2025 18:27:01 Europe/Berlin] Raw input: {"action":"get_transfers_with_details"}
+[13-Jul-2025 18:27:01 Europe/Berlin] Processing action: get_locations
+[13-Jul-2025 18:27:01 Europe/Berlin] Processing action: get_products
+[13-Jul-2025 18:27:01 Europe/Berlin] Processing action: get_transfers_with_details
+[13-Jul-2025 18:27:01 Europe/Berlin] Raw input: {"action":"get_locations"}
+[13-Jul-2025 18:27:01 Europe/Berlin] Processing action: get_locations
+[13-Jul-2025 18:27:01 Europe/Berlin] Raw input: {"action":"get_inventory_staff"}
+[13-Jul-2025 18:27:01 Europe/Berlin] Processing action: get_inventory_staff
+[13-Jul-2025 18:27:20 Europe/Berlin] Raw input: 
+[13-Jul-2025 18:27:20 Europe/Berlin] JSON decode error: Syntax error
+[13-Jul-2025 18:27:20 Europe/Berlin] Raw input: {"action":"create_transfer","source_location_id":3,"destination_location_id":2,"employee_id":20,"status":"New","delivery_date":"2025-07-29","products":[{"product_id":91,"quantity":2}]}
+[13-Jul-2025 18:27:20 Europe/Berlin] Processing action: create_transfer
+[13-Jul-2025 18:27:20 Europe/Berlin] Transfer validation - Product ID: 91, Name: daw, Available: 22, Requested: 2
+[13-Jul-2025 18:27:20 Europe/Berlin] Transfer quantity update - Product ID: 91, Reduced by: 2
+[13-Jul-2025 18:27:20 Europe/Berlin] Transfer stock status update - Product ID: 91
+[13-Jul-2025 18:27:20 Europe/Berlin] Raw input: {"action":"get_transfers_with_details"}
+[13-Jul-2025 18:27:20 Europe/Berlin] Processing action: get_transfers_with_details
+[13-Jul-2025 18:27:20 Europe/Berlin] Raw input: {"action":"get_products"}
+[13-Jul-2025 18:27:20 Europe/Berlin] Processing action: get_products
+[13-Jul-2025 18:27:23 Europe/Berlin] Raw input: {"action":"get_suppliers"}
+[13-Jul-2025 18:27:23 Europe/Berlin] Processing action: get_suppliers
+[13-Jul-2025 18:27:23 Europe/Berlin] Raw input: {"action":"get_products"}
+[13-Jul-2025 18:27:23 Europe/Berlin] Processing action: get_products
+[13-Jul-2025 18:27:23 Europe/Berlin] Raw input: {"action":"get_batches"}
+[13-Jul-2025 18:27:23 Europe/Berlin] Processing action: get_batches
+[13-Jul-2025 18:27:23 Europe/Berlin] Raw input: {"action":"get_brands"}
+[13-Jul-2025 18:27:23 Europe/Berlin] Processing action: get_brands
+[13-Jul-2025 18:27:23 Europe/Berlin] Raw input: {"action":"get_suppliers"}
+[13-Jul-2025 18:27:23 Europe/Berlin] Processing action: get_suppliers
+[13-Jul-2025 18:27:23 Europe/Berlin] Raw input: {"action":"get_products"}
+[13-Jul-2025 18:27:23 Europe/Berlin] Processing action: get_products
+[13-Jul-2025 18:27:23 Europe/Berlin] Raw input: {"action":"get_batches"}
+[13-Jul-2025 18:27:23 Europe/Berlin] Processing action: get_batches
+[13-Jul-2025 18:27:23 Europe/Berlin] Raw input: {"action":"get_brands"}
+[13-Jul-2025 18:27:23 Europe/Berlin] Processing action: get_brands
+[13-Jul-2025 18:29:18 Europe/Berlin] Raw input: 
+[13-Jul-2025 18:29:18 Europe/Berlin] JSON decode error: Syntax error
+[13-Jul-2025 18:29:18 Europe/Berlin] Raw input: 
+[13-Jul-2025 18:29:18 Europe/Berlin] JSON decode error: Syntax error
+[13-Jul-2025 18:29:18 Europe/Berlin] Raw input: 
+[13-Jul-2025 18:29:18 Europe/Berlin] Raw input: {"action":"get_transfers_with_details"}
+[13-Jul-2025 18:29:18 Europe/Berlin] JSON decode error: Syntax error
+[13-Jul-2025 18:29:18 Europe/Berlin] Processing action: get_transfers_with_details
+[13-Jul-2025 18:29:18 Europe/Berlin] Raw input: {"action":"get_products"}
+[13-Jul-2025 18:29:18 Europe/Berlin] Processing action: get_products
+[13-Jul-2025 18:29:18 Europe/Berlin] Raw input: {"action":"get_locations"}
+[13-Jul-2025 18:29:18 Europe/Berlin] Processing action: get_locations
+[13-Jul-2025 18:29:18 Europe/Berlin] Raw input: {"action":"get_products"}
+[13-Jul-2025 18:29:18 Europe/Berlin] Raw input: {"action":"get_inventory_staff"}
+[13-Jul-2025 18:29:18 Europe/Berlin] Processing action: get_inventory_staff
+[13-Jul-2025 18:29:18 Europe/Berlin] Processing action: get_products
+[13-Jul-2025 18:29:18 Europe/Berlin] Raw input: {"action":"get_inventory_staff"}
+[13-Jul-2025 18:29:18 Europe/Berlin] Raw input: {"action":"get_transfers_with_details"}
+[13-Jul-2025 18:29:18 Europe/Berlin] Processing action: get_transfers_with_details
+[13-Jul-2025 18:29:18 Europe/Berlin] Raw input: {"action":"get_locations"}
+[13-Jul-2025 18:29:18 Europe/Berlin] Processing action: get_inventory_staff
+[13-Jul-2025 18:29:18 Europe/Berlin] Processing action: get_locations
+[13-Jul-2025 18:29:22 Europe/Berlin] Raw input: {"action":"get_transfers_with_details"}
+[13-Jul-2025 18:29:22 Europe/Berlin] Processing action: get_transfers_with_details
+[13-Jul-2025 18:29:22 Europe/Berlin] Raw input: {"action":"get_products"}
+[13-Jul-2025 18:29:22 Europe/Berlin] Processing action: get_products
+[13-Jul-2025 18:29:22 Europe/Berlin] Raw input: {"action":"get_locations"}
+[13-Jul-2025 18:29:22 Europe/Berlin] Processing action: get_locations
+[13-Jul-2025 18:29:22 Europe/Berlin] Raw input: {"action":"get_inventory_staff"}
+[13-Jul-2025 18:29:22 Europe/Berlin] Processing action: get_inventory_staff
+[13-Jul-2025 18:29:22 Europe/Berlin] Raw input: {"action":"get_transfers_with_details"}
+[13-Jul-2025 18:29:22 Europe/Berlin] Processing action: get_transfers_with_details
+[13-Jul-2025 18:29:22 Europe/Berlin] Raw input: {"action":"get_products"}
+[13-Jul-2025 18:29:22 Europe/Berlin] Processing action: get_products
+[13-Jul-2025 18:29:22 Europe/Berlin] Raw input: {"action":"get_locations"}
+[13-Jul-2025 18:29:22 Europe/Berlin] Processing action: get_locations
+[13-Jul-2025 18:29:22 Europe/Berlin] Raw input: {"action":"get_inventory_staff"}
+[13-Jul-2025 18:29:22 Europe/Berlin] Processing action: get_inventory_staff

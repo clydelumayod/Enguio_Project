@@ -23,10 +23,9 @@ import {
 
 // API function
 // ✅ Paste this near the top of Warehouse.js
-
 async function handleApiCall(action, data = {}) {
   try {
-    const response = await fetch("http://localhost/capstone_api/backend.php", {
+    const response = await fetch("http://localhost/Enguio_Project/backend.php", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -38,19 +37,15 @@ async function handleApiCall(action, data = {}) {
     });
 
     if (!response.ok) {
-      const text = await response.text();
-      console.error("❌ Server error:", response.status, text);
-      return { success: false, message: `Server error ${response.status}` };
+      throw new Error(`HTTP error! Status: ${response.status}`);
     }
 
     const result = await response.json();
     return result;
+
   } catch (error) {
-    console.error("❌ handleApiCall failed:", error);
-    return {
-      success: false,
-      message: error.message || "Unknown error",
-    };
+    console.error("API call failed:", error.message);
+    return { success: false, error: error.message };
   }
 }
 
@@ -346,7 +341,7 @@ function Warehouse() {
             for (let i = 0; i < validItems.length; i++) {
               const item = validItems[i];
     
-              let brand_id = 1;
+              let brand_id = 30; // Default to first brand in database
               const selectedBrand = brandsData.find(
                 (brand) =>
                   brand.brand.trim().toLowerCase() ===
@@ -355,15 +350,23 @@ function Warehouse() {
     
               if (selectedBrand?.brand_id) {
                 brand_id = parseInt(selectedBrand.brand_id);
-              } else {
-                // ✅ Brand handling (clear and insert)
-                // This logic should ideally be handled by your backend API
-                // For now, we'll just use a default brand_id or handle it via backend
-                // If you want to insert a new brand, you'd call a backend endpoint here
-                // For example: const response = await handleApiCall("add_brand", { brand_name: item.brand });
-                // Then, if response.success, update brandsData and get the new brand_id
-                // For now, we'll just use a default or assume it's handled by backend
-                brand_id = 1; // Default brand_id
+              } else if (item.brand && item.brand.trim() !== "") {
+                // Try to create new brand if it doesn't exist
+                try {
+                  const brandResponse = await handleApiCall("add_brand", { brand_name: item.brand.trim() });
+                  if (brandResponse.success) {
+                    brand_id = brandResponse.brand_id;
+                    // Reload brands data to include the new brand
+                    loadData("brands");
+                  } else {
+                    console.warn("Failed to create brand:", brandResponse.message);
+                    // Use default brand_id
+                    brand_id = 30;
+                  }
+                } catch (error) {
+                  console.error("Error creating brand:", error);
+                  brand_id = 30; // Default brand_id
+                }
               }
     
               const productData = {
