@@ -26,11 +26,11 @@ const Sidebar = ({
   // Features except inventory dropdown
   const features = [
     { label: "Dashboard", icon: <FaTachometerAlt />, key: "Dashboard" },
-    { label: "Convenience Inventory", icon: <FaTruck />, key: "Convenience Inventory" },
-    { label: "Pharmacy Inventory", icon: <FaBoxes />, key: "Pharmacy Inventory" },
     { label: "Warehouse Inventory", icon: <FaTags />, key: "Warehouse Inventory" },
-    { label: "Stock Adjustment", icon: <FaClipboardList />, key: "Stock Adjustment" },
-    { label: "Movement History", icon: <FaHistory />, key: "Movement History" },
+    { label: "Convenience Inventory", icon: <FaTruck />, key: "ConvenienceInventory" },
+    { label: "Pharmacy Inventory", icon: <FaBoxes />, key: "PharmacyInventory" },
+    { label: "Stock Adjustment", icon: <FaClipboardList />, key: "StockAdjustment" },
+    { label: "Movement History", icon: <FaHistory />, key: "MovementHistory" },
     { label: "Reports", icon: <FaChartLine />, key: "Reports" },
     { label: "Settings", icon: <FaCog />, key: "Settings" },
     { label: "Suppliers", icon: <FaUser />, key: "Suppliers" },

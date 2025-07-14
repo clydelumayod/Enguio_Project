@@ -780,10 +780,47 @@ switch ($action) {
                 error_log("Transfer stock status update - Product ID: $product_id");
             }
             
+            // Create notification for destination location if it's convenience store or pharmacy
+            $destinationLocationStmt = $conn->prepare("
+                SELECT location_name FROM tbl_location WHERE location_id = ?
+            ");
+            $destinationLocationStmt->execute([$destination_location_id]);
+            $destinationLocation = $destinationLocationStmt->fetch(PDO::FETCH_ASSOC);
+            
+            if ($destinationLocation && 
+                (stripos($destinationLocation['location_name'], 'convenience') !== false || 
+                 stripos($destinationLocation['location_name'], 'pharmacy') !== false)) {
+                
+                $notificationMessage = "New transfer received from " . 
+                    (function() use ($conn, $source_location_id) {
+                        $stmt = $conn->prepare("SELECT location_name FROM tbl_location WHERE location_id = ?");
+                        $stmt->execute([$source_location_id]);
+                        $source = $stmt->fetch(PDO::FETCH_ASSOC);
+                        return $source ? $source['location_name'] : 'Warehouse';
+                    })() . 
+                    " with " . count($products) . " products. Transfer ID: TR-" . $transfer_header_id;
+                
+                $notificationStmt = $conn->prepare("
+                    INSERT INTO tbl_notifications (
+                        location_id, transfer_id, notification_type, message, status, created_at
+                    ) VALUES (?, ?, ?, ?, 'unread', NOW())
+                ");
+                $notificationStmt->execute([
+                    $destination_location_id,
+                    $transfer_header_id,
+                    'transfer',
+                    $notificationMessage
+                ]);
+            }
+            
             $conn->commit();
             echo json_encode([
                 "success" => true, 
-                "message" => "Transfer created successfully. Product quantities updated in source location."
+                "message" => "Transfer created successfully. Product quantities updated in source location." .
+                            ($destinationLocation && 
+                             (stripos($destinationLocation['location_name'], 'convenience') !== false || 
+                              stripos($destinationLocation['location_name'], 'pharmacy') !== false) 
+                             ? " Notification sent to destination store." : "")
             ]);
             
         } catch (Exception $e) {
@@ -1103,6 +1140,182 @@ switch ($action) {
             echo json_encode([
                 "success" => true,
                 "data" => $batches
+            ]);
+        } catch (Exception $e) {
+            echo json_encode([
+                "success" => false,
+                "message" => "Database error: " . $e->getMessage(),
+                "data" => []
+            ]);
+        }
+        break;
+
+    case 'create_notification':
+        try {
+            $location_id = $data['location_id'] ?? 0;
+            $transfer_id = $data['transfer_id'] ?? 0;
+            $notification_type = $data['notification_type'] ?? 'transfer';
+            $message = $data['message'] ?? '';
+            $status = $data['status'] ?? 'unread';
+            
+            $stmt = $conn->prepare("
+                INSERT INTO tbl_notifications (
+                    location_id, transfer_id, notification_type, message, status, created_at
+                ) VALUES (?, ?, ?, ?, ?, NOW())
+            ");
+            $stmt->execute([$location_id, $transfer_id, $notification_type, $message, $status]);
+            
+            echo json_encode([
+                "success" => true,
+                "message" => "Notification created successfully",
+                "notification_id" => $conn->lastInsertId()
+            ]);
+        } catch (Exception $e) {
+            echo json_encode([
+                "success" => false,
+                "message" => "Database error: " . $e->getMessage()
+            ]);
+        }
+        break;
+
+    case 'get_notifications':
+        try {
+            $location_id = $data['location_id'] ?? 0;
+            $status = $data['status'] ?? 'all';
+            
+            $whereClause = "WHERE 1=1";
+            $params = [];
+            
+            if ($location_id > 0) {
+                $whereClause .= " AND location_id = ?";
+                $params[] = $location_id;
+            }
+            
+            if ($status !== 'all') {
+                $whereClause .= " AND status = ?";
+                $params[] = $status;
+            }
+            
+            $stmt = $conn->prepare("
+                SELECT 
+                    n.notification_id,
+                    n.location_id,
+                    n.transfer_id,
+                    n.notification_type,
+                    n.message,
+                    n.status,
+                    n.created_at,
+                    l.location_name,
+                    th.source_location_id,
+                    th.destination_location_id,
+                    sl.location_name as source_location_name,
+                    dl.location_name as destination_location_name,
+                    e.Fname as employee_name
+                FROM tbl_notifications n
+                LEFT JOIN tbl_location l ON n.location_id = l.location_id
+                LEFT JOIN tbl_transfer_header th ON n.transfer_id = th.transfer_header_id
+                LEFT JOIN tbl_location sl ON th.source_location_id = sl.location_id
+                LEFT JOIN tbl_location dl ON th.destination_location_id = dl.location_id
+                LEFT JOIN tbl_employee e ON th.employee_id = e.emp_id
+                $whereClause
+                ORDER BY n.created_at DESC
+            ");
+            $stmt->execute($params);
+            $notifications = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            echo json_encode([
+                "success" => true,
+                "data" => $notifications
+            ]);
+        } catch (Exception $e) {
+            echo json_encode([
+                "success" => false,
+                "message" => "Database error: " . $e->getMessage(),
+                "data" => []
+            ]);
+        }
+        break;
+
+    case 'mark_notification_read':
+        try {
+            $notification_id = $data['notification_id'] ?? 0;
+            
+            if (!$notification_id) {
+                echo json_encode(["success" => false, "message" => "Notification ID is required"]);
+                break;
+            }
+            
+            $stmt = $conn->prepare("
+                UPDATE tbl_notifications 
+                SET status = 'read' 
+                WHERE notification_id = ?
+            ");
+            $stmt->execute([$notification_id]);
+            
+            echo json_encode([
+                "success" => true,
+                "message" => "Notification marked as read"
+            ]);
+        } catch (Exception $e) {
+            echo json_encode([
+                "success" => false,
+                "message" => "Database error: " . $e->getMessage()
+            ]);
+        }
+        break;
+
+    case 'get_location_products':
+        try {
+            $location_id = $data['location_id'] ?? 0;
+            $search = $data['search'] ?? '';
+            $category = $data['category'] ?? 'all';
+            
+            $whereClause = "WHERE p.location_id = ?";
+            $params = [$location_id];
+            
+            if ($search) {
+                $whereClause .= " AND (p.product_name LIKE ? OR p.barcode LIKE ? OR p.category LIKE ?)";
+                $searchTerm = "%$search%";
+                $params[] = $searchTerm;
+                $params[] = $searchTerm;
+                $params[] = $searchTerm;
+            }
+            
+            if ($category !== 'all') {
+                $whereClause .= " AND p.category = ?";
+                $params[] = $category;
+            }
+            
+            $stmt = $conn->prepare("
+                SELECT 
+                    p.product_id,
+                    p.product_name,
+                    p.category,
+                    p.barcode,
+                    p.description,
+                    p.quantity,
+                    p.unit_price,
+                    p.stock_status,
+                    p.Variation,
+                    p.brand_id,
+                    p.supplier_id,
+                    p.location_id,
+                    b.brand,
+                    s.supplier_name,
+                    l.location_name
+                FROM tbl_product p
+                LEFT JOIN tbl_brand b ON p.brand_id = b.brand_id
+                LEFT JOIN tbl_supplier s ON p.supplier_id = s.supplier_id
+                LEFT JOIN tbl_location l ON p.location_id = l.location_id
+                $whereClause
+                ORDER BY p.product_name ASC
+            ");
+            $stmt->execute($params);
+            $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            echo json_encode([
+                "success" => true,
+                "data" => $products
             ]);
         } catch (Exception $e) {
             echo json_encode([

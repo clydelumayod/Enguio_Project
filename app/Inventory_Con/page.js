@@ -7,6 +7,7 @@ import InventoryTransfer from "./InventoryTransfer";
 import Warehouse from "./Warehouse";
 import ConvenienceInventory from "./ConvenienceStore";
 import Suppliers from "./Suppliers";
+import MovementHistory from "./MovementHistory";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -18,8 +19,8 @@ export default function Page() {
   const componentMap = {
     "Dashboard": Dashboard,
     "Inventory Transfer": InventoryTransfer,
-    "Convenience Inventory": ConvenienceInventory,
-    "Pharmacy Inventory": () => (
+    "ConvenienceInventory": ConvenienceInventory,
+    "PharmacyInventory": () => (
       <div className="p-8">
         <h1 className="text-2xl font-bold">Pharmacy Inventory</h1>
         <p>Pharmacy inventory management.</p>
@@ -32,11 +33,8 @@ export default function Page() {
         <p>Stock adjustment functionality.</p>
       </div>
     ),
-    "Movement History": () => (
-      <div className="p-8">
-        <h1 className="text-2xl font-bold">Movement History</h1>
-        <p>Movement history tracking.</p>
-      </div>
+    "MovementHistory": () => (
+      <MovementHistory />
     ),
     "Reports": () => (
       <div className="p-8">
@@ -58,7 +56,6 @@ export default function Page() {
       </div>
     ),
   };
-
   // Get the component to render
   const ComponentToRender = componentMap[selectedFeature] || Dashboard;
 
