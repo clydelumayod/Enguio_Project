@@ -6,6 +6,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 
+const API_BASE_URL = "http://localhost/enguio/Api/backend.php";
 //dashboard
 function Dashboard() {
   const metrics = [
@@ -143,10 +144,103 @@ function Dashboard() {
 }
 //product
 function Products(){
+  const [products, setProducts] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await axios.post(API_BASE_URL, {
+          action: "get_products"
+        });
+        if (response.data.success) {
+          setProducts(response.data.data || []);
+        } else {
+          setProducts([]);
+        }
+      } catch (err) {
+        setProducts([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProducts();
+  }, []);
+
+  const filteredProducts = products.filter(
+    (product) =>
+      product.product_name?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  return (
+    <div className="p-8">
+      <h1 className="text-2xl font-bold mb-6">Product Management</h1>
+      <div className="mb-6">
+        <input
+          type="text"
+          placeholder="Search products by name..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="w-full border p-2 rounded"
+        />
+      </div>
+      <div className="bg-white shadow overflow-hidden sm:rounded-lg">
+        <div className="max-h-[500px] overflow-y-auto">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50 sticky top-0 z-10">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-bold uppercase">#</th>
+                <th className="px-6 py-3 text-left text-xs font-bold uppercase">Product Name</th>
+                <th className="px-6 py-3 text-left text-xs font-bold uppercase">Category</th>
+                <th className="px-6 py-3 text-left text-xs font-bold uppercase">Barcode</th>
+                <th className="px-6 py-3 text-left text-xs font-bold uppercase">Description</th>
+                <th className="px-6 py-3 text-left text-xs font-bold uppercase">Prescription</th>
+                <th className="px-6 py-3 text-left text-xs font-bold uppercase">Bulk</th>
+                <th className="px-6 py-3 text-left text-xs font-bold uppercase">Expiration</th>
+                <th className="px-6 py-3 text-left text-xs font-bold uppercase">Quantity</th>
+                <th className="px-6 py-3 text-left text-xs font-bold uppercase">Unit Price</th>
+                <th className="px-10 py-3 text-left text-xs font-bold uppercase">Brand</th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {loading ? (
+                <tr>
+                  <td colSpan="11" className="text-center py-4">Loading...</td>
+                </tr>
+              ) : filteredProducts.length > 0 ? (
+                filteredProducts.map((product, index) => (
+                  <tr key={product.product_id}>
+                    <td className="px-6 py-4">{index + 1}</td>
+                    <td className="px-6 py-4">{product.product_name}</td>
+                    <td className="px-6 py-4">{product.category}</td>
+                    <td className="px-6 py-4">{product.barcode}</td>
+                    <td className="px-6 py-4">{product.description}</td>
+                    <td className="px-6 py-4">{product.prescription}</td>
+                    <td className="px-6 py-4">{product.bulk}</td>
+                    <td className="px-6 py-4">{product.expiration}</td>
+                    <td className="px-6 py-4">{product.quantity}</td>
+                    <td className="px-6 py-4">{product.unit_price}</td>
+                    <td className="px-6 py-4">{product.brand}</td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="11" className="text-center py-4">No products found</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
 
 }
+
 //user
-function UserManagement() { 
+function 
+UserManagement() { 
   const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState({
     fname: "",
@@ -183,7 +277,7 @@ function UserManagement() {
   useEffect(() => {
     const fetchEmployee = async () => {
       try {
-        const response = await axios.post("http://localhost/capstone_api/backend.php", {
+        const response = await axios.post(API_BASE_URL, {
           action: "display_employee",
         });
         if (response.data.success) {
@@ -231,8 +325,21 @@ function UserManagement() {
       lname: formData.lname.trim() || null,
     };
 
+    // Only require shift for cashier and pharmacist
+    const role = sanitizedData.role;
+    const needsShift = role === "cashier" || role === "pharmacist";
+    if (needsShift && !sanitizedData.shift) {
+      toast.error("Shift is required for Cashier and Pharmacist.", {
+        style: { backgroundColor: "red", color: "white" },
+        position: "top-right",
+        hideProgressBar: true,
+        autoClose: 3000,
+      });
+      return;
+    }
+
     try {
-      const response = await axios.post("http://localhost/capstone_api/backend.php", {
+      const payload = {
         action: "add_employee",
         fname: sanitizedData.fname,
         mname: sanitizedData.mname,
@@ -244,41 +351,59 @@ function UserManagement() {
         contact_num: sanitizedData.contact,
         email: sanitizedData.email,
         role_id:
-          sanitizedData.role === "admin"
+          role === "admin"
             ? 1
-            : sanitizedData.role === "cashier"
+            : role === "cashier"
             ? 3
-            : sanitizedData.role === "inventory"
+            : role === "inventory"
             ? 4
             : 2,
-        shift_id:
+        age: sanitizedData.age,
+        address: sanitizedData.address,
+        status: sanitizedData.status,
+      };
+      // Only include shift_id for cashier and pharmacist
+      if (needsShift) {
+        payload.shift_id =
           sanitizedData.shift === "Shift1"
             ? 1
             : sanitizedData.shift === "Shift2"
             ? 2
-            : sanitizedData.shift ==="Shift3" 
-            ?3
-            :null,
-        age: sanitizedData.age,
-        address: sanitizedData.address,
-        status: sanitizedData.status,
-      });
+            : sanitizedData.shift === "Shift3"
+            ? 3
+            : null;
+      }
+
+      const response = await axios.post(API_BASE_URL, payload);
 
       if (response.data.success) {
-        toast.success("Employee added successfully!",
-          {
-            style:{backgroundColor:"green", color:"white"},
-            position:"top-right",
-            hideProgressBar:true,
-            autoClose:3000
-          }
-        );
+        toast.success("Employee added successfully!", {
+          style: { backgroundColor: "green", color: "white" },
+          position: "top-right",
+          hideProgressBar: true,
+          autoClose: 3000,
+        });
         setUsers([
           ...users,
           {
             ...sanitizedData,
-            role_id: sanitizedData.role === "admin" ? 1 : sanitizedData.role === "cashier" ? 3 : sanitizedData.role === "inventory" ? 4 : 2,
-            shift_id: sanitizedData.shift === "morning" ? 1 : sanitizedData.shift === "afternoon" ? 2 : 3,
+            role_id:
+              role === "admin"
+                ? 1
+                : role === "cashier"
+                ? 3
+                : role === "inventory"
+                ? 4
+                : 2,
+            shift_id: needsShift
+              ? sanitizedData.shift === "Shift1"
+                ? 1
+                : sanitizedData.shift === "Shift2"
+                ? 2
+                : sanitizedData.shift === "Shift3"
+                ? 3
+                : null
+              : null,
           },
         ]);
         setFormData({
@@ -299,24 +424,20 @@ function UserManagement() {
         });
         setShowModal(false);
       } else {
-        toast.error(response.data.message || "Failed to add employee.",
-          {
-            style:{backgroundColor:"red", color:"white"},
-            position:"top-right",
-            hideProgressBar:true,
-            autoClose:3000
-          }
-        );
+        toast.error(response.data.message || "Failed to add employee.", {
+          style: { backgroundColor: "red", color: "white" },
+          position: "top-right",
+          hideProgressBar: true,
+          autoClose: 3000,
+        });
       }
     } catch (error) {
-      toast.error(error.response?.data?.message || "An error occurred.",
-        {
-            style:{backgroundColor:"red", color:"white"},
-            position:"top-right",
-            hideProgressBar:true,
-            autoClose:3000
-          }
-      );
+      toast.error(error.response?.data?.message || "An error occurred.", {
+        style: { backgroundColor: "red", color: "white" },
+        position: "top-right",
+        hideProgressBar: true,
+        autoClose: 3000,
+      });
     }
   };
 
@@ -324,7 +445,7 @@ function UserManagement() {
     const idToUse = Number(employeeId); // Ensure numeric emp_id
     console.log("Debug: Updating user ID:", idToUse, "to status:", newStatus);
     try {
-      const response = await axios.post("http://localhost/capstone_api/backend.php", {
+      const response = await axios.post(API_BASE_URL, {
         action: "update_employee_status",
         id: idToUse,
         status: newStatus,
@@ -703,6 +824,7 @@ function UserManagement() {
                       value={formData.shift}
                       onChange={handleInputChange}
                       className="w-full border p-2 rounded"
+                      required
                     >
                       <option value="">-- Select Shift --</option>
                       <option value="Shift1">Shift1</option>
@@ -793,28 +915,19 @@ function UserManagement() {
 //brand
 function BrandManagement() {
   const [brands, setBrands] = useState([]);
-  const [newBrandName, setNewBrandName] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
-  const [showArchiveModal, setShowArchiveModal] = useState(false);
-  const [brandToArchive, setBrandToArchive] = useState({ id: null, isArchived: false });
-  const [showArchived, setShowArchived] = useState(false);
 
   // Fetch Brands
   useEffect(() => {
     const fetchBrands = async () => {
       try {
-        const response = await axios.post('http://localhost/capstone_api/backend.php', {
+        const response = await axios.post(API_BASE_URL, {
           action: 'displayBrand'
         });
 
         if (response.data.success) {
-          setBrands(
-            (response.data.brand || []).map((b) => ({
-              ...b,
-              is_archived: b.is_archived ? Boolean(b.is_archived) : false
-            }))
-          );
+          setBrands(response.data.brand || []);
         } else {
           console.error(response.data.message || 'Failed to fetch brands');
         }
@@ -828,218 +941,47 @@ function BrandManagement() {
     fetchBrands();
   }, []);
 
-  // Add New Brand
-  const handleAddBrand = async (e) => {
-    e.preventDefault();
-
-    if (!newBrandName.trim()) {
-      toast.error('Brand name is required',
-        {
-            style:{backgroundColor:"red", color:"white"},
-            position:"top-right",
-            hideProgressBar:true,
-            autoClose:3000
-          }
-      );
-      return;
-    }
-
-    try {
-      const response = await axios.post('http://localhost/capstone_api/backend.php', {
-        action: 'addBrand',
-        brand: newBrandName.trim()
-      });
-
-      if (response.data.success) {
-        toast.success('Brand added successfully',
-          {
-            style:{backgroundColor:"green", color:"white"},
-            position:"top-right",
-            hideProgressBar:true,
-            autoClose:3000
-          }
-        );
-
-        const newBrand = {
-          brand_id: response.data.brand_id || Date.now(),
-          brand: newBrandName.trim(),
-          is_archived: false
-        };
-
-        setBrands((prev) => [...prev, newBrand]);
-        setNewBrandName('');
-      } else {
-        toast.error(response.data.message || 'Failed to add brand',
-          {
-            style:{backgroundColor:"red", color:"white"},
-            position:"top-right",
-            hideProgressBar:true,
-            autoClose:3000
-          }
-        );
-      }
-    } catch (err) {
-      toast.error('An error occurred while adding brand',
-        {
-            style:{backgroundColor:"red", color:"white"},
-            position:"top-right",
-            hideProgressBar:true,
-            autoClose:3000
-          }
-      );
-    }
-  };
-
-  // Open Archive Modal
-  const openArchiveModal = (brandId, isArchived) => {
-    if (brandId === undefined) {
-      toast.error('Invalid brand ID',
-        {
-            style:{backgroundColor:"red", color:"white"},
-            position:"top-right",
-            hideProgressBar:true,
-            autoClose:3000
-          }
-      );
-      return;
-    }
-
-    setBrandToArchive({ id: brandId, isArchived });
-    setShowArchiveModal(true);
-  };
-
-  // Handle Archive or Restore
-  const handleArchiveBrand = async () => {
-    const { id, isArchived } = brandToArchive;
-
-    if (!id) {
-      setShowArchiveModal(false);
-      return;
-    }
-
-    try {
-      const response = await axios.post('http://localhost/capstone_api/backend.php', {
-        action: 'archiveBrand',
-        brand_id: id,
-        is_archived: isArchived ? 0 : 1
-      });
-
-      if (response.data.success) {
-        toast.success(`Brand ${isArchived ? 'restored' : 'archived'} successfully`,
-          {
-            style:{backgroundColor:"green", color:"white"},
-            position:"top-right",
-            hideProgressBar:true,
-            autoClose:3000
-          }
-        );
-        setBrands((prev) =>
-          prev.map((brand) =>
-            brand.brand_id === id
-              ? { ...brand, is_archived: !isArchived }
-              : brand
-          )
-        );
-      } else {
-        toast.error(response.data.message || 'Failed to update brand',
-          {
-            style:{backgroundColor:"red", color:"white"},
-            position:"top-right",
-            hideProgressBar:true,
-            autoClose:3000
-          }
-        );
-      }
-    } catch (err) {
-      toast.error('An error occurred while updating brand',
-        {
-            style:{backgroundColor:"red", color:"white"},
-            position:"top-right",
-            hideProgressBar:true,
-            autoClose:3000
-          }
-      );
-    } finally {
-      setShowArchiveModal(false);
-      setBrandToArchive({ id: null, isArchived: false });
-    }
-  };
-
   // Filter Brands
   const filteredBrands = brands
     .filter((brand) => brand && typeof brand.brand_id === 'number')
     .filter((brand) =>
       brand.brand?.toLowerCase().includes(searchTerm.toLowerCase())
-    )
-    .filter((brand) => (showArchived ? brand.is_archived : !brand.is_archived));
+    );
 
   return (
     <div className="p-8">
       <h1 className="text-2xl font-bold mb-6">Brand Management</h1>
 
-      {/* Add Brand Form */}
-      <div className="bg-white p-4 rounded-lg shadow-md mb-8">
-        <h2 className="text-xl font-semibold mb-4 flex items-center">
-          <span className="mr-2 text-green-500">+</span> Add New Brand
-        </h2>
-        <form onSubmit={handleAddBrand} className="flex space-x-4">
+      {/* Search Only */}
+      <div className="flex justify-between items-center p-4 border-b border-gray-200">
+        <h2 className="text-xl font-semibold">Brand List</h2>
+        <div className="relative w-1/3">
           <input
             type="text"
-            value={newBrandName}
-            onChange={(e) => setNewBrandName(e.target.value)}
-            className="w-full h-10 px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Enter brand name"
+            placeholder="Search brands..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 pl-10"
           />
-          <button
-            type="submit"
-            className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors duration-200 flex-items-center justify-center h-10 w-30"
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-5 w-5 text-gray-500 absolute left-3 top-2.5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
           >
-            Add Brand
-          </button>
-        </form>
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+            />
+          </svg>
+        </div>
       </div>
 
       {/* Brands Table */}
       <div className="bg-white rounded-lg shadow overflow-hidden">
-        {/* Header with Title and Search */}
-        <div className="flex justify-between items-center p-4 border-b border-gray-200">
-          <h2 className="text-xl font-semibold">Brand List</h2>
-          <div className="relative w-1/3">
-            <input
-              type="text"
-              placeholder="Search brands..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 pl-10"
-            />
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5 text-gray-500 absolute left-3 top-2.5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-              />
-            </svg>
-          </div>
-          <label className="inline-flex items-center cursor-pointer ml-4">
-            <input
-              type="checkbox"
-              checked={showArchived}
-              onChange={(e) => setShowArchived(e.target.checked)}
-              className="sr-only peer"
-            />
-            <div className="relative w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-            <span className="ms-3 text-sm font-medium text-gray-700">Show Archived</span>
-          </label>
-        </div>
-
-        {/* Scrollable Table Container */}
         <div className="max-h-[200px] overflow-y-auto border border-gray-200 rounded mt-4">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50 sticky top-0">
@@ -1047,46 +989,23 @@ function BrandManagement() {
                 <th scope="col" className="px-6 py-3 text-left text-xs font-bold text-black-700 uppercase tracking-wider">#</th>
                 <th scope="col" className="px-6 py-3 text-left text-xs font-bold text-black-700 uppercase tracking-wider">Brand Name</th>
                 <th scope="col" className="px-6 py-3 text-center text-xs font-bold text-black-700 uppercase tracking-wider">Products</th>
-                <th scope="col" className="px-6 py-3 text-right text-xs font-bold text-black-700 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {loading ? (
                 <tr>
-                  <td colSpan="4" className="px-6 py-4 text-center">Loading...</td>
+                  <td colSpan="3" className="px-6 py-4 text-center">Loading...</td>
                 </tr>
               ) : filteredBrands.length === 0 ? (
                 <tr>
-                  <td colSpan="4" className="px-6 py-4 text-center text-sm text-gray-500">No brands found</td>
+                  <td colSpan="3" className="px-6 py-4 text-center text-sm text-gray-500">No brands found</td>
                 </tr>
               ) : (
                 filteredBrands.map((brand, index) => (
                   <tr key={brand.brand_id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">{index + 1}</td>
                     <td className="px-6 py-4 whitespace-nowrap">{brand.brand}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-center">12</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right">
-                      <button
-                        onClick={() => openArchiveModal(brand.brand_id, brand.is_archived)}
-                        className={`flex items-center justify-end w-full ${
-                          brand.is_archived ? 'text-green-600 hover:text-green-800' : 'text-red-600 hover:text-red-900'
-                        }`}
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="h-5 w-5 mr-1"
-                          viewBox="0 0 20 20"
-                          fill="currentColor"
-                        >
-                          {brand.is_archived ? (
-                            <path d="M7 3a1 1 0 012 0v1h3V3a1 1 0 112 0v1h2a2 2 0 012 2v11a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2h2V3zm3 1h3v1H7V4zm4 10a1 1 0 10-2 0v3a1 1 0 102 0v-3z" />
-                          ) : (
-                            <path d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm0 2h12v7H4V5zm5 7a1 1 0 01-2 0v-3a1 1 0 012 0v3z" />
-                          )}
-                        </svg>
-                        {brand.is_archived ? 'Restore' : 'Archive'}
-                      </button>
-                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-center">{brand.product_count ?? 0}</td>
                   </tr>
                 ))
               )}
@@ -1094,39 +1013,6 @@ function BrandManagement() {
           </table>
         </div>
       </div>
-
-      {/* Archive Confirmation Modal */}
-      {showArchiveModal && (
-        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
-          <div className="bg-white rounded-lg shadow-lg p-6 max-w-sm w-full">
-            <h3 className="text-lg font-semibold mb-4">Confirm Action</h3>
-            <p className="mb-6 text-md text-gray-600">
-              Are you sure you want to{' '}
-              {brandToArchive.isArchived ? 'restore' : 'archive'} this brand?
-            </p>
-            <div className="flex justify-end space-x-3">
-              <button
-                onClick={() => setShowArchiveModal(false)}
-                className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleArchiveBrand}
-                className={`px-4 py-2 ${
-                  brandToArchive.isArchived
-                    ? 'bg-green-500 hover:bg-green-600'
-                    : 'bg-red-500 hover:bg-red-600'
-                } text-white rounded transition`}
-              >
-                {brandToArchive.isArchived ? 'Restore' : 'Archive'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      <ToastContainer />
     </div>
   );
 }
@@ -1134,28 +1020,8 @@ function BrandManagement() {
 //supplier
 function Supplier() {
   const [suppliers, setSuppliers] = useState([]);
-  const [showModal, setShowModal] = useState(false);
-  const [showArchiveModal, setShowArchiveModal] = useState(false);
-  const [showConfirmModal, setShowConfirmModal] = useState(false);
-
-  const [confirmAction, setConfirmAction] = useState(null);
-  const [confirmId, setConfirmId] = useState(null);
-  const [confirmMessage, setConfirmMessage] = useState("");
-  const [isEditing, setIsEditing] = useState(false);
-  const [currentSupplier, setCurrentSupplier] = useState(null);
-  const [archiveLoading, setArchiveLoading] = useState(false);
-  const [archivedSuppliers, setArchivedSuppliers] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
-
-  // Form state
-  const [formData, setFormData] = useState({
-    supplier_name: "",
-    supplier_address: "",
-    supplier_contact: "",
-    supplier_email: "",
-   
-  });
 
   // Fetch suppliers on load
   useEffect(() => {
@@ -1165,7 +1031,7 @@ function Supplier() {
   const fetchSuppliers = async () => {
     try {
       const response = await axios.post(
-        "http://localhost/capstone_api/backend.php",
+        API_BASE_URL,
         {
           action: "get_suppliers"
         },
@@ -1177,7 +1043,7 @@ function Supplier() {
       );
 
       if (response.data.success) {
-        setSuppliers(response.data.suppliers || []);
+        setSuppliers(response.data.data || []);
       } else {
         console.error(response.data.message || "Failed to fetch suppliers");
       }
@@ -1186,319 +1052,6 @@ function Supplier() {
     } finally {
       setLoading(false);
     }
-  };
-
-  // Fetch archived suppliers
-  const fetchArchivedSuppliers = async () => {
-    setArchiveLoading(true);
-    try {
-      const response = await axios.post(
-        "http://localhost/capstone_api/backend.php",
-        {
-          action: "displayArchivedSuppliers"
-        },
-        {
-          headers: {
-            "Content-Type": "application/json"
-          }
-        }
-      );
-      if (response.data.success) {
-        setArchivedSuppliers(response.data.suppliers || []);
-      } else {
-        toast.error("Failed to load archived suppliers",
-          {
-            style:{backgroundColor:"red", color:"white"},
-            position:"top-right",
-            hideProgressBar:true,
-            autoClose:3000
-          }
-        );
-      }
-    } catch (err) {
-      toast.error("Error fetching archived suppliers",
-        {
-            style:{backgroundColor:"red", color:"white"},
-            position:"top-right",
-            hideProgressBar:true,
-            autoClose:3000
-          }
-      );
-    } finally {
-      setArchiveLoading(false);
-    }
-  };
-
-  // Handle input changes
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-  };
-
-  // Open modal for adding
-  const openAddModal = () => {
-    setFormData({
-      supplier_name: "",
-      supplier_address: "",
-      supplier_contact: "",
-      supplier_email: "",
-   
-    });
-    setIsEditing(false);
-    setShowModal(true);
-  };
-
-  // Close modals
-  const closeModal = () => {
-    setShowModal(false);
-    setIsEditing(false);
-    setCurrentSupplier(null);
-  };
-
-  const closeArchiveModal = () => {
-    setShowArchiveModal(false);
-  };
-
-  const closeConfirmModal = () => {
-    setShowConfirmModal(false);
-    setConfirmAction(null);
-    setConfirmId(null);
-    setConfirmMessage("");
-  };
-
-  const openConfirmModal = (message, action, id) => {
-    setConfirmMessage(message);
-    setConfirmAction(() => action.bind(this, id));
-    setConfirmId(id);
-    setShowConfirmModal(true);
-  };
-
-  // Submit form (add or edit)
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    if (
-      !formData.supplier_name.trim() ||
-      !formData.supplier_address.trim() ||
-      !formData.supplier_contact.trim() ||
-      !formData.supplier_email.trim()
-    ) {
-      toast.error("All fields are required");
-      return;
-    }
-
-    try {
-      let response;
-
-      if (isEditing) {
-        // Update supplier
-        response = await axios.post(
-          "http://localhost/capstone_api/backend.php",
-          {
-            action: "updateSupplier",
-            supplier_id: currentSupplier.supplier_id,
-            supplier_name: formData.supplier_name,
-            supplier_address: formData.supplier_address,
-            supplier_contact: formData.supplier_contact,
-            supplier_email: formData.supplier_email,
-          },
-          {
-            headers: {
-              "Content-Type": "application/json"
-            }
-          }
-        );
-
-        if (response.data.success) {
-          toast.success("Supplier updated successfully",
-            {
-            style:{backgroundColor:"green", color:"white"},
-            position:"top-right",
-            hideProgressBar:true,
-            autoClose:3000
-          }
-          );
-          setSuppliers((prev) =>
-            prev.map((s) =>
-              s.supplier_id === currentSupplier.supplier_id ? { ...s, ...formData } : s
-            )
-          );
-        }
-      } else {
-        // Add new supplier
-        response = await axios.post(
-          "http://localhost/capstone_api/backend.php",
-          {
-            action: "add_supplier",
-            supplier_name: formData.supplier_name,
-            supplier_address: formData.supplier_address,
-            supplier_contact: formData.supplier_contact,
-            supplier_email: formData.supplier_email,
-           
-          },
-          {
-            headers: {
-              "Content-Type": "application/json"
-            }
-          }
-        );
-
-        if (response.data.success) {
-          const newSupplier = {
-            supplier_id: response.data.supplier_id || Date.now(),
-            ...formData
-          };
-          setSuppliers((prev) => [...prev, newSupplier]);
-          toast.success("Supplier added successfully",
-            {
-            style:{backgroundColor:"green", color:"white"},
-            position:"top-right",
-            hideProgressBar:true,
-            autoClose:3000
-          }
-          );
-        }
-      }
-
-      if (!response.data.success) {
-        toast.error(response.data.message || "Operation failed");
-      }
-
-      closeModal();
-    } catch (error) {
-      toast.error("An error occurred while saving supplier");
-    }
-  };
-
-  // Handle delete (soft delete)
-  const handleDelete = async (supplierId) => {
-    openConfirmModal(
-      "Are you sure you want to archive this supplier?",
-      async () => {
-        try {
-          const response = await axios.post(
-            "http://localhost/capstone_api/backend.php",
-            {
-              action: "deleteSupplier",
-              supplier_id: supplierId
-            },
-            {
-              headers: {
-                "Content-Type": "application/json"
-              }
-            }
-          );
-
-          if (response.data.success) {
-            toast.success("Supplier archived successfully",
-              {
-            style:{backgroundColor:"green", color:"white"},
-            position:"top-right",
-            hideProgressBar:true,
-            autoClose:3000
-          }
-            );
-            setSuppliers((prev) =>
-              prev.filter((s) => s.supplier_id !== supplierId)
-            );
-          } else {
-            toast.error(response.data.message || "Failed to archive supplier",
-              {
-            style:{backgroundColor:"red", color:"white"},
-            position:"top-right",
-            hideProgressBar:true,
-            autoClose:3000
-          }
-            );
-          }
-        } catch (error) {
-          toast.error("An error occurred while archiving supplier",
-            {
-            style:{backgroundColor:"red", color:"white"},
-            position:"top-right",
-            hideProgressBar:true,
-            autoClose:3000
-          }
-          );
-        } finally {
-          closeConfirmModal();
-        }
-      }
-    );
-  };
-
-  // Handle restore
-  const handleRestore = async (supplierId) => {
-    openConfirmModal(
-      "Are you sure you want to restore this supplier?",
-      async () => {
-        try {
-          const response = await axios.post(
-            "http://localhost/capstone_api/backend.php",
-            {
-              action: "restoreSupplier",
-              supplier_id: supplierId
-            },
-            {
-              headers: {
-                "Content-Type": "application/json"
-              }
-            }
-          );
-
-          if (response.data.success) {
-            toast.success("Supplier restored successfully",
-              {
-            style:{backgroundColor:"green", color:"white"},
-            position:"top-right",
-            hideProgressBar:true,
-            autoClose:3000
-          }
-            );
-            setArchivedSuppliers((prev) =>
-              prev.filter((s) => s.supplier_id !== supplierId)
-            );
-            fetchSuppliers(); // Refresh active list
-          } else {
-            toast.error(response.data.message || "Failed to restore supplier",
-              {
-            style:{backgroundColor:"red", color:"white"},
-            position:"top-right",
-            hideProgressBar:true,
-            autoClose:3000
-          }
-            );
-          }
-        } catch (error) {
-          toast.error("An error occurred while restoring supplier",
-            {
-            style:{backgroundColor:"red", color:"white"},
-            position:"top-right",
-            hideProgressBar:true,
-            autoClose:3000
-          }
-          );
-        } finally {
-          closeConfirmModal();
-        }
-      }
-    );
-  };
-
-  // Handle permanent delete
-  
-  // Handle edit
-  const handleEdit = (supplier) => {
-    setCurrentSupplier(supplier);
-    setFormData({
-      supplier_name: supplier.supplier_name,
-      supplier_address: supplier.supplier_address,
-      supplier_contact: supplier.supplier_contact,
-      supplier_email: supplier.supplier_email,
-    
-    });
-    setIsEditing(true);
-    setShowModal(true);
   };
 
   // Filter suppliers based on search term
@@ -1512,26 +1065,7 @@ function Supplier() {
     <div className="p-8">
       <h1 className="text-2xl font-bold mb-6">Supplier Management</h1>
 
-      {/* Buttons */}
-      <div className="flex justify-between mb-6">
-        <button
-          className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
-          onClick={openAddModal}
-        >
-          + Add Supplier
-        </button>
-        <button
-          className="bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600"
-          onClick={() => {
-            setShowArchiveModal(true);
-            fetchArchivedSuppliers();
-          }}
-        >
-          📦 View Archived Suppliers
-        </button>
-      </div>
-
-      {/* Search Box */}
+      {/* Search Box Only */}
       <div className="mb-6">
         <input
           type="text"
@@ -1548,42 +1082,27 @@ function Supplier() {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50 sticky top-0 z-10">
               <tr>
-                <th>#</th>
-                <th>Supplier Name</th>
-                <th>Address</th>
-                <th>Contact</th>
-                <th>Email</th>
-                <th>Actions</th>
+                <th className="px-6 py-3 text-left text-xs font-bold text-black-700 uppercase tracking-wider">#</th>
+                <th className="px-6 py-3 text-left text-xs font-bold text-black-700 uppercase tracking-wider">Supplier Name</th>
+                <th className="px-6 py-3 text-left text-xs font-bold text-black-700 uppercase tracking-wider">Address</th>
+                <th className="px-6 py-3 text-left text-xs font-bold text-black-700 uppercase tracking-wider">Contact</th>
+                <th className="px-6 py-3 text-left text-xs font-bold text-black-700 uppercase tracking-wider">Email</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {filteredSuppliers.length > 0 ? (
                 filteredSuppliers.map((supplier, index) => (
                   <tr key={supplier.supplier_id}>
-                     <td className="pl-4">{index + 1}</td>
-                    <td className="pl-7">{supplier.supplier_name}</td>
-                    <td className="pl-15">{supplier.supplier_address}</td>
-                    <td className="pl-15">{supplier.supplier_contact}</td>
-                    <td className="pl-15">{supplier.supplier_email}</td>
-                    <td className="pl-5"> 
-                      <button
-                        onClick={() => handleEdit(supplier)}
-                        className="text-blue-500 mr-3"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => handleDelete(supplier.supplier_id)}
-                        className="text-green-500"
-                      >
-                        Archive
-                      </button>
-                    </td>
+                    <td className="px-6 py-4">{index + 1}</td>
+                    <td className="px-6 py-4">{supplier.supplier_name}</td>
+                    <td className="px-6 py-4">{supplier.supplier_address}</td>
+                    <td className="px-6 py-4">{supplier.supplier_contact}</td>
+                    <td className="px-6 py-4">{supplier.supplier_email}</td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan="7" className="text-center py-4">
+                  <td colSpan="5" className="text-center py-4">
                     No suppliers found
                   </td>
                 </tr>
@@ -1592,157 +1111,6 @@ function Supplier() {
           </table>
         </div>
       </div>
-
-      {/* Modal - Add/Edit Supplier */}
-      {showModal && (
-        <div className="fixed inset-0  flex items-center justify-center z-50">
-          <div className="bg-white border-1 border-black-500 p-6 rounded shadow-lg w-full max-w-md mx-auto">
-            <h2 className="text-xl font-semibold mb-4">
-              {isEditing ? "Edit Supplier" : "Add New Supplier"}
-            </h2>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label className="block mb-1">Supplier Name *</label>
-                <input
-                  type="text"
-                  name="supplier_name"
-                  value={formData.supplier_name}
-                  onChange={handleChange}
-                  className="w-full border p-2 rounded"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block mb-1">Business Address *</label>
-                <input
-                  type="text"
-                  name="supplier_address"
-                  value={formData.supplier_address}
-                  onChange={handleChange}
-                  className="w-full border p-2 rounded"
-                  required
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block mb-1">Phone Number *</label>
-                  <input
-                    type="tel"
-                    name="supplier_contact"
-                    value={formData.supplier_contact}
-                    onChange={handleChange}
-                    className="w-full border p-2 rounded"
-                    required
-                  />
-                </div>
-               
-              </div>
-              <div>
-                <label className="block mb-1">Email Address *</label>
-                <input
-                  type="email"
-                  name="supplier_email"
-                  value={formData.supplier_email}
-                  onChange={handleChange}
-                  className="w-full border p-2 rounded"
-                  required
-                />
-              </div>
-              <div className="flex justify-end space-x-4 mt-4">
-                <button
-                  type="button"
-                  onClick={closeModal}
-                  className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
-                >
-                  {isEditing ? "Update" : "Add"} Supplier
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* Modal - Archived Suppliers */}
-      {showArchiveModal && (
-        <div className="fixed inset-0 flex items-center justify-center z-50">
-          <div className="bg-white p-6 border-1 border-black-500 rounded shadow-lg w-full max-w-2xl mx-auto max-h-[90vh] overflow-y-auto">
-            <h2 className="text-xl font-semibold mb-4">Archived Suppliers</h2>
-
-            {archiveLoading ? (
-              <p>Loading archived suppliers...</p>
-            ) : archivedSuppliers.length === 0 ? (
-              <p className="text-gray-500">No archived suppliers found.</p>
-            ) : (
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead>
-                  <tr>
-                    <th>Supplier Name</th>
-                    <th>Archived At</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200">
-                  {archivedSuppliers.map((supplier) => (
-                    <tr key={supplier.supplier_id}>
-                      <td className="pl-7">{supplier.supplier_name}</td>
-                      <td className="pl-6">{new Date(supplier.deleted_at).toLocaleString()}</td>
-                      <td className="pl-10">
-                        <button
-                          onClick={() => handleRestore(supplier.supplier_id)}
-                          className="text-blue-500 mr-3"
-                        >
-                          Restore
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
-
-            <div className="flex justify-end mt-4">
-              <button
-                onClick={closeArchiveModal}
-                className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400"
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Confirmation Modal */}
-      {showConfirmModal && (
-        <div className="fixed inset-0  flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded shadow-lg w-full max-w-sm mx-auto">
-            <h3 className="text-lg font-semibold mb-4">Confirm Action</h3>
-            <p className="mb-6 text-sm text-gray-600">{confirmMessage}</p>
-            <div className="flex justify-end space-x-3">
-              <button
-                onClick={closeConfirmModal}
-                className="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={confirmAction}
-                className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
-              >
-                Confirm
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      <ToastContainer />
     </div>
   );
 }
