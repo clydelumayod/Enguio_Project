@@ -3,8 +3,12 @@
 import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 
+// Define API base URLs at the top of the file
+const API_BASE_SIMPLE = "http://localhost/Enguio_Project/purchase_order_api_simple.php";
+const API_BASE = "http://localhost/Enguio_Project/purchase_order_api.php";
+
 function CreatePurchaseOrder() {
-  // Tab state
+  // Tab stateasy
   const [activeTab, setActiveTab] = useState('create');
   
   // Create Purchase Order states
@@ -50,7 +54,7 @@ function CreatePurchaseOrder() {
   // Create Purchase Order functions
   const fetchSuppliers = async () => {
     try {
-      const response = await fetch('/purchase_order_api_simple.php?action=suppliers');
+      const response = await fetch(`${API_BASE_SIMPLE}?action=suppliers`);
       const data = await response.json();
       if (data.success) {
         setSuppliers(data.data);
@@ -65,7 +69,7 @@ function CreatePurchaseOrder() {
 
   const fetchProducts = async () => {
     try {
-      const response = await fetch('/purchase_order_api_simple.php?action=products');
+      const response = await fetch(`${API_BASE_SIMPLE}?action=products`);
       const data = await response.json();
       if (data.success) {
         setProducts(data.data);
@@ -101,18 +105,33 @@ function CreatePurchaseOrder() {
     setSelectedProducts(selectedProducts.filter((_, i) => i !== index));
   };
 
+  const safeNumber = (val) => {
+    const num = typeof val === 'string' && val.trim() === '' ? 0 : Number(val);
+    return Number.isNaN(num) ? 0 : num;
+  };
+
   const updateProduct = (index, field, value) => {
     const updatedProducts = [...selectedProducts];
+    let safeValue = value;
+
+    if (field === 'quantity' || field === 'unitPrice') {
+      safeValue = safeNumber(value);
+    }
+
     updatedProducts[index] = {
       ...updatedProducts[index],
-      [field]: value
+      [field]: safeValue
     };
 
     // Calculate total if productId, quantity, or unitPrice changed
     if (field === 'productId' || field === 'quantity' || field === 'unitPrice') {
       const product = updatedProducts[index];
-      if (product.productId && product.quantity && product.unitPrice) {
-        product.total = product.quantity * product.unitPrice;
+      const quantity = safeNumber(product.quantity);
+      const unitPrice = safeNumber(product.unitPrice);
+      if (product.productId && quantity && unitPrice) {
+        product.total = quantity * unitPrice;
+      } else {
+        product.total = 0;
       }
     }
 
@@ -120,8 +139,8 @@ function CreatePurchaseOrder() {
     if (field === 'productId' && value) {
       const selectedProduct = products.find(p => p.product_id == value);
       if (selectedProduct) {
-        updatedProducts[index].unitPrice = selectedProduct.unit_price;
-        updatedProducts[index].total = updatedProducts[index].quantity * selectedProduct.unit_price;
+        updatedProducts[index].unitPrice = safeNumber(selectedProduct.unit_price);
+        updatedProducts[index].total = safeNumber(updatedProducts[index].quantity) * safeNumber(selectedProduct.unit_price);
       }
     }
 
@@ -160,7 +179,7 @@ function CreatePurchaseOrder() {
         }))
       };
 
-      const response = await fetch('/purchase_order_api_simple.php?action=create_purchase_order', {
+      const response = await fetch(`${API_BASE_SIMPLE}?action=create_purchase_order`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -196,7 +215,7 @@ function CreatePurchaseOrder() {
   // Purchase Order List functions
   const fetchPurchaseOrders = async () => {
     try {
-      const response = await fetch('/purchase_order_api_simple.php?action=purchase_orders');
+      const response = await fetch(`${API_BASE_SIMPLE}?action=purchase_orders`);
       const data = await response.json();
       if (data.success) {
         setPurchaseOrders(data.data);
@@ -245,7 +264,7 @@ function CreatePurchaseOrder() {
 
   const handleApprove = async (poId, action) => {
     try {
-      const response = await fetch('/purchase_order_api_simple.php?action=approve_purchase_order', {
+      const response = await fetch(`${API_BASE_SIMPLE}?action=approve_purchase_order`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -274,7 +293,7 @@ function CreatePurchaseOrder() {
 
   const handleUpdateDelivery = async (poId, status) => {
     try {
-      const response = await fetch('/purchase_order_api_simple.php?action=update_delivery_status', {
+      const response = await fetch(`${API_BASE_SIMPLE}?action=update_delivery_status`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -302,7 +321,7 @@ function CreatePurchaseOrder() {
 
   const viewDetails = async (poId) => {
     try {
-      const response = await fetch(`/purchase_order_api_simple.php?action=purchase_order_details&po_id=${poId}`);
+      const response = await fetch(`${API_BASE_SIMPLE}?action=purchase_order_details&po_id=${poId}`);
       const data = await response.json();
       if (data.success) {
         setSelectedPO(data);
@@ -319,7 +338,7 @@ function CreatePurchaseOrder() {
   // Receive Items functions
   const fetchReceivingList = async () => {
     try {
-      const response = await fetch('/purchase_order_api_simple.php?action=receiving_list');
+      const response = await fetch(`${API_BASE_SIMPLE}?action=receiving_list`);
       const data = await response.json();
       if (data.success) {
         setReceivingList(data.data);
@@ -337,7 +356,7 @@ function CreatePurchaseOrder() {
   const handleReceive = async (poId) => {
     try {
       // Get PO details for receiving
-      const response = await fetch(`/purchase_order_api.php?action=purchase_order_details&po_id=${poId}`);
+      const response = await fetch(`${API_BASE}?action=purchase_order_details&po_id=${poId}`);
       const data = await response.json();
       if (data.success) {
         setSelectedPO(data);
@@ -410,7 +429,7 @@ function CreatePurchaseOrder() {
         items: receiveFormData.items.filter(item => item.received_qty > 0)
       };
 
-      const response = await fetch('/purchase_order_api.php?action=receive_items', {
+      const response = await fetch(`${API_BASE}?action=receive_items`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -577,7 +596,7 @@ function CreatePurchaseOrder() {
 
             {selectedProducts.length === 0 ? (
               <div className="text-center py-8 text-gray-500">
-                No products added yet. Click "Add Product" to get started.
+                No products added yet. Click Add `Product` to get started.
               </div>
             ) : (
               <div className="space-y-4">
@@ -609,8 +628,8 @@ function CreatePurchaseOrder() {
                         <input
                           type="number"
                           min="1"
-                          value={product.quantity}
-                          onChange={(e) => updateProduct(index, 'quantity', parseInt(e.target.value))}
+                          value={product.quantity || ''}
+                          onChange={(e) => updateProduct(index, 'quantity', e.target.value)}
                           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                         />
                       </div>
@@ -623,8 +642,8 @@ function CreatePurchaseOrder() {
                           type="number"
                           step="0.01"
                           min="0"
-                          value={product.unitPrice}
-                          onChange={(e) => updateProduct(index, 'unitPrice', parseFloat(e.target.value))}
+                          value={product.unitPrice || ''}
+                          onChange={(e) => updateProduct(index, 'unitPrice', e.target.value)}
                           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                         />
                       </div>
@@ -635,7 +654,7 @@ function CreatePurchaseOrder() {
                         </label>
                         <input
                           type="text"
-                          value={product.total || 0}
+                          value={product.total || ''}
                           className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50"
                           readOnly
                         />

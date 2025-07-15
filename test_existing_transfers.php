@@ -1,6 +1,6 @@
 <?php
 // Test script to check existing transfers
-include 'index.php';
+include 'Api/index.php';
 
 echo "<h1>Existing Transfers Test</h1>";
 

@@ -25,7 +25,7 @@ import {
 // ✅ Paste this near the top of Warehouse.js
 async function handleApiCall(action, data = {}) {
   try {
-    const response = await fetch("http://localhost/enguio/Api/backend.php", {
+    const response = await fetch("http://localhost/Enguio_Project/backend.php", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

@@ -6,14 +6,14 @@ header('Access-Control-Allow-Headers: Content-Type');
 
 // Database connection using mysqli
 $host = 'localhost';
-$dbname = 'enguio';
+$dbname = 'enguio2';
 $username = 'root';
 $password = '';
 
 $conn = mysqli_connect($host, $username, $password, $dbname);
 
 if (!$conn) {
-    echo json_encode(['error' => 'Connection failed: ' . mysqli_connect_error()]);
+    echo json_encode(['success' => false, 'error' => 'Connection failed: ' . mysqli_connect_error()]);
     exit;
 }
 
@@ -28,7 +28,7 @@ switch($method) {
         handlePost($conn, $action);
         break;
     default:
-        echo json_encode(['error' => 'Method not allowed']);
+        echo json_encode(['success' => false, 'error' => 'Method not allowed']);
 }
 
 function handleGet($conn, $action) {
@@ -50,7 +50,7 @@ function handleGet($conn, $action) {
             getReceivingList($conn);
             break;
         default:
-            echo json_encode(['error' => 'Invalid action']);
+            echo json_encode(['success' => false, 'error' => 'Invalid action']);
     }
 }
 
@@ -71,7 +71,7 @@ function handlePost($conn, $action) {
             receiveItems($conn, $data);
             break;
         default:
-            echo json_encode(['error' => 'Invalid action']);
+            echo json_encode(['success' => false, 'error' => 'Invalid action']);
     }
 }
 
@@ -92,7 +92,8 @@ function getSuppliers($conn) {
         
         echo json_encode(['success' => true, 'data' => $suppliers]);
     } catch(Exception $e) {
-        echo json_encode(['error' => $e->getMessage()]);
+        file_put_contents('php_errors.log', date('c') . ' ' . $e->getMessage() . PHP_EOL, FILE_APPEND);
+        echo json_encode(['success' => false, 'error' => $e->getMessage()]);
     }
 }
 
@@ -118,7 +119,8 @@ function getProducts($conn) {
         
         echo json_encode(['success' => true, 'data' => $products]);
     } catch(Exception $e) {
-        echo json_encode(['error' => $e->getMessage()]);
+        file_put_contents('php_errors.log', date('c') . ' ' . $e->getMessage() . PHP_EOL, FILE_APPEND);
+        echo json_encode(['success' => false, 'error' => $e->getMessage()]);
     }
 }
 
@@ -149,14 +151,15 @@ function getPurchaseOrders($conn) {
         
         echo json_encode(['success' => true, 'data' => $purchase_orders]);
     } catch(Exception $e) {
-        echo json_encode(['error' => $e->getMessage()]);
+        file_put_contents('php_errors.log', date('c') . ' ' . $e->getMessage() . PHP_EOL, FILE_APPEND);
+        echo json_encode(['success' => false, 'error' => $e->getMessage()]);
     }
 }
 
 // Get purchase order details
 function getPurchaseOrderDetails($conn, $po_id) {
     if (!$po_id) {
-        echo json_encode(['error' => 'Purchase order ID required']);
+        echo json_encode(['success' => false, 'error' => 'Purchase order ID required']);
         return;
     }
     
@@ -194,7 +197,8 @@ function getPurchaseOrderDetails($conn, $po_id) {
         
         echo json_encode(['success' => true, 'header' => $header, 'details' => $details]);
     } catch(Exception $e) {
-        echo json_encode(['error' => $e->getMessage()]);
+        file_put_contents('php_errors.log', date('c') . ' ' . $e->getMessage() . PHP_EOL, FILE_APPEND);
+        echo json_encode(['success' => false, 'error' => $e->getMessage()]);
     }
 }
 
@@ -244,7 +248,8 @@ function createPurchaseOrder($conn, $data) {
         
     } catch(Exception $e) {
         mysqli_rollback($conn);
-        echo json_encode(['error' => $e->getMessage()]);
+        file_put_contents('php_errors.log', date('c') . ' ' . $e->getMessage() . PHP_EOL, FILE_APPEND);
+        echo json_encode(['success' => false, 'error' => $e->getMessage()]);
     }
 }
 
@@ -271,7 +276,8 @@ function approvePurchaseOrder($conn, $data) {
         
     } catch(Exception $e) {
         mysqli_rollback($conn);
-        echo json_encode(['error' => $e->getMessage()]);
+        file_put_contents('php_errors.log', date('c') . ' ' . $e->getMessage() . PHP_EOL, FILE_APPEND);
+        echo json_encode(['success' => false, 'error' => $e->getMessage()]);
     }
 }
 
@@ -287,7 +293,8 @@ function updateDeliveryStatus($conn, $data) {
         echo json_encode(['success' => true]);
         
     } catch(Exception $e) {
-        echo json_encode(['error' => $e->getMessage()]);
+        file_put_contents('php_errors.log', date('c') . ' ' . $e->getMessage() . PHP_EOL, FILE_APPEND);
+        echo json_encode(['success' => false, 'error' => $e->getMessage()]);
     }
 }
 
@@ -336,7 +343,8 @@ function receiveItems($conn, $data) {
         
     } catch(Exception $e) {
         mysqli_rollback($conn);
-        echo json_encode(['error' => $e->getMessage()]);
+        file_put_contents('php_errors.log', date('c') . ' ' . $e->getMessage() . PHP_EOL, FILE_APPEND);
+        echo json_encode(['success' => false, 'error' => $e->getMessage()]);
     }
 }
 
@@ -366,7 +374,8 @@ function getReceivingList($conn) {
         
         echo json_encode(['success' => true, 'data' => $receiving_list]);
     } catch(Exception $e) {
-        echo json_encode(['error' => $e->getMessage()]);
+        file_put_contents('php_errors.log', date('c') . ' ' . $e->getMessage() . PHP_EOL, FILE_APPEND);
+        echo json_encode(['success' => false, 'error' => $e->getMessage()]);
     }
 }
 

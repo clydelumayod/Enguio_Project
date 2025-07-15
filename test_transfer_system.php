@@ -2,7 +2,7 @@
 // Test script for the immediate transfer system
 // This script tests the transfer functionality
 
-include 'index.php'; // Include database connection
+include 'Api/index.php'; // Include database connection
 
 echo "<h1>Transfer System Test</h1>";
 

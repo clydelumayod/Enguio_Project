@@ -31,9 +31,9 @@ const Sidebar = ({
     { label: "Pharmacy Inventory", icon: <FaBoxes />, key: "PharmacyInventory" },
     { label: "Stock Adjustment", icon: <FaClipboardList />, key: "StockAdjustment" },
     { label: "Movement History", icon: <FaHistory />, key: "MovementHistory" },
+    { label: "Create Purchase Order", icon: <FaUser />, key: "Create Purchase Order" },
     { label: "Reports", icon: <FaChartLine />, key: "Reports" },
     { label: "Settings", icon: <FaCog />, key: "Settings" },
-    { label: "Create Purchase Order", icon: <FaUser />, key: "Create Purchase Order" },
     { label: "Archive", icon: <FaUser />, key: "Archive" },
 
     { label: "Logout", icon: <FaSignOutAlt />, key: "Logout" },

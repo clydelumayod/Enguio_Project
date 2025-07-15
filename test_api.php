@@ -1,17 +1,23 @@
 <?php
-<<<<<<< HEAD
+include 'Api/index.php';
 // Simple test to check backend response
-$url = 'http://localhost/enguio/backend.php';
+$url = 'http://localhost/Enguio_Project/backend.php';
 $data = json_encode(['action' => 'get_suppliers']);
-=======
-// Test the purchase order API directly
-echo "Testing Purchase Order API directly...\n";
->>>>>>> 687011100542853d6bad6ac9c30c4dfff5304d80
 
-// Simulate the API call by setting up the environment
-$_GET['action'] = 'suppliers';
-$_SERVER['REQUEST_METHOD'] = 'GET';
+$options = [
+    'http' => [
+        'header'  => "Content-Type: application/json\r\n",
+        'method'  => 'POST',
+        'content' => $data,
+    ],
+];
+$context  = stream_context_create($options);
+$result = file_get_contents($url, false, $context);
 
-// Include the API file
-include 'purchase_order_api.php';
+if ($result === FALSE) {
+    die('Error occurred while calling API');
+}
+
+echo "API Response:\n";
+echo $result;
 ?> 

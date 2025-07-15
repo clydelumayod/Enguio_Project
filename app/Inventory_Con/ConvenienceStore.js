@@ -24,7 +24,7 @@ function ConvenienceInventory() {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [convenienceLocationId, setConvenienceLocationId] = useState(null);
 
-  const API_BASE_URL = "http://localhost/enguio/Api/backend.php";
+  const API_BASE_URL = "http://localhost/Enguio_Project/backend.php";
 
   // API function
   async function handleApiCall(action, data = {}) {
