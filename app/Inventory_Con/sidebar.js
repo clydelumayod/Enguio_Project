@@ -33,7 +33,7 @@ const Sidebar = ({
     { label: "Movement History", icon: <FaHistory />, key: "MovementHistory" },
     { label: "Reports", icon: <FaChartLine />, key: "Reports" },
     { label: "Settings", icon: <FaCog />, key: "Settings" },
-    { label: "Suppliers", icon: <FaUser />, key: "Suppliers" },
+    { label: "Create Purchase Order", icon: <FaUser />, key: "Create Purchase Order" },
     { label: "Archive", icon: <FaUser />, key: "Archive" },
 
     { label: "Logout", icon: <FaSignOutAlt />, key: "Logout" },

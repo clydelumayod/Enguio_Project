@@ -10,7 +10,6 @@ import {
   Plus,
   X,
   Search,
-  Bell,
   Package,
   Truck,
   CheckCircle,
@@ -20,12 +19,9 @@ import {
 
 function ConvenienceInventory() {
   const [products, setProducts] = useState([]);
-  const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
-  const [showNotifications, setShowNotifications] = useState(false);
-  const [unreadCount, setUnreadCount] = useState(0);
   const [convenienceLocationId, setConvenienceLocationId] = useState(null);
 
   const API_BASE_URL = "http://localhost/Enguio_Project/backend.php";
@@ -117,85 +113,13 @@ function ConvenienceInventory() {
     }
   };
 
-  // Load notifications for convenience store
-  const loadNotifications = async () => {
-    if (!convenienceLocationId) return;
-    
-    try {
-      const response = await handleApiCall("get_notifications", {
-        location_id: convenienceLocationId,
-        status: "all"
-      });
-      
-      if (response.success && Array.isArray(response.data)) {
-        console.log("✅ Loaded notifications:", response.data.length);
-        setNotifications(response.data);
-        setUnreadCount(response.data.filter(n => n.status === 'unread').length);
-      } else {
-        setNotifications([]);
-        setUnreadCount(0);
-      }
-    } catch (error) {
-      console.error("Error loading notifications:", error);
-      setNotifications([]);
-      setUnreadCount(0);
-    }
-  };
 
-  // Mark notification as read
-  const markNotificationRead = async (notificationId) => {
-    try {
-      const response = await handleApiCall("mark_notification_read", {
-        notification_id: notificationId
-      });
-      
-      if (response.success) {
-        // Update local state
-        setNotifications(prev => 
-          prev.map(n => 
-            n.notification_id === notificationId 
-              ? { ...n, status: 'read' } 
-              : n
-          )
-        );
-        setUnreadCount(prev => Math.max(0, prev - 1));
-        toast.success("Notification marked as read");
-      }
-    } catch (error) {
-      console.error("Error marking notification as read:", error);
-      toast.error("Failed to mark notification as read");
-    }
-  };
-
-  // Accept transfer (mark as completed)
-  const acceptTransfer = async (transferId) => {
-    try {
-      const response = await handleApiCall("update_transfer_status", {
-        transfer_header_id: transferId,
-        status: "Completed",
-        employee_id: 1, // You can get this from user session
-        notes: "Transfer accepted by convenience store"
-      });
-
-      if (response.success) {
-        toast.success("Transfer accepted successfully!");
-        loadProducts(); // Reload products to show new inventory
-        loadNotifications(); // Reload notifications
-      } else {
-        toast.error(response.message || "Failed to accept transfer");
-      }
-    } catch (error) {
-      console.error("Error accepting transfer:", error);
-      toast.error("Failed to accept transfer");
-    }
-  };
 
   useEffect(() => {
     const initialize = async () => {
       const locationId = await loadConvenienceLocation();
       if (locationId) {
         await loadProducts();
-        await loadNotifications();
       }
     };
     initialize();
@@ -217,19 +141,6 @@ function ConvenienceInventory() {
         return "text-red-600 bg-red-100";
       default:
         return "text-gray-600 bg-gray-100";
-    }
-  };
-
-  const getNotificationIcon = (type) => {
-    switch (type) {
-      case "transfer":
-        return <Truck className="h-5 w-5 text-blue-500" />;
-      case "low_stock":
-        return <AlertCircle className="h-5 w-5 text-yellow-500" />;
-      case "expiry":
-        return <Clock className="h-5 w-5 text-red-500" />;
-      default:
-        return <Bell className="h-5 w-5 text-gray-500" />;
     }
   };
 
@@ -269,78 +180,6 @@ function ConvenienceInventory() {
           <div>
             <h1 className="text-2xl font-bold text-gray-900">Convenience Store Inventory</h1>
             <p className="text-gray-600">Manage convenience store products and transfers</p>
-          </div>
-          <div className="flex items-center gap-4">
-            {/* Notification Bell */}
-            <div className="relative">
-              <button
-                onClick={() => setShowNotifications(!showNotifications)}
-                className="relative p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-full transition-colors"
-              >
-                <Bell className="h-6 w-6" />
-                {unreadCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                    {unreadCount}
-                  </span>
-                )}
-              </button>
-              
-              {/* Notifications Dropdown */}
-              {showNotifications && (
-                <div className="absolute right-0 top-12 w-96 bg-white rounded-lg shadow-lg border border-gray-200 z-50 max-h-96 overflow-y-auto">
-                  <div className="p-4 border-b border-gray-200">
-                    <h3 className="text-lg font-semibold text-gray-900">Notifications</h3>
-                    <p className="text-sm text-gray-600">{unreadCount} unread</p>
-                  </div>
-                  <div className="divide-y divide-gray-200">
-                    {notifications.length > 0 ? (
-                      notifications.map((notification) => (
-                        <div
-                          key={notification.notification_id}
-                          className={`p-4 hover:bg-gray-50 transition-colors ${
-                            notification.status === 'unread' ? 'bg-blue-50' : ''
-                          }`}
-                        >
-                          <div className="flex items-start gap-3">
-                            {getNotificationIcon(notification.notification_type)}
-                            <div className="flex-1">
-                              <p className="text-sm text-gray-900">{notification.message}</p>
-                              <p className="text-xs text-gray-500 mt-1">
-                                {new Date(notification.created_at).toLocaleString()}
-                              </p>
-                              {notification.notification_type === 'transfer' && notification.transfer_id && (
-                                <div className="mt-2 flex gap-2">
-                                  <button
-                                    onClick={() => acceptTransfer(notification.transfer_id)}
-                                    className="text-xs bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600"
-                                  >
-                                    Accept Transfer
-                                  </button>
-                                  <button
-                                    onClick={() => markNotificationRead(notification.notification_id)}
-                                    className="text-xs bg-gray-500 text-white px-2 py-1 rounded hover:bg-gray-600"
-                                  >
-                                    Mark Read
-                                  </button>
-                                </div>
-                              )}
-                            </div>
-                            {notification.status === 'unread' && (
-                              <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                            )}
-                          </div>
-                        </div>
-                      ))
-                    ) : (
-                      <div className="p-4 text-center text-gray-500">
-                        <Bell className="h-8 w-8 mx-auto text-gray-300 mb-2" />
-                        <p>No notifications</p>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
-            </div>
           </div>
         </div>
       </div>
@@ -412,6 +251,8 @@ function ConvenienceInventory() {
                 <th className="px-3 py-2 border font-semibold text-gray-700">Unit Price</th>
                 <th className="px-3 py-2 border font-semibold text-gray-700">Total Value</th>
                 <th className="px-3 py-2 border font-semibold text-gray-700">Status</th>
+                <th className="px-3 py-2 border font-semibold text-gray-700">Product Type</th>
+                <th className="px-3 py-2 border font-semibold text-gray-700">Transfer Info</th>
                 <th className="px-3 py-2 border font-semibold text-gray-700">Supplier Name</th>
                 <th className="px-3 py-2 border font-semibold text-gray-700">Actions</th>
               </tr>
@@ -419,11 +260,11 @@ function ConvenienceInventory() {
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={9} className="text-center py-8">Loading...</td>
+                  <td colSpan={11} className="text-center py-8">Loading...</td>
                 </tr>
               ) : paginatedProducts.length > 0 ? (
                 paginatedProducts.map(product => (
-                  <tr key={product.product_id} className="hover:bg-gray-50 transition-colors">
+                  <tr key={`${product.product_id}-${product.product_type}`} className="hover:bg-gray-50 transition-colors">
                     <td className="border px-3 py-2 font-mono font-semibold">{product.barcode}</td>
                     <td className="border px-3 py-2">{product.product_name}</td>
                     <td className="border px-3 py-2">{product.category}</td>
@@ -432,6 +273,26 @@ function ConvenienceInventory() {
                     <td className="border px-3 py-2 text-center">₱{(Number(product.unit_price) * Number(product.quantity)).toFixed(2)}</td>
                     <td className="border px-3 py-2 text-center">
                       <span className={`px-2 py-1 rounded text-xs font-semibold ${getStatusColor(product.stock_status)}`}>{product.stock_status ? product.stock_status.charAt(0).toUpperCase() + product.stock_status.slice(1) : 'Unknown'}</span>
+                    </td>
+                    <td className="border px-3 py-2 text-center">
+                      <span className={`px-2 py-1 rounded text-xs font-semibold ${
+                        product.product_type === 'Transferred' 
+                          ? 'text-blue-600 bg-blue-100' 
+                          : 'text-green-600 bg-green-100'
+                      }`}>
+                        {product.product_type}
+                      </span>
+                    </td>
+                    <td className="border px-3 py-2 text-center">
+                      {product.product_type === 'Transferred' ? (
+                        <div className="text-xs">
+                          <div className="font-semibold">From: {product.source_location}</div>
+                          <div>By: {product.transferred_by}</div>
+                          <div>{new Date(product.transfer_date).toLocaleDateString()}</div>
+                        </div>
+                      ) : (
+                        <span className="text-gray-400">-</span>
+                      )}
                     </td>
                     <td className="border px-3 py-2">{product.supplier_name || 'N/A'}</td>
                     <td className="border px-3 py-2 text-center">
@@ -443,7 +304,7 @@ function ConvenienceInventory() {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={9} className="text-center py-8 text-gray-500">No products found</td>
+                  <td colSpan={11} className="text-center py-8 text-gray-500">No products found</td>
                 </tr>
               )}
             </tbody>
@@ -468,6 +329,8 @@ function ConvenienceInventory() {
           </button>
         </div>
       </div>
+
+
       {/* Keep ToastContainer for notifications */}
       <ToastContainer
         position="top-right"

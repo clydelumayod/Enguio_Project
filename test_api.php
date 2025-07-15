@@ -1,21 +1,11 @@
 <?php
-// Simple test to check backend response
-$url = 'http://localhost/Enguio_Project/backend.php';
-$data = json_encode(['action' => 'get_suppliers']);
+// Test the purchase order API directly
+echo "Testing Purchase Order API directly...\n";
 
-$options = [
-    'http' => [
-        'header' => "Content-type: application/json\r\n",
-        'method' => 'POST',
-        'content' => $data
-    ]
-];
+// Simulate the API call by setting up the environment
+$_GET['action'] = 'suppliers';
+$_SERVER['REQUEST_METHOD'] = 'GET';
 
-$context = stream_context_create($options);
-$result = file_get_contents($url, false, $context);
-
-echo "Raw response:\n";
-echo $result;
-echo "\n\nResponse length: " . strlen($result);
-echo "\nFirst 100 characters: " . substr($result, 0, 100);
+// Include the API file
+include 'purchase_order_api.php';
 ?> 

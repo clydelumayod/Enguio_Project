@@ -631,7 +631,13 @@ switch ($action) {
                 SELECT 
                     th.transfer_header_id,
                     th.date,
-                    th.status,
+                    CASE 
+                        WHEN th.status = '' OR th.status IS NULL THEN 'Completed'
+                        WHEN th.status = 'pending' THEN 'New'
+                        WHEN th.status = 'approved' THEN 'Completed'
+                        WHEN th.status = 'rejected' THEN 'Cancelled'
+                        ELSE th.status
+                    END as status,
                     th.note,
                     sl.location_name as source_location_name,
                     dl.location_name as destination_location_name,
@@ -685,7 +691,7 @@ switch ($action) {
             $source_location_id = $data['source_location_id'] ?? 0;
             $destination_location_id = $data['destination_location_id'] ?? 0;
             $employee_id = $data['employee_id'] ?? 0;
-            $status = $data['status'] ?? 'New';
+            $status = $data['status'] ?? 'approved'; // Use 'approved' instead of 'Completed' to match DB enum
             $products = $data['products'] ?? [];
             
             if (empty($products)) {
@@ -701,27 +707,23 @@ switch ($action) {
                 $product_id = $product['product_id'];
                 $transfer_qty = $product['quantity'];
                 
-                // Check current quantity - look for product regardless of location first
+                // Check current quantity in source location
                 $checkStmt = $conn->prepare("
                     SELECT quantity, product_name, location_id 
                     FROM tbl_product 
-                    WHERE product_id = ?
+                    WHERE product_id = ? AND location_id = ?
                 ");
-                $checkStmt->execute([$product_id]);
+                $checkStmt->execute([$product_id, $source_location_id]);
                 $currentProduct = $checkStmt->fetch(PDO::FETCH_ASSOC);
                 
                 if (!$currentProduct) {
-                    throw new Exception("Product not found in database - Product ID: " . $product_id);
+                    throw new Exception("Product not found in source location - Product ID: " . $product_id);
                 }
                 
                 if ($currentProduct['quantity'] < $transfer_qty) {
                     throw new Exception("Insufficient quantity for product: " . $currentProduct['product_name'] . 
                                      ". Available: " . $currentProduct['quantity'] . ", Requested: " . $transfer_qty);
                 }
-                
-                // Log for debugging
-                error_log("Transfer validation - Product ID: $product_id, Name: " . $currentProduct['product_name'] . 
-                         ", Available: " . $currentProduct['quantity'] . ", Requested: $transfer_qty");
             }
             
             // Insert transfer header
@@ -744,7 +746,7 @@ switch ($action) {
             $updateStmt = $conn->prepare("
                 UPDATE tbl_product 
                 SET quantity = quantity - ? 
-                WHERE product_id = ?
+                WHERE product_id = ? AND location_id = ?
             ");
             
             foreach ($products as $product) {
@@ -758,13 +760,10 @@ switch ($action) {
                     $transfer_qty
                 ]);
                 
-                // Update product quantity (decrease)
-                $updateStmt->execute([$transfer_qty, $product_id]);
+                // Update product quantity (decrease) in source location
+                $updateStmt->execute([$transfer_qty, $product_id, $source_location_id]);
                 
-                // Log the quantity update
-                error_log("Transfer quantity update - Product ID: $product_id, Reduced by: $transfer_qty");
-                
-                // Update stock status based on new quantity
+                // Update stock status based on new quantity in source location
                 $updateStockStatusStmt = $conn->prepare("
                     UPDATE tbl_product 
                     SET stock_status = CASE 
@@ -772,55 +771,53 @@ switch ($action) {
                         WHEN quantity <= 10 THEN 'low stock'
                         ELSE 'in stock'
                     END
-                    WHERE product_id = ?
+                    WHERE product_id = ? AND location_id = ?
                 ");
-                $updateStockStatusStmt->execute([$product_id]);
+                $updateStockStatusStmt->execute([$product_id, $source_location_id]);
                 
-                // Log the stock status update
-                error_log("Transfer stock status update - Product ID: $product_id");
-            }
-            
-            // Create notification for destination location if it's convenience store or pharmacy
-            $destinationLocationStmt = $conn->prepare("
-                SELECT location_name FROM tbl_location WHERE location_id = ?
-            ");
-            $destinationLocationStmt->execute([$destination_location_id]);
-            $destinationLocation = $destinationLocationStmt->fetch(PDO::FETCH_ASSOC);
-            
-            if ($destinationLocation && 
-                (stripos($destinationLocation['location_name'], 'convenience') !== false || 
-                 stripos($destinationLocation['location_name'], 'pharmacy') !== false)) {
-                
-                $notificationMessage = "New transfer received from " . 
-                    (function() use ($conn, $source_location_id) {
-                        $stmt = $conn->prepare("SELECT location_name FROM tbl_location WHERE location_id = ?");
-                        $stmt->execute([$source_location_id]);
-                        $source = $stmt->fetch(PDO::FETCH_ASSOC);
-                        return $source ? $source['location_name'] : 'Warehouse';
-                    })() . 
-                    " with " . count($products) . " products. Transfer ID: TR-" . $transfer_header_id;
-                
-                $notificationStmt = $conn->prepare("
-                    INSERT INTO tbl_notifications (
-                        location_id, transfer_id, notification_type, message, status, created_at
-                    ) VALUES (?, ?, ?, ?, 'unread', NOW())
+                // Get the original product details from source location
+                $productStmt = $conn->prepare("
+                    SELECT product_name, category, barcode, description, prescription, bulk,
+                           expiration, unit_price, brand_id, supplier_id, batch_id, status, Variation
+                    FROM tbl_product 
+                    WHERE product_id = ? AND location_id = ?
+                    LIMIT 1
                 ");
-                $notificationStmt->execute([
-                    $destination_location_id,
-                    $transfer_header_id,
-                    'transfer',
-                    $notificationMessage
-                ]);
+                $productStmt->execute([$product_id, $source_location_id]);
+                $productDetails = $productStmt->fetch(PDO::FETCH_ASSOC);
+                
+                if ($productDetails) {
+                    // Check if product exists in destination location
+                    $checkDestStmt = $conn->prepare("
+                        SELECT product_id, quantity 
+                        FROM tbl_product 
+                        WHERE product_id = ? AND location_id = ?
+                    ");
+                    $checkDestStmt->execute([$product_id, $destination_location_id]);
+                    $destProduct = $checkDestStmt->fetch(PDO::FETCH_ASSOC);
+                    
+                    if ($destProduct) {
+                        // Update existing product quantity in destination
+                        $updateDestStmt = $conn->prepare("
+                            UPDATE tbl_product 
+                            SET quantity = quantity + ?,
+                                stock_status = CASE 
+                                    WHEN quantity + ? <= 0 THEN 'out of stock'
+                                    WHEN quantity + ? <= 10 THEN 'low stock'
+                                    ELSE 'in stock'
+                                END
+                            WHERE product_id = ? AND location_id = ?
+                        ");
+                        $updateDestStmt->execute([$transfer_qty, $transfer_qty, $transfer_qty, $product_id, $destination_location_id]);
+                    }
+                    // If product doesn't exist in destination, we don't create it - just track the transfer
+                }
             }
             
             $conn->commit();
             echo json_encode([
                 "success" => true, 
-                "message" => "Transfer created successfully. Product quantities updated in source location." .
-                            ($destinationLocation && 
-                             (stripos($destinationLocation['location_name'], 'convenience') !== false || 
-                              stripos($destinationLocation['location_name'], 'pharmacy') !== false) 
-                             ? " Notification sent to destination store." : "")
+                "message" => "Transfer created successfully. Products immediately added to destination location."
             ]);
             
         } catch (Exception $e) {
@@ -1002,32 +999,72 @@ switch ($action) {
                             ");
                             $updateStmt->execute([$qty, $qty, $qty, $product_id, $destination_location_id]);
                         } else {
-                            // Create new product entry in destination location
-                            $insertStmt = $conn->prepare("
-                                INSERT INTO tbl_product (
-                                    product_name, category, barcode, description, prescription, bulk,
-                                    expiration, quantity, unit_price, brand_id, supplier_id,
-                                    location_id, batch_id, status, Variation, stock_status
-                                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                            // Check if a product with this barcode exists anywhere in the database
+                            $checkGlobalStmt = $conn->prepare("
+                                SELECT product_id, location_id 
+                                FROM tbl_product 
+                                WHERE barcode = ?
                             ");
-                            $insertStmt->execute([
-                                $productDetails['product_name'],
-                                $productDetails['category'],
-                                $productDetails['barcode'],
-                                $productDetails['description'],
-                                $productDetails['prescription'],
-                                $productDetails['bulk'],
-                                $productDetails['expiration'],
-                                $qty,
-                                $productDetails['unit_price'],
-                                $productDetails['brand_id'],
-                                $productDetails['supplier_id'],
-                                $destination_location_id,
-                                $productDetails['batch_id'],
-                                $productDetails['status'],
-                                $productDetails['Variation'],
-                                $qty <= 0 ? 'out of stock' : ($qty <= 10 ? 'low stock' : 'in stock')
-                            ]);
+                            $checkGlobalStmt->execute([$productDetails['barcode']]);
+                            $globalProduct = $checkGlobalStmt->fetch(PDO::FETCH_ASSOC);
+                            
+                            if ($globalProduct) {
+                                // A product with this barcode exists elsewhere, so we need to create a unique barcode
+                                // Generate a truly unique barcode for the destination location
+                                $microtime = microtime(true);
+                                $random = mt_rand(1000, 9999);
+                                $uniqueBarcode = $productDetails['barcode'] . '_' . $destination_location_id . '_' . $microtime . '_' . $random;
+                            } else {
+                                // No product with this barcode exists anywhere, so we can use the original barcode
+                                $uniqueBarcode = $productDetails['barcode'];
+                            }
+                            
+                            // Create new product entry in destination location with retry mechanism
+                            $maxRetries = 5;
+                            $retryCount = 0;
+                            $insertSuccess = false;
+                            $currentBarcode = $uniqueBarcode; // Store the current barcode to use
+                            
+                            while (!$insertSuccess && $retryCount < $maxRetries) {
+                                try {
+                                    $insertStmt = $conn->prepare("
+                                        INSERT INTO tbl_product (
+                                            product_name, category, barcode, description, prescription, bulk,
+                                            expiration, quantity, unit_price, brand_id, supplier_id,
+                                            location_id, batch_id, status, Variation, stock_status
+                                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                                    ");
+                                    $insertStmt->execute([
+                                        $productDetails['product_name'],
+                                        $productDetails['category'],
+                                        $currentBarcode, // Use the current barcode variable
+                                        $productDetails['description'],
+                                        $productDetails['prescription'],
+                                        $productDetails['bulk'],
+                                        $productDetails['expiration'],
+                                        $qty,
+                                        $productDetails['unit_price'],
+                                        $productDetails['brand_id'],
+                                        $productDetails['supplier_id'],
+                                        $destination_location_id,
+                                        $productDetails['batch_id'],
+                                        $productDetails['status'],
+                                        $productDetails['Variation'],
+                                        $qty <= 0 ? 'out of stock' : ($qty <= 10 ? 'low stock' : 'in stock')
+                                    ]);
+                                    $insertSuccess = true;
+                                } catch (Exception $e) {
+                                    $retryCount++;
+                                    if ($retryCount < $maxRetries) {
+                                        // Generate a new unique barcode
+                                        $microtime = microtime(true);
+                                        $random = mt_rand(1000, 9999);
+                                        $currentBarcode = $productDetails['barcode'] . '_' . $destination_location_id . '_' . $microtime . '_' . $random;
+                                    } else {
+                                        throw new Exception("Failed to create unique barcode after $maxRetries attempts");
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -1270,6 +1307,7 @@ switch ($action) {
             $search = $data['search'] ?? '';
             $category = $data['category'] ?? 'all';
             
+            // Get regular products in the location
             $whereClause = "WHERE p.location_id = ?";
             $params = [$location_id];
             
@@ -1302,20 +1340,287 @@ switch ($action) {
                     p.location_id,
                     b.brand,
                     s.supplier_name,
-                    l.location_name
+                    l.location_name,
+                    'Regular' as product_type,
+                    NULL as transfer_date,
+                    NULL as source_location,
+                    NULL as transferred_by,
+                    NULL as transfer_status
                 FROM tbl_product p
                 LEFT JOIN tbl_brand b ON p.brand_id = b.brand_id
                 LEFT JOIN tbl_supplier s ON p.supplier_id = s.supplier_id
                 LEFT JOIN tbl_location l ON p.location_id = l.location_id
                 $whereClause
-                ORDER BY p.product_name ASC
             ");
             $stmt->execute($params);
-            $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $regularProducts = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            // Get transferred products to this location
+            $transferWhereClause = "WHERE th.destination_location_id = ?";
+            $transferParams = [$location_id];
+            
+            if ($search) {
+                $transferWhereClause .= " AND (p.product_name LIKE ? OR p.barcode LIKE ? OR p.category LIKE ?)";
+                $searchTerm = "%$search%";
+                $transferParams[] = $searchTerm;
+                $transferParams[] = $searchTerm;
+                $transferParams[] = $searchTerm;
+            }
+            
+            if ($category !== 'all') {
+                $transferWhereClause .= " AND p.category = ?";
+                $transferParams[] = $category;
+            }
+            
+            $stmt2 = $conn->prepare("
+                SELECT 
+                    p.product_id,
+                    p.product_name,
+                    p.category,
+                    p.barcode,
+                    p.description,
+                    td.qty as quantity,
+                    p.unit_price,
+                    CASE 
+                        WHEN td.qty <= 0 THEN 'out of stock'
+                        WHEN td.qty <= 10 THEN 'low stock'
+                        ELSE 'in stock'
+                    END as stock_status,
+                    p.Variation,
+                    p.brand_id,
+                    p.supplier_id,
+                    th.destination_location_id as location_id,
+                    b.brand,
+                    s.supplier_name,
+                    l.location_name,
+                    'Transferred' as product_type,
+                    th.date as transfer_date,
+                    sl.location_name as source_location,
+                    CONCAT(e.Fname, ' ', e.Lname) as transferred_by,
+                    CASE 
+                        WHEN th.status = '' OR th.status IS NULL THEN 'Completed'
+                        WHEN th.status = 'pending' THEN 'Pending'
+                        WHEN th.status = 'approved' THEN 'Completed'
+                        WHEN th.status = 'rejected' THEN 'Cancelled'
+                        ELSE th.status
+                    END as transfer_status
+                FROM tbl_transfer_header th
+                JOIN tbl_transfer_dtl td ON th.transfer_header_id = td.transfer_header_id
+                JOIN tbl_product p ON td.product_id = p.product_id
+                LEFT JOIN tbl_brand b ON p.brand_id = b.brand_id
+                LEFT JOIN tbl_supplier s ON p.supplier_id = s.supplier_id
+                LEFT JOIN tbl_location l ON th.destination_location_id = l.location_id
+                LEFT JOIN tbl_location sl ON th.source_location_id = sl.location_id
+                LEFT JOIN tbl_employee e ON th.employee_id = e.emp_id
+                $transferWhereClause
+            ");
+            $stmt2->execute($transferParams);
+            $transferredProducts = $stmt2->fetchAll(PDO::FETCH_ASSOC);
+            
+            // Combine both regular and transferred products
+            $allProducts = array_merge($regularProducts, $transferredProducts);
+            
+            // Sort by product name
+            usort($allProducts, function($a, $b) {
+                return strcmp($a['product_name'], $b['product_name']);
+            });
             
             echo json_encode([
                 "success" => true,
-                "data" => $products
+                "data" => $allProducts
+            ]);
+        } catch (Exception $e) {
+            echo json_encode([
+                "success" => false,
+                "message" => "Database error: " . $e->getMessage(),
+                "data" => []
+            ]);
+        }
+        break;
+
+    case 'get_movement_history':
+        try {
+            $search = $data['search'] ?? '';
+            $movement_type = $data['movement_type'] ?? 'all';
+            $location = $data['location'] ?? 'all';
+            $date_range = $data['date_range'] ?? 'all';
+            
+            // Build WHERE clause for filtering
+            $whereConditions = [];
+            $params = [];
+            
+            if ($search) {
+                $whereConditions[] = "(p.product_name LIKE ? OR p.barcode LIKE ? OR e.Fname LIKE ? OR e.Lname LIKE ?)";
+                $searchTerm = "%$search%";
+                $params[] = $searchTerm;
+                $params[] = $searchTerm;
+                $params[] = $searchTerm;
+                $params[] = $searchTerm;
+            }
+            
+            if ($location !== 'all') {
+                $whereConditions[] = "(sl.location_name = ? OR dl.location_name = ?)";
+                $params[] = $location;
+                $params[] = $location;
+            }
+            
+            if ($date_range !== 'all') {
+                switch ($date_range) {
+                    case 'today':
+                        $whereConditions[] = "DATE(th.date) = CURDATE()";
+                        break;
+                    case 'week':
+                        $whereConditions[] = "th.date >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)";
+                        break;
+                    case 'month':
+                        $whereConditions[] = "th.date >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)";
+                        break;
+                }
+            }
+            
+            $whereClause = !empty($whereConditions) ? "WHERE " . implode(" AND ", $whereConditions) : "";
+            
+            $stmt = $conn->prepare("
+                SELECT 
+                    th.transfer_header_id as id,
+                    p.product_name,
+                    p.barcode as productId,
+                    'Transfer' as movementType,
+                    td.qty as quantity,
+                    sl.location_name as fromLocation,
+                    dl.location_name as toLocation,
+                    CONCAT(e.Fname, ' ', e.Lname) as movedBy,
+                    th.date,
+                    TIME(th.date) as time,
+                    CASE 
+                        WHEN th.status = '' OR th.status IS NULL THEN 'Completed'
+                        WHEN th.status = 'pending' THEN 'Pending'
+                        WHEN th.status = 'approved' THEN 'Completed'
+                        WHEN th.status = 'rejected' THEN 'Cancelled'
+                        ELSE th.status
+                    END as status,
+                    NULL as notes,
+                    CONCAT('TR-', th.transfer_header_id) as reference,
+                    p.category,
+                    p.description,
+                    p.unit_price,
+                    b.brand
+                FROM tbl_transfer_header th
+                JOIN tbl_transfer_dtl td ON th.transfer_header_id = td.transfer_header_id
+                JOIN tbl_product p ON td.product_id = p.product_id
+                LEFT JOIN tbl_location sl ON th.source_location_id = sl.location_id
+                LEFT JOIN tbl_location dl ON th.destination_location_id = dl.location_id
+                LEFT JOIN tbl_employee e ON th.employee_id = e.emp_id
+                LEFT JOIN tbl_brand b ON p.brand_id = b.brand_id
+                $whereClause
+                ORDER BY th.date DESC, th.transfer_header_id DESC
+            ");
+            $stmt->execute($params);
+            $movements = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            echo json_encode([
+                "success" => true,
+                "data" => $movements
+            ]);
+        } catch (Exception $e) {
+            echo json_encode([
+                "success" => false,
+                "message" => "Database error: " . $e->getMessage(),
+                "data" => []
+            ]);
+        }
+        break;
+
+    case 'get_locations_for_filter':
+        try {
+            $stmt = $conn->prepare("
+                SELECT DISTINCT location_name 
+                FROM tbl_location 
+                ORDER BY location_name
+            ");
+            $stmt->execute();
+            $locations = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            echo json_encode([
+                "success" => true,
+                "data" => $locations
+            ]);
+        } catch (Exception $e) {
+            echo json_encode([
+                "success" => false,
+                "message" => "Database error: " . $e->getMessage(),
+                "data" => []
+            ]);
+        }
+        break;
+
+    case 'get_transferred_products':
+        try {
+            $location_id = $data['location_id'] ?? 0;
+            $search = $data['search'] ?? '';
+            $category = $data['category'] ?? 'all';
+            
+            $whereClause = "WHERE th.destination_location_id = ?";
+            $params = [$location_id];
+            
+            if ($search) {
+                $whereClause .= " AND (p.product_name LIKE ? OR p.barcode LIKE ? OR p.category LIKE ?)";
+                $searchTerm = "%$search%";
+                $params[] = $searchTerm;
+                $params[] = $searchTerm;
+                $params[] = $searchTerm;
+            }
+            
+            if ($category !== 'all') {
+                $whereClause .= " AND p.category = ?";
+                $params[] = $category;
+            }
+            
+            $stmt = $conn->prepare("
+                SELECT 
+                    p.product_id,
+                    p.product_name,
+                    p.category,
+                    p.barcode,
+                    p.description,
+                    td.qty as transferred_quantity,
+                    p.unit_price,
+                    p.stock_status,
+                    p.Variation,
+                    p.brand_id,
+                    p.supplier_id,
+                    p.location_id,
+                    b.brand,
+                    s.supplier_name,
+                    l.location_name,
+                    th.transfer_header_id,
+                    th.date as transfer_date,
+                    sl.location_name as source_location,
+                    CONCAT(e.Fname, ' ', e.Lname) as transferred_by,
+                    CASE 
+                        WHEN th.status = '' OR th.status IS NULL THEN 'Completed'
+                        WHEN th.status = 'pending' THEN 'Pending'
+                        WHEN th.status = 'approved' THEN 'Completed'
+                        WHEN th.status = 'rejected' THEN 'Cancelled'
+                        ELSE th.status
+                    END as transfer_status
+                FROM tbl_transfer_header th
+                JOIN tbl_transfer_dtl td ON th.transfer_header_id = td.transfer_header_id
+                JOIN tbl_product p ON td.product_id = p.product_id
+                LEFT JOIN tbl_brand b ON p.brand_id = b.brand_id
+                LEFT JOIN tbl_supplier s ON p.supplier_id = s.supplier_id
+                LEFT JOIN tbl_location l ON p.location_id = l.location_id
+                LEFT JOIN tbl_location sl ON th.source_location_id = sl.location_id
+                LEFT JOIN tbl_employee e ON th.employee_id = e.emp_id
+                $whereClause
+                ORDER BY th.date DESC, th.transfer_header_id DESC
+            ");
+            $stmt->execute($params);
+            $transferredProducts = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            echo json_encode([
+                "success" => true,
+                "data" => $transferredProducts
             ]);
         } catch (Exception $e) {
             echo json_encode([

@@ -10,26 +10,18 @@ import {
   FaEye, 
   FaFilter, 
   FaDownload, 
-  FaUpload,
-  FaBell,
-  FaTruck,
-  FaCheckCircle,
-  FaExclamationTriangle,
-  FaClock
+  FaUpload
 } from "react-icons/fa";
-import { Bell, Package, Truck, CheckCircle, AlertCircle, Clock } from "lucide-react";
+import { Package, Truck, CheckCircle, AlertCircle } from "lucide-react";
 
 const PharmacyInventory = () => {
   const [inventory, setInventory] = useState([]);
   const [filteredInventory, setFilteredInventory] = useState([]);
-  const [notifications, setNotifications] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [page, setPage] = useState(1);
   const [rowsPerPage] = useState(10);
   const [isLoading, setIsLoading] = useState(false);
-  const [showNotifications, setShowNotifications] = useState(false);
-  const [unreadCount, setUnreadCount] = useState(0);
   const [pharmacyLocationId, setPharmacyLocationId] = useState(null);
 
   const API_BASE_URL = "http://localhost/Enguio_Project/backend.php";
@@ -124,85 +116,11 @@ const PharmacyInventory = () => {
     }
   };
 
-  // Load notifications for pharmacy
-  const loadNotifications = async () => {
-    if (!pharmacyLocationId) return;
-    
-    try {
-      const response = await handleApiCall("get_notifications", {
-        location_id: pharmacyLocationId,
-        status: "all"
-      });
-      
-      if (response.success && Array.isArray(response.data)) {
-        console.log("✅ Loaded notifications:", response.data.length);
-        setNotifications(response.data);
-        setUnreadCount(response.data.filter(n => n.status === 'unread').length);
-      } else {
-        setNotifications([]);
-        setUnreadCount(0);
-      }
-    } catch (error) {
-      console.error("Error loading notifications:", error);
-      setNotifications([]);
-      setUnreadCount(0);
-    }
-  };
-
-  // Mark notification as read
-  const markNotificationRead = async (notificationId) => {
-    try {
-      const response = await handleApiCall("mark_notification_read", {
-        notification_id: notificationId
-      });
-      
-      if (response.success) {
-        // Update local state
-        setNotifications(prev => 
-          prev.map(n => 
-            n.notification_id === notificationId 
-              ? { ...n, status: 'read' } 
-              : n
-          )
-        );
-        setUnreadCount(prev => Math.max(0, prev - 1));
-        toast.success("Notification marked as read");
-      }
-    } catch (error) {
-      console.error("Error marking notification as read:", error);
-      toast.error("Failed to mark notification as read");
-    }
-  };
-
-  // Accept transfer (mark as completed)
-  const acceptTransfer = async (transferId) => {
-    try {
-      const response = await handleApiCall("update_transfer_status", {
-        transfer_header_id: transferId,
-        status: "Completed",
-        employee_id: 1, // You can get this from user session
-        notes: "Transfer accepted by pharmacy"
-      });
-
-      if (response.success) {
-        toast.success("Transfer accepted successfully!");
-        loadProducts(); // Reload products to show new inventory
-        loadNotifications(); // Reload notifications
-      } else {
-        toast.error(response.message || "Failed to accept transfer");
-      }
-    } catch (error) {
-      console.error("Error accepting transfer:", error);
-      toast.error("Failed to accept transfer");
-    }
-  };
-
   useEffect(() => {
     const initialize = async () => {
       const locationId = await loadPharmacyLocation();
       if (locationId) {
         await loadProducts();
-        await loadNotifications();
       }
     };
     initialize();
@@ -249,22 +167,12 @@ const PharmacyInventory = () => {
     }
   };
 
-  const getNotificationIcon = (type) => {
-    switch (type) {
-      case "transfer":
-        return <FaTruck className="h-5 w-5 text-blue-500" />;
-      case "low_stock":
-        return <FaExclamationTriangle className="h-5 w-5 text-yellow-500" />;
-      case "expiry":
-        return <FaClock className="h-5 w-5 text-red-500" />;
-      default:
-        return <FaBell className="h-5 w-5 text-gray-500" />;
-    }
-  };
-
   const categories = [...new Set(inventory.map(p => p.category).filter(Boolean))];
   const pages = Math.ceil(filteredInventory.length / rowsPerPage);
   const items = filteredInventory.slice((page - 1) * rowsPerPage, page * rowsPerPage);
+
+  // Update uniqueProducts for both table and stats
+  const uniqueProducts = Array.from(new Map(filteredInventory.map(item => [item.product_name, item])).values());
 
   return (
     <div className="p-6 space-y-6">
@@ -274,103 +182,21 @@ const PharmacyInventory = () => {
           <h1 className="text-3xl font-bold text-gray-800">Pharmacy Inventory</h1>
           <p className="text-gray-600">Manage pharmaceutical products and medications</p>
         </div>
-        <div className="flex gap-3">
-          <div className="relative">
-            <button
-              onClick={() => setShowNotifications(!showNotifications)}
-              className="relative p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-full transition-colors"
-            >
-              <FaBell className="h-6 w-6" />
-              {unreadCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                  {unreadCount}
-                </span>
-              )}
-            </button>
-            
-            {/* Notifications Dropdown */}
-            {showNotifications && (
-              <div className="absolute right-0 top-12 w-96 bg-white rounded-lg shadow-lg border border-gray-200 z-50 max-h-96 overflow-y-auto">
-                <div className="p-4 border-b border-gray-200">
-                  <h3 className="text-lg font-semibold text-gray-900">Notifications</h3>
-                  <p className="text-sm text-gray-600">{unreadCount} unread</p>
-                </div>
-                <div className="divide-y divide-gray-200">
-                  {notifications.length > 0 ? (
-                    notifications.map((notification) => (
-                      <div
-                        key={notification.notification_id}
-                        className={`p-4 hover:bg-gray-50 transition-colors ${
-                          notification.status === 'unread' ? 'bg-blue-50' : ''
-                        }`}
-                      >
-                        <div className="flex items-start gap-3">
-                          {getNotificationIcon(notification.notification_type)}
-                          <div className="flex-1">
-                            <p className="text-sm text-gray-900">{notification.message}</p>
-                            <p className="text-xs text-gray-500 mt-1">
-                              {new Date(notification.created_at).toLocaleString()}
-                            </p>
-                            {notification.notification_type === 'transfer' && notification.transfer_id && (
-                              <div className="mt-2 flex gap-2">
-                                <button
-                                  onClick={() => acceptTransfer(notification.transfer_id)}
-                                  className="text-xs bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600"
-                                >
-                                  Accept Transfer
-                                </button>
-                                <button
-                                  onClick={() => markNotificationRead(notification.notification_id)}
-                                  className="text-xs bg-gray-500 text-white px-2 py-1 rounded hover:bg-gray-600"
-                                >
-                                  Mark Read
-                                </button>
-                              </div>
-                            )}
-                          </div>
-                          {notification.status === 'unread' && (
-                            <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                          )}
-                        </div>
-                      </div>
-                    ))
-                  ) : (
-                    <div className="p-4 text-center text-gray-500">
-                      <FaBell className="h-8 w-8 mx-auto text-gray-300 mb-2" />
-                      <p>No notifications</p>
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
-          </div>
-          <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md flex items-center gap-2">
-            <FaUpload className="h-4 w-4" />
-            Import
-          </button>
-          <button className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md flex items-center gap-2">
-            <FaDownload className="h-4 w-4" />
-            Export
-          </button>
-          <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md flex items-center gap-2">
-            <FaPlus className="h-4 w-4" />
-            Add Product
-          </button>
-        </div>
+        {/* Removed Import, Export, and Add Product buttons */}
       </div>
 
       {/* Statistics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-white rounded-lg border p-6">
+        <div className="bg-white rounded-3xl shadow-xl p-6">
           <div className="flex items-center">
             <Package className="h-8 w-8 text-blue-500" />
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-600">Total Products</p>
-              <p className="text-2xl font-bold text-gray-900">{inventory.length}</p>
+              <p className="text-2xl font-bold text-gray-900">{uniqueProducts.length}</p>
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-lg border p-6">
+        <div className="bg-white rounded-3xl shadow-xl p-6">
           <div className="flex items-center">
             <CheckCircle className="h-8 w-8 text-green-500" />
             <div className="ml-4">
@@ -381,7 +207,7 @@ const PharmacyInventory = () => {
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-lg border p-6">
+        <div className="bg-white rounded-3xl shadow-xl p-6">
           <div className="flex items-center">
             <AlertCircle className="h-8 w-8 text-yellow-500" />
             <div className="ml-4">
@@ -392,13 +218,13 @@ const PharmacyInventory = () => {
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-lg border p-6">
+        <div className="bg-white rounded-3xl shadow-xl p-6">
           <div className="flex items-center">
             <Truck className="h-8 w-8 text-purple-500" />
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Pending Transfers</p>
+              <p className="text-sm font-medium text-gray-600">Total Value</p>
               <p className="text-2xl font-bold text-gray-900">
-                {notifications.filter(n => n.notification_type === 'transfer' && n.status === 'unread').length}
+                ₱{inventory.reduce((sum, p) => sum + (Number(p.unit_price || 0) * Number(p.quantity || 0)), 0).toFixed(2)}
               </p>
             </div>
           </div>
@@ -406,7 +232,7 @@ const PharmacyInventory = () => {
       </div>
 
       {/* Filters and Search */}
-      <div className="bg-white rounded-lg border p-6">
+      <div className="bg-white rounded-3xl shadow-xl p-6">
         <div className="flex flex-col md:flex-row gap-4">
           <div className="flex-1">
             <div className="relative">
@@ -438,7 +264,7 @@ const PharmacyInventory = () => {
       </div>
 
       {/* Inventory Table */}
-      <div className="bg-white rounded-lg border">
+      <div className="bg-white rounded-3xl shadow-xl">
         <div className="px-6 py-4 border-b border-gray-200">
           <div className="flex justify-between items-center">
             <h3 className="text-xl font-semibold text-gray-900">Products</h3>
@@ -453,6 +279,9 @@ const PharmacyInventory = () => {
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   PRODUCT NAME
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  BRAND
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   CATEGORY
@@ -485,28 +314,16 @@ const PharmacyInventory = () => {
                   </td>
                 </tr>
               ) : items.length > 0 ? (
-                items.map((item) => (
-                  <tr key={item.product_id} className="hover:bg-gray-50">
+                // Remove duplicates by product_name
+                uniqueProducts.map((item, index) => (
+                  <tr key={`${item.product_id}-${index}`} className="hover:bg-gray-50">
                     <td className="px-6 py-4">
-                      <div className="flex items-center">
-                        <div className="flex-shrink-0 h-10 w-10">
-                          <img
-                            src={item.image || "/placeholder.svg?height=40&width=40"}
-                            alt={item.product_name}
-                            className="h-10 w-10 rounded object-cover"
-                          />
-                        </div>
-                        <div className="ml-4">
-                          <div className="text-sm font-medium text-gray-900">
-                            {item.product_name}
-                          </div>
-                          {item.Variation && (
-                            <div className="text-sm text-gray-500">
-                              {item.Variation}
-                            </div>
-                          )}
-                        </div>
+                      <div className="text-sm font-medium text-gray-900">
+                        {item.product_name}
                       </div>
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-900">
+                      {item.brand || 'N/A'}
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-900">
                       <span className="inline-flex px-2 py-1 text-xs font-medium bg-gray-100 text-gray-800 rounded-full">

@@ -216,7 +216,7 @@ import {
         source_location_id: sourceLocation.location_id,
         destination_location_id: destinationLocation.location_id,
         employee_id: transferEmployee.emp_id,
-        status: "New",
+        status: "approved", // Use 'approved' to match database enum
         delivery_date: transferInfo.deliveryDate || null,
         products: productsToTransfer.map((product) => ({
           product_id: product.product_id,
@@ -229,7 +229,7 @@ import {
       console.log("📥 Transfer creation response:", response)
 
       if (response.success) {
-        toast.success("Transfer created successfully!")
+        toast.success("Transfer approved successfully! Products have been added to destination store.")
         console.log("✅ Transfer created with ID:", response.transfer_id)
 
         // Reset form
@@ -308,17 +308,19 @@ import {
   const updateTransferQuantity = (productId, quantity) => {
     const newQuantity = Number.parseInt(quantity) || 0;
     
+    // Find the product to check available quantity
+    const product = selectedProducts.find(p => p.product_id === productId);
+    const availableQty = product?.quantity || 0;
+    const finalQuantity = Math.min(newQuantity, availableQty);
+    
+    // Show warning if quantity exceeds available (outside of state update)
+    if (newQuantity > availableQty) {
+      toast.warning(`Quantity reduced to available amount: ${availableQty}`);
+    }
+    
     setSelectedProducts((prev) =>
       prev.map((product) => {
         if (product.product_id === productId) {
-          // Validate quantity doesn't exceed available
-          const availableQty = product.quantity || 0;
-          const finalQuantity = Math.min(newQuantity, availableQty);
-          
-          if (newQuantity > availableQty) {
-            toast.warning(`Quantity reduced to available amount: ${availableQty}`);
-          }
-          
           return { ...product, transfer_quantity: finalQuantity };
         }
         return product;
@@ -332,28 +334,8 @@ import {
   }
 
   const handleStatusUpdate = async (transferId, currentStatus) => {
-    const statusOptions = ["New", "In Storage", "Transferring", "Completed", "Cancelled"]
-    const currentIndex = statusOptions.indexOf(currentStatus)
-    const nextStatus = statusOptions[(currentIndex + 1) % statusOptions.length]
-
-    try {
-      const response = await handleApiCall("update_transfer_status", {
-        transfer_header_id: transferId,
-        status: nextStatus,
-        employee_id: 1, // You can get this from user session
-        notes: `Status updated from ${currentStatus} to ${nextStatus}`,
-      })
-
-      if (response.success) {
-        toast.success(`Transfer status updated to ${nextStatus}`)
-        loadTransfers() // Reload transfers to show updated data
-      } else {
-        toast.error(response.message || "Failed to update status")
-      }
-    } catch (error) {
-      console.error("Error updating transfer status:", error)
-      toast.error("Failed to update transfer status")
-    }
+    // Since transfers are now completed immediately, we'll just show a message
+    toast.info("Transfer status: " + currentStatus + " - Products have been immediately added to destination store")
   }
 
   const handleDeleteTransfer = async (transferId) => {
@@ -588,12 +570,9 @@ import {
                             >
                               {transfer.status || "New"}
                             </span>
-                            <button
-                              onClick={() => handleStatusUpdate(transfer.transfer_header_id, transfer.status)}
-                              className="text-xs text-blue-600 hover:text-blue-800 underline"
-                            >
-                              Update
-                            </button>
+                            <span className="text-xs text-gray-500">
+                              Auto-completed
+                            </span>
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
@@ -1146,7 +1125,7 @@ import {
                       </tbody>
                     </table>
                   </div>
-                  {/* Action Buttons */}
+
                   <div className="flex justify-between">
                     <button
                       onClick={() => setShowProductSelection(true)}
