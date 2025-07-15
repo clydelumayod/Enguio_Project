@@ -1,6 +1,6 @@
 <?php
 // Test file for movement history API
-include 'index.php';
+include 'Api/index.php';
 
 echo "<h1>Movement History API Test</h1>";
 

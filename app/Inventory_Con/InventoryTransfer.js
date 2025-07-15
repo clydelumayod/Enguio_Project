@@ -50,7 +50,7 @@ function InventoryTransfer() {
     deliveryDate: "",
   })
 
-  const API_BASE_URL = "http://localhost/enguio/Api/backend.php"
+  const API_BASE_URL = "http://localhost/Enguio_Project/backend.php"
 
   // API function
   async function handleApiCall(action, data = {}) {

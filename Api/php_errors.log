@@ -6161,3 +6161,43 @@
 [15-Jul-2025 04:52:37 Europe/Berlin] Processing action: get_products
 [15-Jul-2025 04:52:37 Europe/Berlin] Raw input: {"action":"get_brands"}
 [15-Jul-2025 04:52:37 Europe/Berlin] Processing action: get_brands
+[15-Jul-2025 05:36:41 Europe/Berlin] Raw input: 
+[15-Jul-2025 05:36:41 Europe/Berlin] Raw input: 
+[15-Jul-2025 05:36:41 Europe/Berlin] JSON decode error: Syntax error
+[15-Jul-2025 05:36:41 Europe/Berlin] JSON decode error: Syntax error
+[15-Jul-2025 05:36:41 Europe/Berlin] Raw input: {"action":"get_locations"}
+[15-Jul-2025 05:36:41 Europe/Berlin] Processing action: get_locations
+[15-Jul-2025 05:36:41 Europe/Berlin] Raw input: {"action":"get_locations"}
+[15-Jul-2025 05:36:41 Europe/Berlin] Processing action: get_locations
+[15-Jul-2025 05:36:41 Europe/Berlin] Raw input: {"action":"get_locations"}
+[15-Jul-2025 05:36:41 Europe/Berlin] Processing action: get_locations
+[15-Jul-2025 05:36:41 Europe/Berlin] Raw input: {"action":"get_location_products","location_id":4,"search":"","category":"all"}
+[15-Jul-2025 05:36:41 Europe/Berlin] Processing action: get_location_products
+[15-Jul-2025 05:36:41 Europe/Berlin] Raw input: {"action":"get_location_products","location_id":4,"search":"","category":"all"}
+[15-Jul-2025 05:36:41 Europe/Berlin] Processing action: get_location_products
+[15-Jul-2025 05:36:42 Europe/Berlin] Raw input: {"action":"get_locations"}
+[15-Jul-2025 05:36:42 Europe/Berlin] Processing action: get_locations
+[15-Jul-2025 05:36:42 Europe/Berlin] Raw input: {"action":"get_locations"}
+[15-Jul-2025 05:36:42 Europe/Berlin] Processing action: get_locations
+[15-Jul-2025 05:36:42 Europe/Berlin] Raw input: {"action":"get_locations"}
+[15-Jul-2025 05:36:42 Europe/Berlin] Processing action: get_locations
+[15-Jul-2025 05:36:42 Europe/Berlin] Raw input: {"action":"get_location_products","location_id":3,"search":"","category":"all"}
+[15-Jul-2025 05:36:42 Europe/Berlin] Processing action: get_location_products
+[15-Jul-2025 05:36:43 Europe/Berlin] Raw input: {"action":"get_location_products","location_id":3,"search":"","category":"all"}
+[15-Jul-2025 05:36:43 Europe/Berlin] Processing action: get_location_products
+[15-Jul-2025 05:40:34 Europe/Berlin] Raw input: 
+[15-Jul-2025 05:40:34 Europe/Berlin] Raw input: 
+[15-Jul-2025 05:40:34 Europe/Berlin] JSON decode error: Syntax error
+[15-Jul-2025 05:40:34 Europe/Berlin] JSON decode error: Syntax error
+[15-Jul-2025 05:40:34 Europe/Berlin] Raw input: {"action":"get_locations"}
+[15-Jul-2025 05:40:34 Europe/Berlin] Raw input: {"action":"get_locations"}
+[15-Jul-2025 05:40:34 Europe/Berlin] Processing action: get_locations
+[15-Jul-2025 05:40:34 Europe/Berlin] Processing action: get_locations
+[15-Jul-2025 05:40:34 Europe/Berlin] Raw input: {"action":"get_locations"}
+[15-Jul-2025 05:40:34 Europe/Berlin] Processing action: get_locations
+[15-Jul-2025 05:40:34 Europe/Berlin] Raw input: {"action":"get_location_products","location_id":3,"search":"","category":"all"}
+[15-Jul-2025 05:40:34 Europe/Berlin] Processing action: get_location_products
+[15-Jul-2025 05:40:34 Europe/Berlin] Raw input: {"action":"get_location_products","location_id":3,"search":"","category":"all"}
+[15-Jul-2025 05:40:34 Europe/Berlin] Processing action: get_location_products
+[15-Jul-2025 06:26:45 Europe/Berlin] Raw input: 
+[15-Jul-2025 06:26:45 Europe/Berlin] JSON decode error: Syntax error

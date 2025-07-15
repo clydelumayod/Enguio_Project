@@ -6,7 +6,7 @@ header('Access-Control-Allow-Headers: Content-Type');
 
 // Database connection
 $host = 'localhost';
-$dbname = 'enguio';
+$dbname = 'enguio2';
 $username = 'root';
 $password = '';
 
