@@ -6129,3 +6129,35 @@
 [15-Jul-2025 04:49:42 Europe/Berlin] Processing action: get_locations
 [15-Jul-2025 04:49:42 Europe/Berlin] Raw input: {"action":"get_inventory_staff"}
 [15-Jul-2025 04:49:42 Europe/Berlin] Processing action: get_inventory_staff
+[15-Jul-2025 04:52:37 Europe/Berlin] Raw input: 
+[15-Jul-2025 04:52:37 Europe/Berlin] Raw input: 
+[15-Jul-2025 04:52:37 Europe/Berlin] JSON decode error: Syntax error
+[15-Jul-2025 04:52:37 Europe/Berlin] JSON decode error: Syntax error
+[15-Jul-2025 04:52:37 Europe/Berlin] Raw input: 
+[15-Jul-2025 04:52:37 Europe/Berlin] JSON decode error: Syntax error
+[15-Jul-2025 04:52:37 Europe/Berlin] Raw input: 
+[15-Jul-2025 04:52:37 Europe/Berlin] JSON decode error: Syntax error
+[15-Jul-2025 04:52:37 Europe/Berlin] Raw input: 
+[15-Jul-2025 04:52:37 Europe/Berlin] JSON decode error: Syntax error
+[15-Jul-2025 04:52:37 Europe/Berlin] Raw input: 
+[15-Jul-2025 04:52:37 Europe/Berlin] JSON decode error: Syntax error
+[15-Jul-2025 04:52:37 Europe/Berlin] Raw input: 
+[15-Jul-2025 04:52:37 Europe/Berlin] JSON decode error: Syntax error
+[15-Jul-2025 04:52:37 Europe/Berlin] Raw input: 
+[15-Jul-2025 04:52:37 Europe/Berlin] JSON decode error: Syntax error
+[15-Jul-2025 04:52:37 Europe/Berlin] Raw input: {"action":"get_brands"}
+[15-Jul-2025 04:52:37 Europe/Berlin] Processing action: get_brands
+[15-Jul-2025 04:52:37 Europe/Berlin] Raw input: {"action":"get_batches"}
+[15-Jul-2025 04:52:37 Europe/Berlin] Processing action: get_batches
+[15-Jul-2025 04:52:37 Europe/Berlin] Raw input: {"action":"get_suppliers"}
+[15-Jul-2025 04:52:37 Europe/Berlin] Raw input: {"action":"get_products"}
+[15-Jul-2025 04:52:37 Europe/Berlin] Raw input: {"action":"get_suppliers"}
+[15-Jul-2025 04:52:37 Europe/Berlin] Processing action: get_suppliers
+[15-Jul-2025 04:52:37 Europe/Berlin] Processing action: get_products
+[15-Jul-2025 04:52:37 Europe/Berlin] Processing action: get_suppliers
+[15-Jul-2025 04:52:37 Europe/Berlin] Raw input: {"action":"get_batches"}
+[15-Jul-2025 04:52:37 Europe/Berlin] Processing action: get_batches
+[15-Jul-2025 04:52:37 Europe/Berlin] Raw input: {"action":"get_products"}
+[15-Jul-2025 04:52:37 Europe/Berlin] Processing action: get_products
+[15-Jul-2025 04:52:37 Europe/Berlin] Raw input: {"action":"get_brands"}
+[15-Jul-2025 04:52:37 Europe/Berlin] Processing action: get_brands
