@@ -569,20 +569,10 @@ function InventoryTransfer() {
                               }`}
                             >
                               {transfer.status || "New"}
-<<<<<<< HEAD
-                          </span>
-                            <button
-                              onClick={() => handleStatusUpdate(transfer.transfer_header_id, transfer.status)}
-                              className="text-xs text-blue-600 hover:text-blue-800 underline"
-                            >
-                              Update
-                            </button>
-=======
                             </span>
                             <span className="text-xs text-gray-500">
                               Auto-completed
                             </span>
->>>>>>> 687011100542853d6bad6ac9c30c4dfff5304d80
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
