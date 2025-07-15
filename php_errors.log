@@ -1750,3 +1750,7 @@
 [14-Jul-2025 07:03:56 Europe/Berlin] Processing action: get_location_products
 [14-Jul-2025 07:03:56 Europe/Berlin] Raw input: {"action":"get_notifications","location_id":4,"status":"all"}
 [14-Jul-2025 07:03:56 Europe/Berlin] Processing action: get_notifications
+[14-Jul-2025 08:17:24 Europe/Berlin] PHP Warning:  include(index.php): Failed to open stream: No such file or directory in C:\xampp\htdocs\enguio\backend.php on line 22
+[14-Jul-2025 08:17:24 Europe/Berlin] PHP Warning:  include(): Failed opening 'index.php' for inclusion (include_path='C:\xampp\php\PEAR') in C:\xampp\htdocs\enguio\backend.php on line 22
+[14-Jul-2025 08:17:24 Europe/Berlin] Raw input: 
+[14-Jul-2025 08:17:24 Europe/Berlin] JSON decode error: Syntax error

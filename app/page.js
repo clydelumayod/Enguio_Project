@@ -4,6 +4,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 
+const API_BASE_URL = "http://localhost/enguio/Api/index.php";
+
 export default function LoginForm() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -21,7 +23,7 @@ export default function LoginForm() {
     }
 
     try {
-      const res = await axios.post("http://localhost/api2/index.php", {
+      const res = await axios.post(API_BASE_URL, {
         action: "login", // Ensure lowercase to match backend
         username: username,
         password: password,
@@ -49,10 +51,12 @@ export default function LoginForm() {
         }
       } else {
         setError(res.data.message || "Invalid username or password.");
+        setPassword(""); // Clear password field on error
       }
     } catch (err) {
       console.error("Login error:", err);
       setError("An unexpected error occurred.");
+      setPassword(""); // Clear password field on error
     }
   };
 

@@ -1,6 +1,6 @@
 <?php
 // Simple test to check backend response
-$url = 'http://localhost/Enguio_Project/backend.php';
+$url = 'http://localhost/enguio/backend.php';
 $data = json_encode(['action' => 'get_suppliers']);
 
 $options = [

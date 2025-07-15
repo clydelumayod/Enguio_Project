@@ -32,7 +32,7 @@ const PharmacyInventory = () => {
   const [unreadCount, setUnreadCount] = useState(0);
   const [pharmacyLocationId, setPharmacyLocationId] = useState(null);
 
-  const API_BASE_URL = "http://localhost/Enguio_Project/backend.php";
+  const API_BASE_URL = "http://localhost/enguio/Api/backend.php";
 
   // API function
   async function handleApiCall(action, data = {}) {

@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 
 
- function InventoryTransfer() {
+function InventoryTransfer() {
   const [transfers, setTransfers] = useState([])
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [currentStep, setCurrentStep] = useState(1)
@@ -50,7 +50,7 @@ import {
     deliveryDate: "",
   })
 
-  const API_BASE_URL = "http://localhost/Enguio_Project/backend.php"
+  const API_BASE_URL = "http://localhost/enguio/Api/backend.php"
 
   // API function
   async function handleApiCall(action, data = {}) {
@@ -157,13 +157,13 @@ import {
       const response = await handleApiCall("get_inventory_staff")
       if (response.success) {
         setStaff(response.data)
-      } else {
-        console.error("Failed to load inventory staff")
+        } else {
+          console.error("Failed to load inventory staff")
+        }
+      } catch (err) {
+        console.error("Error loading staff:", err)
       }
-    } catch (err) {
-      console.error("Error loading staff:", err)
     }
-  }
 
   useEffect(() => {
     loadTransfers()
@@ -571,12 +571,12 @@ import {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center space-x-2">
-                            <span
-                              className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                                transfer.status === "New"
-                                  ? "bg-blue-100 text-blue-800"
-                                  : transfer.status === "In Storage"
-                                    ? "bg-yellow-100 text-yellow-800"
+                          <span
+                            className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                              transfer.status === "New"
+                                ? "bg-blue-100 text-blue-800"
+                                : transfer.status === "In Storage"
+                                  ? "bg-yellow-100 text-yellow-800"
                                     : transfer.status === "Transferring"
                                       ? "bg-orange-100 text-orange-800"
                                     : transfer.status === "Completed"
@@ -587,7 +587,7 @@ import {
                               }`}
                             >
                               {transfer.status || "New"}
-                            </span>
+                          </span>
                             <button
                               onClick={() => handleStatusUpdate(transfer.transfer_header_id, transfer.status)}
                               className="text-xs text-blue-600 hover:text-blue-800 underline"
@@ -622,7 +622,7 @@ import {
                               ₱{transfer.total_value ? Number.parseFloat(transfer.total_value).toFixed(2) : "0.00"}
                             </span>
                             <span className="text-xs text-gray-500">
-                              {transfer.total_products || 0} items
+                          {transfer.total_products || 0} items
                             </span>
                           </div>
                         </td>
@@ -664,7 +664,7 @@ import {
                               </div>
 
                               {transfer.products && transfer.products.length > 0 ? (
-                                <div className="overflow-x-auto">
+                              <div className="overflow-x-auto">
                                   <table className="min-w-full border border-gray-200 rounded-lg overflow-hidden">
                                     <thead className="bg-blue-50">
                                       <tr>
@@ -689,8 +689,8 @@ import {
                                         <th className="px-4 py-3 text-center text-xs font-semibold text-blue-900 uppercase tracking-wider">
                                           Total Value
                                         </th>
-                                      </tr>
-                                    </thead>
+                                    </tr>
+                                  </thead>
                                     <tbody className="bg-white divide-y divide-gray-200">
                                       {transfer.products.map((product, index) => (
                                         <tr key={index} className="hover:bg-gray-50 transition-colors">
@@ -699,7 +699,7 @@ import {
                                               <div className="flex-shrink-0">
                                                 <img
                                                   src={product.image || "/placeholder.svg?height=32&width=32"}
-                                                  alt={product.product_name}
+                                                alt={product.product_name}
                                                   className="h-8 w-8 rounded object-cover border border-gray-200"
                                                 />
                                               </div>
@@ -743,18 +743,18 @@ import {
                                           </td>
                                           <td className="px-4 py-3 text-sm text-center">
                                             <span className="font-semibold text-blue-600">
-                                              ₱
-                                              {(
-                                                Number.parseFloat(product.unit_price || 0) *
-                                                Number.parseInt(product.qty || 0)
-                                              ).toFixed(2)}
+                                            ₱
+                                            {(
+                                              Number.parseFloat(product.unit_price || 0) *
+                                              Number.parseInt(product.qty || 0)
+                                            ).toFixed(2)}
                                             </span>
                                           </td>
                                         </tr>
                                       ))}
-                                    </tbody>
-                                  </table>
-                                </div>
+                                  </tbody>
+                                </table>
+                              </div>
                               ) : (
                                 <div className="text-center py-8 text-gray-500">
                                   <Package className="h-12 w-12 mx-auto text-gray-300 mb-2" />
@@ -768,7 +768,7 @@ import {
                                     <span className="font-medium">Total Items:</span>
                                     <span className="ml-1 bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-semibold">
                                       {transfer.products ? transfer.products.length : 0}
-                                    </span>
+                                </span>
                                   </span>
                                   <span className="flex items-center">
                                     <span className="font-medium">From:</span>
@@ -781,8 +781,8 @@ import {
                                     <span className="ml-1 text-green-600 font-medium">
                                       {transfer.destination_location_name}
                                     </span>
-                                  </span>
-                                </div>
+                                </span>
+                              </div>
                                 <div className="text-right">
                                   <div className="text-sm text-gray-600">Total Transfer Value</div>
                                   <div className="text-lg font-bold text-blue-600">
@@ -915,7 +915,7 @@ import {
                       </option>
                     ))}
                   </select>
-                </div>
+      </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Destination Store*</label>
                   <select
@@ -931,7 +931,7 @@ import {
                       </option>
                     ))}
                   </select>
-                </div>
+    </div>
               </div>
               {!storeData.storesConfirmed ? (
                 <div className="text-center">
