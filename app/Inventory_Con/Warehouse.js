@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+
 import {
   ChevronUp,
   ChevronDown,
@@ -16,35 +17,77 @@ import {
   Truck,
   DollarSign,
   Edit,
-  Trash2,
+  Archive,
 } from "lucide-react";
 
 // API Configuratio
 
 // API function
-// ✅ Paste this near the top of Warehouse.js
 async function handleApiCall(action, data = {}) {
+  const API_BASE_URL = "http://localhost/Enguio_Project/Api/backend.php";
+  const payload = { action, ...data };
+  console.log("🚀 API Call Payload:", payload);
+
   try {
-    const response = await fetch("http://localhost/Enguio_Project/backend.php", {
+    const response = await fetch(API_BASE_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        action,
-        ...data,
-      }),
+      body: JSON.stringify(payload),
     });
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
+    const resData = await response.json();
+    console.log("✅ API Success Response:", resData);
+
+    if (resData && typeof resData === "object") {
+      if (!resData.success) {
+        console.warn("⚠️ API responded with failure:", resData.message || resData);
+      }
+      return resData;
+    } else {
+      console.warn("⚠️ Unexpected API response format:", resData);
+      return {
+        success: false,
+        message: "Unexpected response format",
+        data: resData,
+      };
     }
-
-    const result = await response.json();
-    return result;
-
   } catch (error) {
-    console.error("API call failed:", error.message);
+    console.error("❌ API Call Error:", error);
+    return {
+      success: false,
+      message: error.message,
+      error: "REQUEST_ERROR",
+    };
+  }
+}
+
+// New function to check if barcode exists
+async function checkBarcodeExists(barcode) {
+  try {
+    const response = await handleApiCall("check_barcode", { barcode });
+    return response;
+  } catch (error) {
+    console.error("Error checking barcode:", error);
+    return { success: false, error: error.message };
+  }
+}
+
+// New function to update product stock with FIFO tracking
+async function updateProductStock(productId, newQuantity, batchReference = "", expirationDate = null, unitCost = 0) {
+  try {
+    const response = await handleApiCall("update_product_stock", { 
+      product_id: productId, 
+      new_quantity: newQuantity,
+      batch_reference: batchReference,
+      expiration_date: expirationDate,
+      unit_cost: unitCost,
+      entry_by: "admin"
+    });
+    return response;
+  } catch (error) {
+    console.error("Error updating product stock:", error);
     return { success: false, error: error.message };
   }
 }
@@ -58,11 +101,13 @@ function Warehouse() {
     const [suppliersData, setSuppliersData] = useState([])
     const [batchData, setBatchData] = useState([])
     const [brandsData, setBrandsData] = useState([])
+    const [categoriesData, setCategoriesData] = useState([])
     const [searchTerm, setSearchTerm] = useState("")
     const [loading, setLoading] = useState(false)
     const [showAddModal, setShowAddModal] = useState(false)
     const [showSupplierModal, setShowSupplierModal] = useState(false)
     const [showEditModal, setShowEditModal] = useState(false)
+    const [showEditProductModal, setShowEditProductModal] = useState(false)
     const [showDeleteModal, setShowDeleteModal] = useState(false)
     const [activeTab, setActiveTab] = useState("products")
     const [currentLocation, setCurrentLocation] = useState("warehouse")
@@ -73,6 +118,36 @@ function Warehouse() {
     const [showProductModal, setShowProductModal] = useState(false);
     const [selectedProducts, setSelectedProducts] = useState([]);
     
+    // New state for barcode scanning modals
+    const [showUpdateStockModal, setShowUpdateStockModal] = useState(false);
+    const [showNewProductModal, setShowNewProductModal] = useState(false);
+    const [existingProduct, setExistingProduct] = useState(null);
+    const [newStockQuantity, setNewStockQuantity] = useState("");
+    const [showFifoModal, setShowFifoModal] = useState(false);
+    const [fifoStockData, setFifoStockData] = useState([]);
+    const [selectedProductForFifo, setSelectedProductForFifo] = useState(null);
+    
+
+    
+
+    const [newProductForm, setNewProductForm] = useState({
+      product_name: "",
+      category: "",
+      barcode: "",
+      description: "",
+      unit_price: "",
+      brand_id: "",
+      brand_search: "",
+      quantity: "",
+      supplier_id: "",
+      expiration: "",
+      date_added: new Date().toISOString().split('T')[0], // Auto-set current date
+      batch: generateBatchRef(), // Auto-generate batch number
+      order_number: "",
+      prescription: 0,
+      bulk: 0
+    });
+    
     useEffect(() => {
     let buffer = "";
     let timeout;
@@ -80,19 +155,25 @@ function Warehouse() {
     const handleKeyDown = (e) => {
       if (!scannerActive) return;
   
+      console.log("Key pressed:", e.key, "KeyCode:", e.keyCode, "Scanner active:", scannerActive);
+  
       if (timeout) clearTimeout(timeout);
   
-      // Only accept numbers and Enter key
+      // Accept Enter key to complete scan
       if (e.key === "Enter") {
         if (buffer.length > 0) {
+          console.log("Barcode scanned:", buffer);
           handleScannerOperation("SCAN_COMPLETE", { barcode: buffer });
           buffer = "";
         }
       } else {
+        // Accept all characters (not just numbers) for barcode scanning
         buffer += e.key;
+        console.log("Buffer updated:", buffer);
         timeout = setTimeout(() => {
+          console.log("Buffer cleared due to timeout");
           buffer = ""; // Clear buffer after inactivity
-        }, 500);
+        }, 1000); // Increased timeout to 1 second
       }
     };
   
@@ -122,47 +203,7 @@ function Warehouse() {
       return `BR-${yyyy}${mm}${dd}-${hh}${mi}${ss}`
     }
   
-    // Form header data
-    const [headerData, setHeaderData] = useState({
-      supplier_id: "",
-      location: "Warehouse",
-      order_no: "",
-      bill_to: "",
-      reference: generateBatchRef(),
-      order_ref: "",
-      entry_by: "admin",
-      expiration: "",
-      ship_from: "",
-      entry_date: new Date().toISOString().split("T")[0],
-      entry_time: new Date().toLocaleTimeString(),
-    })
-  
-    // Form options
-    const [formOptions, setFormOptions] = useState({
-      bulk: false,
-      prescriptionAttachment: false,
-    })
-  
-    // Line items for the table - UPDATED with brand field
-    const [lineItems, setLineItems] = useState([
-      {
-        id: 1,
-        title: "",
-        sku: "",
-        s_code: "",
-        category: "",
-        brand: "",
-        units: "Pcs",
-        unit_qty: "",
-        c_stock: "",
-        rate: "",
-        disc: "",
-        status: "In Stocks",
-        description: "",
-        variation: "",
-        l_total: "",
-      },
-    ])
+    // Removed unused form state variables since we're using modals now
   
     const [stats, setStats] = useState({
       totalProducts: 0,
@@ -210,6 +251,7 @@ function Warehouse() {
   
     // Edit form data
     const [editFormData, setEditFormData] = useState({})
+    const [editProductFormData, setEditProductFormData] = useState({})
   
   
     // FIXED API Functions with better error handling
@@ -294,6 +336,31 @@ function Warehouse() {
             setLoading(false);
           }
           break;
+
+        case "UPDATE_PRODUCT":
+          setLoading(true);
+          const updateProductData = {
+            ...data,
+            product_id: selectedItem?.product_id,
+          };
+          try {
+            const response = await handleApiCall("update_product", updateProductData);
+            if (response.success) {
+              toast.success("Product updated successfully");
+              setShowEditProductModal(false);
+              setSelectedItem(null);
+              setEditProductFormData({});
+              loadData("products");
+            } else {
+              toast.error(response.message || "Failed to update product");
+            }
+          } catch (error) {
+            console.error("Error updating product:", error);
+            toast.error("Failed to update product");
+          } finally {
+            setLoading(false);
+          }
+          break;
     
         case "DELETE_SUPPLIER":
           setLoading(true);
@@ -318,119 +385,8 @@ function Warehouse() {
           break;
     
         case "CREATE_PRODUCT":
-          const validItems = lineItems.filter((item) => {
-            return (
-              (item.title && item.title.trim() !== "") ||
-              (item.sku && item.sku.trim() !== "")
-            );
-          });
-    
-          if (validItems.length === 0) {
-            toast.error("Please add at least one product with a name or barcode");
-            return;
-          }
-    
-          if (!headerData.supplier_id) {
-            toast.error("Please select a supplier");
-            return;
-          }
-    
-          setLoading(true);
-          try {
-            const results = [];
-            for (let i = 0; i < validItems.length; i++) {
-              const item = validItems[i];
-    
-              let brand_id = 30; // Default to first brand in database
-              const selectedBrand = brandsData.find(
-                (brand) =>
-                  brand.brand.trim().toLowerCase() ===
-                  (item.brand || "").trim().toLowerCase()
-              );
-    
-              if (selectedBrand?.brand_id) {
-                brand_id = parseInt(selectedBrand.brand_id);
-              } else if (item.brand && item.brand.trim() !== "") {
-                // Try to create new brand if it doesn't exist
-                try {
-                  const brandResponse = await handleApiCall("add_brand", { brand_name: item.brand.trim() });
-                  if (brandResponse.success) {
-                    brand_id = brandResponse.brand_id;
-                    // Reload brands data to include the new brand
-                    loadData("brands");
-                  } else {
-                    console.warn("Failed to create brand:", brandResponse.message);
-                    // Use default brand_id
-                    brand_id = 30;
-                  }
-                } catch (error) {
-                  console.error("Error creating brand:", error);
-                  brand_id = 30; // Default brand_id
-                }
-              }
-    
-              const productData = {
-                product_name: item.title?.trim() || `Product ${i + 1}`,
-                category: item.category?.trim() || "General",
-                barcode: item.sku?.trim() || `AUTO-${Date.now()}-${i}`,
-                description: `${item.title?.trim() || "Product"} - ${
-                  item.s_code?.trim() || "No Code"
-                }`,
-                variation: item.variation?.trim() || "",
-                prescription: formOptions.prescriptionAttachment ? 1 : 0,
-                bulk: formOptions.bulk ? 1 : 0,
-                quantity: Number.parseInt(item.unit_qty) || 0,
-                unit_price: Number.parseFloat(item.rate) || 0,
-                supplier_id: parseInt(headerData.supplier_id),
-                location: headerData.location,
-                reference: headerData.reference,
-                brand_id,
-                expiration: headerData.expiration || null,
-                entry_by: headerData.entry_by || "admin",
-                order_no: headerData.order_no || "",
-                status: "active",
-                stock_status: "in stock",
-              };
-    
-              try {
-                const result = await handleApiCall("add_product", productData);
-                results.push(result);
-    
-                if (!result.success) {
-                  console.log("📤 Sent product data:", productData);
-                  console.log("📥 Server response:", result);
-                }
-              } catch (error) {
-                console.error(`❌ Product ${i + 1} error:`, error.message);
-                results.push({ success: false, message: error.message });
-              }
-            }
-    
-            const successCount = results.filter((r) => r.success).length;
-            const failedCount = results.length - successCount;
-    
-            if (successCount > 0) {
-              toast.success(
-                `Saved ${successCount} product${
-                  successCount > 1 ? "s" : ""
-                }${failedCount > 0 ? `, ${failedCount} failed` : ""}`
-              );
-              loadData("products");
-              loadData("batches");
-              clearLineItems();
-              setHeaderData((prev) => ({
-                ...prev,
-                reference: generateBatchRef(),
-              }));
-            } else {
-              toast.error("No products were saved. Check console.");
-            }
-          } catch (error) {
-            console.error("Error in CREATE_PRODUCT:", error);
-            toast.error("Failed to save products: " + error.message);
-          } finally {
-            setLoading(false);
-          }
+          // This case is now handled in the modal handlers
+          console.log("CREATE_PRODUCT case is deprecated - use modal handlers instead");
           break;
     
         default:
@@ -466,25 +422,40 @@ function Warehouse() {
             })
           break
             case "products":
+                console.log("🔄 Loading products...");
                 handleApiCall("get_products")
               .then((response) => {
+                console.log("📦 Products API response:", response);
+                console.log("📦 Products response.data:", response.data);
                 let productsArray = [];
   
                 if (Array.isArray(response.data)) {
                   productsArray = response.data;
+                  console.log("✅ Products loaded from response.data array:", productsArray);
                 } else if (response.data && Array.isArray(response.data.data)) {
                   productsArray = response.data.data;
+                  console.log("✅ Products loaded from response.data.data array:", productsArray);
+                } else {
+                  console.warn("⚠️ Unexpected products response format:", response);
                 }
+  
+                console.log("🔍 Final productsArray before filtering:", productsArray);
+                console.log("🔍 productsArray.length:", productsArray.length);
+                console.log("🔍 productsArray content:", JSON.stringify(productsArray, null, 2));
   
                   const activeProducts = productsArray.filter(
                     (product) => (product.status || "").toLowerCase() !== "archived"
                   );
   
+                  console.log("🔍 Active products after filtering:", activeProducts);
+                  console.log("🔍 Active products length:", activeProducts.length);
+  
                   setInventoryData(activeProducts);
                   updateStats("totalProducts", activeProducts.length);
+                  console.log("✅ Products loaded successfully:", activeProducts.length, "products");
                 })
                 .catch((error) => {
-                  console.error("Error loading products:", error);
+                  console.error("❌ Error loading products:", error);
                   toast.error("Failed to load products");
                   setInventoryData([]);
                 });
@@ -543,12 +514,46 @@ function Warehouse() {
               ])
             })
           break
+
+        case "categories":
+          // Load categories from your database
+          console.log("🔄 Loading categories...");
+          handleApiCall("get_categories")
+            .then((response) => {
+              console.log("📦 Categories API response:", response);
+              console.log("📦 Categories response.data:", response.data);
+              let categoriesArray = []
+  
+              if (Array.isArray(response.data)) {
+                categoriesArray = response.data
+                console.log("✅ Categories loaded from response.data array:", categoriesArray);
+              } else if (response.data && Array.isArray(response.data.data)) {
+                categoriesArray = response.data.data
+                console.log("✅ Categories loaded from response.data.data array:", categoriesArray);
+              } else {
+                console.warn("⚠️ Unexpected categories response format:", response);
+              }
+  
+              console.log("🔍 Final categoriesArray before setting:", categoriesArray);
+              console.log("🔍 categoriesArray.length:", categoriesArray.length);
+              console.log("🔍 categoriesArray content:", JSON.stringify(categoriesArray, null, 2));
+              
+              setCategoriesData(categoriesArray)
+              console.log("✅ Categories loaded successfully:", categoriesArray.length, "categories");
+              console.log("📋 Categories data:", categoriesArray);
+            })
+            .catch((error) => {
+              console.error("❌ Error loading categories:", error)
+              toast.error("Failed to load categories from database")
+            })
+          break
   
         case "all":
           loadData("suppliers")
           loadData("products")
           loadData("batches")
           loadData("brands")
+          loadData("categories")
           break
   
         default:
@@ -595,28 +600,6 @@ function Warehouse() {
       setEditFormData({})
     }
   
-    function clearLineItems() {
-      setLineItems([
-        {
-          id: 1,
-          title: "",
-          sku: "",
-          s_code: "",
-          category: "",
-          brand: "",
-          units: "Pcs",
-          unit_qty: "",
-          c_stock: "",
-          rate: "",
-          disc: "",
-          status: "In Stocks",
-          l_total: "",
-          description: "",
-          variation: "",
-        },
-      ])
-    }
-  
     // Form Handlers
     function handleSupplierInputChange(field, value) {
       setSupplierFormData((prev) => ({
@@ -631,77 +614,28 @@ function Warehouse() {
         [field]: value,
       }))
     }
-  
-    function handleHeaderChange(field, value) {
-      setHeaderData((prev) => ({
+
+    function handleEditProductInputChange(field, value) {
+      setEditProductFormData((prev) => ({
         ...prev,
         [field]: value,
       }))
     }
   
-    function handleOptionChange(option, checked) {
-      setFormOptions((prev) => ({
-        ...prev,
-        [option]: checked,
-      }))
-    }
-  
-    function updateLineItem(id, field, value) {
-      setLineItems((prev) => prev.map((item) => (item.id === id ? { ...item, [field]: value } : item)))
-    }
-  
-    function addLineItem() {
-      const newId = Math.max(...lineItems.map((item) => item.id)) + 1
-  
-      setLineItems((prev) => [
-        ...prev,
-        {
-          id: newId,
-          title: "",
-          sku: "",
-          s_code: "",
-          category: "",
-          brand: "",
-          units: "Pcs",
-          unit_qty: "",
-          c_stock: "",
-          rate: "",
-          disc: "",
-          status: "In Stocks",
-          l_total: "",
-          description: "",
-          variation: "",
-        },
-      ])
-    }
-  
-    function removeLineItem(id) {
-      if (lineItems.length > 1) {
-        setLineItems((prev) => prev.filter((item) => item.id !== id))
-      }
-    }
-  
-    function calculateTotal(item) {
-      const qty = Number.parseFloat(item.unit_qty) || 0
-      const rate = Number.parseFloat(item.rate) || 0
-      const disc = Number.parseFloat(item.disc) || 0
-  
-      const subtotal = qty * rate
-      const afterDiscount = subtotal - (subtotal * disc) / 100
-  
-      return afterDiscount.toFixed(2)
-    }
-  
-    // Scanner Functions - KEPT INTACT
-  function handleScannerOperation(operation, data) {
+    // Enhanced Scanner Functions with Barcode Checking
+  async function handleScannerOperation(operation, data) {
+    console.log("Scanner operation:", operation, "Data:", data);
+    
     switch (operation) {
       case "START_SCANNER":
+        console.log("Starting scanner...");
         setScannerActive(true);
         setScannedBarcode("");
         setScannerStatusMessage("🔍 Scanning started... Please scan the product using your barcode scanner.");
   
         // Optional: timeout warning
         const timeoutId = setTimeout(() => {
+          console.log("Scanner timeout - no barcode detected");
           setScannerStatusMessage("⚠️ No barcode detected. Please try again or check if your scanner is connected.");
           setScannerActive(false);
         }, 10000);
@@ -709,22 +643,58 @@ function Warehouse() {
         break;
   
       case "SCAN_COMPLETE":
+        console.log("Scan complete with barcode:", data.barcode);
         setScannerActive(false);
         if (scanTimeout) clearTimeout(scanTimeout);
   
         const scanned = data.barcode;
         setScannedBarcode(scanned);
-        setScannerStatusMessage("✅ Barcode received! The scanned value has been automatically entered into the Barcode No. field.");
+        setScannerStatusMessage("✅ Barcode received! Checking if product exists...");
   
-        const firstEmptyItem = lineItems.find((item) => !item.sku);
-        if (firstEmptyItem) {
-          updateLineItem(firstEmptyItem.id, "sku", scanned);
+        try {
+          console.log("Checking barcode in database:", scanned);
+          // Check if barcode exists in database
+          const barcodeCheck = await checkBarcodeExists(scanned);
+          console.log("Barcode check result:", barcodeCheck);
+          
+          if (barcodeCheck.success && barcodeCheck.product) {
+            console.log("Product found, opening update stock modal");
+            // Product exists - show update stock modal
+            setExistingProduct(barcodeCheck.product);
+            setNewStockQuantity("");
+            setShowUpdateStockModal(true);
+            setScannerStatusMessage("✅ Product found! Opening update stock modal.");
+          } else {
+            console.log("Product not found, opening new product modal");
+            // Product doesn't exist - show new product modal
+            setNewProductForm({
+              product_name: "",
+              category: "",
+              barcode: scanned, // Pre-fill with scanned barcode
+              description: "",
+              unit_price: "",
+              brand_id: "",
+              brand_search: "",
+              quantity: "",
+              supplier_id: "",
+              expiration: "",
+              batch: generateBatchRef(), // Auto-generate batch
+              order_number: "",
+              prescription: 0,
+              bulk: 0
+            });
+            setShowNewProductModal(true);
+            setScannerStatusMessage("✅ New product detected! Opening new product modal.");
+          }
+        } catch (error) {
+          console.error("Error checking barcode:", error);
+          setScannerStatusMessage("❌ Error checking barcode. Please try again.");
+          toast.error("Failed to check barcode");
         }
-  
-        toast.success(`Barcode scanned: ${scanned}`);
         break;
   
       case "STOP_SCANNER":
+        console.log("Stopping scanner...");
         setScannerActive(false);
         if (scanTimeout) clearTimeout(scanTimeout);
         setScannerStatusMessage("");
@@ -748,6 +718,11 @@ function Warehouse() {
       e.preventDefault()
       handleCrudOperation("UPDATE_SUPPLIER", editFormData)
     }
+
+    function handleUpdateProduct(e) {
+      e.preventDefault()
+      handleCrudOperation("UPDATE_PRODUCT", editProductFormData)
+    }
   
    function handleDeleteItem() {
     if (activeTab === "products") {
@@ -759,9 +734,7 @@ function Warehouse() {
   
   
   
-    function handleSaveEntry() {
-      handleCrudOperation("CREATE_PRODUCT")
-    }
+    // Removed handleSaveEntry since we're using modals now
   
     // Modal Actions
     function openSupplierModal() {
@@ -779,11 +752,23 @@ function Warehouse() {
       setEditFormData(item)
       setShowEditModal(true)
     }
+
+    function openEditProductModal(product) {
+      setSelectedItem(product)
+      setEditProductFormData(product)
+      setShowEditProductModal(true)
+    }
   
     function closeEditModal() {
       setShowEditModal(false)
       setSelectedItem(null)
       clearEditForm()
+    }
+
+    function closeEditProductModal() {
+      setShowEditProductModal(false)
+      setSelectedItem(null)
+      setEditProductFormData({})
     }
   
     function openDeleteModal(item) {
@@ -796,198 +781,234 @@ function Warehouse() {
       setSelectedItem(null)
     }
   
+    // New modal handlers for barcode scanning
+    function closeUpdateStockModal() {
+      setShowUpdateStockModal(false);
+      setExistingProduct(null);
+      setNewStockQuantity("");
+    }
+
+    function closeNewProductModal() {
+      setShowNewProductModal(false);
+      setNewProductForm({
+        product_name: "",
+        category: "",
+        barcode: "",
+        description: "",
+        unit_price: "",
+        brand_id: "",
+        brand_search: "",
+        quantity: "",
+        supplier_id: "",
+        expiration: "",
+        date_added: new Date().toISOString().split('T')[0], // Auto-set current date
+        batch: generateBatchRef(), // Auto-generate new batch when modal closes
+        order_number: "",
+        prescription: 0,
+        bulk: 0
+      });
+    }
+
+    // Form handlers for new product modal
+    function handleNewProductInputChange(field, value) {
+      setNewProductForm(prev => ({
+        ...prev,
+        [field]: value
+      }));
+    }
+
+    // FIFO Functions
+    async function getFifoStock(productId) {
+      try {
+        console.log("Calling get_fifo_stock API with product_id:", productId);
+        const response = await handleApiCall("get_fifo_stock", { product_id: productId });
+        console.log("get_fifo_stock API response:", response);
+        return response;
+      } catch (error) {
+        console.error("Error getting FIFO stock:", error);
+        return { success: false, error: error.message };
+      }
+    }
+
+    async function getExpiringProducts(daysThreshold = 30) {
+      try {
+        const response = await handleApiCall("get_expiring_products", { days_threshold: daysThreshold });
+        return response;
+      } catch (error) {
+        console.error("Error getting expiring products:", error);
+        return { success: false, error: error.message };
+      }
+    }
+
+    async function consumeStockFifo(productId, quantity, referenceNo = "", notes = "") {
+      try {
+        const response = await handleApiCall("consume_stock_fifo", { 
+          product_id: productId, 
+          quantity: quantity,
+          reference_no: referenceNo,
+          notes: notes,
+          created_by: "admin"
+        });
+        return response;
+      } catch (error) {
+        console.error("Error consuming stock:", error);
+        return { success: false, error: error.message };
+      }
+    }
+
+    function openFifoModal(product) {
+      setSelectedProductForFifo(product);
+      setShowFifoModal(true);
+      loadFifoStock(product.product_id);
+    }
+
+    function closeFifoModal() {
+      setShowFifoModal(false);
+      setSelectedProductForFifo(null);
+      setFifoStockData([]);
+    }
+
+
+
+    async function loadFifoStock(productId) {
+      console.log("Loading FIFO stock for product ID:", productId);
+      const response = await getFifoStock(productId);
+      console.log("FIFO stock response:", response);
+      if (response.success) {
+        setFifoStockData(response.data);
+      } else {
+        console.error("FIFO stock error:", response.message);
+        toast.error("Failed to load FIFO stock data: " + (response.message || "Unknown error"));
+      }
+    }
+
+    // Handle update stock submission
+    async function handleUpdateStock() {
+      if (!existingProduct || !newStockQuantity || newStockQuantity <= 0) {
+        toast.error("Please enter a valid quantity");
+        return;
+      }
+
+      setLoading(true);
+      try {
+        // Generate batch reference for new stock
+        const batchRef = generateBatchRef();
+        
+        const response = await updateProductStock(
+          existingProduct.product_id, 
+          parseInt(newStockQuantity),
+          batchRef,
+          existingProduct.expiration,
+          existingProduct.unit_price
+        );
+        
+        if (response.success) {
+          toast.success("Stock updated successfully with FIFO tracking");
+          closeUpdateStockModal();
+          loadData("products"); // Reload products to show updated stock
+        } else {
+          toast.error(response.message || "Failed to update stock");
+        }
+      } catch (error) {
+        console.error("Error updating stock:", error);
+        toast.error("Failed to update stock");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    // Handle new product submission
+    async function handleAddNewProduct(e) {
+      e.preventDefault();
+      
+      if (!newProductForm.product_name || !newProductForm.category || !newProductForm.unit_price || !newProductForm.quantity) {
+        toast.error("Please fill in all required fields");
+        return;
+      }
+
+      setLoading(true);
+      try {
+        const productData = {
+          product_name: newProductForm.product_name,
+          category: newProductForm.category,
+          barcode: newProductForm.barcode,
+          description: newProductForm.description,
+          unit_price: parseFloat(newProductForm.unit_price),
+          brand_id: newProductForm.brand_id || 30, // Default brand
+          quantity: parseInt(newProductForm.quantity),
+          supplier_id: newProductForm.supplier_id || 13, // Default supplier
+          expiration: newProductForm.expiration || null,
+          date_added: newProductForm.date_added, // Auto-set date
+          prescription: newProductForm.prescription,
+          bulk: newProductForm.bulk,
+          location: "Warehouse",
+          status: "active",
+          stock_status: "in stock",
+          reference: newProductForm.batch || generateBatchRef(), // Batch number
+          order_no: newProductForm.order_number || "" // Order number
+        };
+
+        const response = await handleApiCall("add_product", productData);
+        if (response.success) {
+          toast.success("Product added successfully");
+          closeNewProductModal();
+          loadData("products"); // Reload products
+        } else {
+          toast.error(response.message || "Failed to add product");
+        }
+      } catch (error) {
+        console.error("Error adding product:", error);
+        toast.error("Failed to add product");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+
+  
     // Component Lifecycle
     useEffect(() => {
       console.log("Component mounted, loading data...")
       loadData("all")
     }, [])
   
-    // Auto-calculate line item totals
+    // Debug useEffect to track categoriesData changes
     useEffect(() => {
-      setLineItems((prev) =>
-        prev.map((item) => ({
-          ...item,
-          l_total: calculateTotal(item),
-        })),
-      )
-    }, [lineItems.map((item) => `${item.unit_qty}-${item.rate}-${item.disc}`).join(",")])
+      console.log("🔄 categoriesData changed:", categoriesData);
+      console.log("🔄 categoriesData length:", categoriesData.length);
+      if (categoriesData.length > 0) {
+        console.log("🔄 First category:", categoriesData[0]);
+        console.log("🔄 All categories:", categoriesData.map(cat => cat.category_name));
+      }
+    }, [categoriesData])
+
+
   
-    // Render Functions
-    function renderLineItemRow(item, index) {
-      return (
-        <tr key={item.id} className="hover:bg-gray-50">
-          <td className="border border-gray-300 px-2 py-1">
-            <input
-              type="text"
-              value={item.title || ""}
-              onChange={(e) => updateLineItem(item.id, "title", e.target.value)}
-              placeholder={`Product ${index + 1}`}
-              className="w-full border-0 p-1 h-8 text-sm focus:outline-none"
-            />
-          </td>
-          <td className="border border-gray-300 px-2 py-1">
-            <input
-              type="text"
-              value={item.sku || ""}
-              onChange={(e) => updateLineItem(item.id, "sku", e.target.value)}
-              placeholder={`ITE10000${index + 1}`}
-              className="w-full border-0 p-1 h-8 text-sm font-mono focus:outline-none"
-            />
-          </td>
-          <td className="border border-gray-300 px-2 py-1">
-            <input
-              type="text"
-              value={item.category || ""}
-              onChange={(e) => updateLineItem(item.id, "category", e.target.value)}
-              placeholder="Category"
-              className="w-full border-0 p-1 h-8 text-sm focus:outline-none"
-            />
-          </td>
-          <td className="border border-gray-300 px-2 py-1">
-            <input
-              type="text"
-              value={item.s_code || ""}
-              onChange={(e) => updateLineItem(item.id, "s_code", e.target.value)}
-              placeholder="SUP-1001"
-              className="w-full border-0 p-1 h-8 text-sm focus:outline-none"
-            />
-          </td>
-          <td className="border border-gray-300 px-2 py-1">
-            <input
-              type="text"
-              value={item.brand || ""}
-              onChange={(e) => updateLineItem(item.id, "brand", e.target.value)}
-              placeholder="Enter Brand"
-              className="w-full border-0 p-1 h-8 text-sm focus:outline-none"
-            />
-          </td>
-  
-          <td className="border border-gray-300 px-2 py-1">
-            <select
-              value={item.units}
-              onChange={(e) => updateLineItem(item.id, "units", e.target.value)}
-              className="w-full border-0 p-1 h-8 text-sm focus:outline-none"
-            >
-              <option value="Pcs">Pcs</option>
-              <option value="Kg">Kg</option>
-              <option value="Box">Box</option>
-              <option value="Bundle">Bundle</option>
-            </select>
-          </td>
-          <td className="border border-gray-300 px-2 py-1">
-            <input
-              type="number"
-              value={item.unit_qty || ""}
-              onChange={(e) => updateLineItem(item.id, "unit_qty", e.target.value)}
-              placeholder="1"
-              className="w-full border-0 p-1 h-8 text-sm focus:outline-none"
-            />
-          </td>
-          <td className="border border-gray-300 px-2 py-1">
-            <input
-              type="text"
-              value={item.c_stock || ""}
-              onChange={(e) => updateLineItem(item.id, "c_stock", e.target.value)}
-              placeholder="500"
-              className="w-full border-0 p-1 h-8 text-sm focus:outline-none"
-            />
-          </td>
-          <td className="border border-gray-300 px-2 py-1">
-            <input
-              type="number"
-              step="0.01"
-              value={item.rate || ""}
-              onChange={(e) => updateLineItem(item.id, "rate", e.target.value)}
-              placeholder="500.00"
-              className="w-full border-0 p-1 h-8 text-sm focus:outline-none"
-            />
-          </td>
-          <td className="border border-gray-300 px-2 py-1">
-            <input
-              type="number"
-              step="0.01"
-              value={item.disc || ""}
-              onChange={(e) => updateLineItem(item.id, "disc", e.target.value)}
-              placeholder="0"
-              className="w-full border-0 p-1 h-8 text-sm focus:outline-none"
-            />
-          </td>
-          <td className="border border-gray-300 px-2 py-1">
-            <select
-              value={item.status}
-              onChange={(e) => updateLineItem(item.id, "status", e.target.value)}
-              className="w-full border-0 p-1 h-8 text-sm focus:outline-none"
-            >
-              <option value="In Stocks">In Stocks</option>
-              <option value="Out of Stock">Out of Stock</option>
-              <option value="Low Stock">Low Stock</option>
-            </select>
-          </td>
-              <td className="border border-gray-300 px-2 py-1">
-                  <input
-              type="text"
-              value={item.description || ""}
-              onChange={(e) => updateLineItem(item.id, "description", e.target.value)}
-              placeholder="Description"
-              className="w-full border-0 p-1 h-8 text-sm focus:outline-none"
-            />
-  
-          </td>
-          <td className="border border-gray-300 px-2 py-1">
-                  <input
-              type="text"
-              value={item.variation || ""}
-              onChange={(e) => updateLineItem(item.id, "variation", e.target.value)}
-  
-              placeholder="Variation  "
-              className="w-full border-0 p-1 h-8 text-sm focus:outline-none"
-            />
-  
-          </td>
-          <td className="border border-gray-300 px-2 py-1">
-            <input
-              type="text"
-              value={calculateTotal(item)}
-              disabled
-              className="w-full border-0 p-1 h-8 text-sm bg-gray-50 font-semibold focus:outline-none"
-            />
-          </td>
-          <td className="border border-gray-300 px-2 py-1 text-center">
-            <button
-              type="button"
-              onClick={() => removeLineItem(item.id)}
-              className="h-6 w-6 p-0 text-red-600 hover:text-red-800 bg-transparent border-none cursor-pointer"
-            >
-              <X className="h-4 w-4" />
-            </button>
-          </td>
-        </tr>
-      )
-    }
-  
-    // Main Render
+
     return (
-      <div className="min-h-screen bg-gray-50 p-6">
+      <div className="min-h-screen bg-white p-6">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Warehouse Management System</h1>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Enguio's Pharmacy [Stock Master]</h1>
           <p className="text-gray-600">Manage your inventory, suppliers, and stock levels</p>
         </div>
   
+
+
         {/* Enhanced Status Bar - KEPT SCANNER FUNCTIONALITY */}
-        <div className="bg-white rounded-lg shadow-md border border-gray-200 mb-6">
+        <div className="bg-gray-50 rounded-lg border border-gray-300 mb-6">
           <div className="p-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-6">
                 <div className="flex items-center space-x-2">
                   <MapPin className="h-4 w-4 text-blue-600" />
                   <span className="text-sm font-medium">Current Location:</span>
-                  <span className="inline-block px-2 py-0.5 text-xs font-medium bg-gray-100 text-gray-800 rounded-full">
+                  <span className="inline-block px-2 py-0.5 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">
                     {currentLocation.toUpperCase()}
                   </span>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <Scan className="h-4 w-4 text-purple-600" />
+                  <Scan className="h-4 w-4 text-green-600" />
                   <span className="text-sm font-medium">Scanner:</span>
                   <span
                     className={`inline-block px-2 py-0.5 text-xs font-medium rounded-full ${
@@ -1002,24 +1023,24 @@ function Warehouse() {
                 <button
                   onClick={() => handleScannerOperation("START_SCANNER")}
                   disabled={scannerActive}
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded flex items-center disabled:opacity-50"
+                  className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded flex items-center disabled:opacity-50"
                 >
                   <Camera className="h-4 w-4 mr-2" />
                   {scannerActive ? "Scanning..." : "Start Scanner"}
                 </button>
                 <button
                   onClick={openSupplierModal}
-                  className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded flex items-center"
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded flex items-center"
                 >
                   <Plus className="h-4 w-4 mr-2" />
                   Add Supplier
                 </button>
+
               </div>
             </div>
           </div>
         </div>
-  
-        {/* Enhanced Stats Cards */}
+
         <div className="grid grid-cols-1 md:grid-cols-6 gap-6 mb-8">
           {[
             { title: "Total Products", value: stats.totalProducts, icon: Package, color: "blue" },
@@ -1034,10 +1055,10 @@ function Warehouse() {
             { title: "Low Stock Items", value: stats.lowStockItems, icon: Package, color: "red" },
             { title: "Expiring Soon", value: stats.expiringSoon, icon: Package, color: "orange" },
           ].map((stat, index) => (
-            <div key={index} className="bg-white rounded-lg shadow-md border border-gray-200 p-6">
+            <div key={index} className="bg-gray-50 rounded-lg border border-gray-300 p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">{stat.title}</p>
+                  <p className="text-sm font-medium text-gray-700">{stat.title}</p>
                   <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
                 </div>
                 <stat.icon className={`h-8 w-8 text-${stat.color}-600`} />
@@ -1045,276 +1066,9 @@ function Warehouse() {
             </div>
           ))}
         </div>
-  
-        {/* Main Form - KEPT ALL INPUT FIELDS */}
-        <div className="bg-white rounded-lg shadow-md border border-gray-200 mb-6">
-          <div className="px-6 py-4 border-b border-gray-200 flex items-center space-x-2">
-            <Package className="h-5 w-5 text-blue-600" />
-            <h2 className="text-xl font-bold text-gray-900">Product Entry Form</h2>
-          </div>
-  
-          <div className="p-6">
-            {/* Header Information - ALL FIELDS KEPT */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-              {/* Left Column */}
-              <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <div className="text-sm font-medium text-gray-700 mb-1">Supplier Name</div>
-                    <select
-                      value={headerData.supplier_id}
-                      onChange={(e) => handleHeaderChange("supplier_id", e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    >
-                      <option value="">Select Supplier</option>
-                      {suppliersData.map((supplier) => (
-                        <option key={supplier.supplier_id} value={supplier.supplier_id}>
-                          {supplier.supplier_id} - {supplier.supplier_name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div>
-                    <div className="text-sm font-medium text-gray-700 mb-1">Location</div>
-                    <input
-                      type="text"
-                      value={headerData.location}
-                      onChange={(e) => handleHeaderChange("location", e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    />
-                  </div>
-                </div>
-                <div>
-                  <div className="text-sm font-medium text-gray-700 mb-1">Supplier Info</div>
-                  <textarea
-                    value={(() => {
-                      if (!headerData || !suppliersData || suppliersData.length === 0) return ""
-  
-                      const selectedSupplier = suppliersData.find(
-                        (s) => String(s.supplier_id) === String(headerData.supplier_id),
-                      )
-  
-                      return selectedSupplier
-                        ? `${selectedSupplier.supplier_name}, ${selectedSupplier.supplier_address}, ${selectedSupplier.supplier_contact}, ${selectedSupplier.supplier_email}`
-                        : ""
-                    })()}
-                    readOnly
-                    rows={3}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100 text-gray-700 focus:outline-none"
-                  />
-                </div>
-              </div>
-  
-              {/* Middle Column */}
-              <div className="space-y-4">
-                <div>
-                  <div className="text-sm font-medium text-gray-700 mb-1">Batch Reference</div>
-                  <input
-                    type="text"
-                    value={headerData.reference}
-                    disabled
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100 text-gray-600"
-                  />
-                </div>
-                <div>
-                  <div className="text-sm font-medium text-gray-700 mb-1">Entry By</div>
-                  <input
-                    type="text"
-                    value={headerData.entry_by}
-                    onChange={(e) => handleHeaderChange("entry_by", e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  />
-                </div>
-                <div>
-                  <div className="text-sm font-medium text-gray-700 mb-1">Entry Date</div>
-                  <input
-                    type="date"
-                    value={headerData.entry_date}
-                    onChange={(e) => handleHeaderChange("entry_date", e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  />
-                </div>
-                <div>
-                  <div className="text-sm font-medium text-gray-700 mb-1">Entry Time</div>
-                  <input
-                    type="text"
-                    value={headerData.entry_time}
-                    onChange={(e) => handleHeaderChange("entry_time", e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  />
-                </div>
-              </div>
-  
-              {/* Right Column */}
-              <div className="space-y-4">
-                <div>
-                  <div className="text-sm font-medium text-gray-700 mb-1">Order No</div>
-                  <input
-                    type="text"
-                    value={headerData.order_no}
-                    onChange={(e) => handleHeaderChange("order_no", e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  />
-                </div>
-                <div>
-                  <div className="text-sm font-medium text-gray-700 mb-1">Order Ref</div>
-                  <input
-                    type="text"
-                    value={headerData.order_ref}
-                    onChange={(e) => handleHeaderChange("order_ref", e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  />
-                </div>
-              <div>
-              <div className="text-sm font-medium text-gray-700 mb-1">Expiration Date</div>
-              <input
-                type="date"
-                value={headerData.expiration || ""}
-                onChange={(e) => handleHeaderChange("expiration", e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-              </div>
-            </div>
-  
-            {/* Options Checkboxes */}
-            <div className="flex items-center space-x-6 mb-6 p-4 bg-gray-50 rounded-lg">
-              <div className="flex items-center space-x-2">
-                <input
-                  type="checkbox"
-                  id="bulk"
-                  checked={formOptions.bulk}
-                  onChange={(e) => handleOptionChange("bulk", e.target.checked)}
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                />
-                <label htmlFor="bulk" className="text-sm font-medium text-gray-700">
-                  Bulk
-                </label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <input
-                  type="checkbox"
-                  id="prescriptionAttachment"
-                  checked={formOptions.prescriptionAttachment}
-                  onChange={(e) => handleOptionChange("prescriptionAttachment", e.target.checked)}
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                />
-                <label htmlFor="prescriptionAttachment" className="text-sm font-medium text-gray-700">
-                  Prescription Attachment
-                </label>
-              </div>
-            </div>
-  
-            {/* Items Table - ALL COLUMNS KEPT */}
-            <div className="overflow-x-auto">
-              <table className="w-full border-collapse border border-gray-300">
-                <thead>
-                  <tr className="bg-blue-100">
-                    <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold text-blue-900">
-                      Product Name
-                    </th>
-                    <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold text-blue-900">
-                      Barcode no.
-                    </th>
-                    <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold text-blue-900">
-                      Category
-                    </th>
-                    <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold text-blue-900">
-                      S.CODE
-                    </th>
-                    <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold text-blue-900">
-                      Brand
-                    </th>
-                    <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold text-blue-900">
-                      UNITS
-                    </th>
-                    <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold text-blue-900">
-                      UNIT-QTY
-                    </th>
-                    <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold text-blue-900">
-                      C.STOCK
-                    </th>
-                    <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold text-blue-900">
-                      RATE
-                    </th>
-                    <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold text-blue-900">
-                      DISC
-                    </th>
-                    <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold text-blue-900">
-                      Status
-                    </th>
-                      <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold text-blue-900">
-                      Description
-                    </th>
-                    <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold text-blue-900">
-                      Variation
-                    </th>
-                    <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold text-blue-900">
-                      L.TOTAL
-                    </th>
-                    <th className="border border-gray-300 px-3 py-2 text-center text-sm font-semibold text-blue-900">
-                      X
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>{lineItems.map(renderLineItemRow)}</tbody>
-                </table>
-                 </div>
-  
-              <div className="flex items-center space-x-2 mb-4 mt-4">
-              <span className="text-sm text-gray-700">
-                Current Batch Reference:
-                <span className="ml-1 font-mono text-blue-600">{headerData.reference}</span>
-              </span>
-              <button
-                onClick={() =>
-                  setHeaderData((prev) => ({
-                    ...prev,
-                    reference: generateBatchRef(),
-                  }))
-                }
-                className="text-sm text-blue-600 hover:underline"
-              >
-                Generate New Batch
-              </button>
-            </div>
-  
-            {/* Add Row Button */}
-            <div className="mt-4 flex justify-start">
-              <button
-                type="button"
-                onClick={addLineItem}
-                className="flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <Plus className="h-4 w-4" />
-                <span>Add Row</span>
-              </button>
-            </div>
-  
-            {/* Form Actions */}
-            <div className="flex justify-end space-x-4 mt-6 pt-6 border-t">
-              <button
-                type="button"
-                onClick={clearLineItems}
-                className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                Clear
-              </button>
-             
-              <button
-                type="button"
-                onClick={handleSaveEntry}
-                disabled={loading}
-                className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 disabled:opacity-50"
-              >
-                {loading ? "Saving..." : "Save Entry"}
-              </button>
-            </div>
-          </div>
-        </div>
-  
+   
         {/* Search and Filter Bar */}
-        <div className="bg-white rounded-lg shadow-md border border-gray-200 mb-6 p-4">
+        <div className="bg-gray-50 rounded-lg border border-gray-300 mb-6 p-4">
           <div className="flex items-center justify-between space-x-4">
             <div className="flex items-center space-x-4 flex-1">
               <div className="relative flex-1 max-w-md">
@@ -1324,7 +1078,7 @@ function Warehouse() {
                   placeholder={`Search ${activeTab}...`}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
             </div>
@@ -1332,8 +1086,8 @@ function Warehouse() {
         </div>
   
         {/* Tabs for Products and Suppliers */}
-        <div className="bg-white rounded-lg shadow-md border border-gray-200 mb-6">
-          <div className="border-b border-gray-200">
+        <div className="bg-gray-50 rounded-lg border border-gray-300 mb-6">
+          <div className="border-b border-gray-300">
             <nav className="-mb-px flex">
               <button
                 onClick={() => setActiveTab("products")}
@@ -1361,6 +1115,8 @@ function Warehouse() {
   <div className="p-6">
     {activeTab === "products" && (
       <div className="overflow-x-auto">
+        {console.log("🔍 Rendering products table with inventoryData:", inventoryData)}
+        {console.log("🔍 inventoryData.length:", inventoryData.length)}
         <table className="w-full border-collapse border border-gray-300">
           <thead>
             <tr className="bg-blue-100">
@@ -1373,6 +1129,7 @@ function Warehouse() {
               <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold text-blue-900">Supplier</th>
               <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold text-blue-900">Batch</th>
               <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold text-blue-900">Expiration</th>
+              <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold text-blue-900">Date Added</th>
               <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold text-blue-900">Type</th>
               <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold text-blue-900">Status</th>
               <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold text-blue-900">Stock Level</th>
@@ -1380,81 +1137,104 @@ function Warehouse() {
             </tr>
           </thead>
           <tbody>
-            {inventoryData.map((product) => (
-              <tr key={product.product_id} className="hover:bg-gray-50">
-                <td className="border border-gray-300 px-3 py-2 font-medium">{product.product_name}</td>
-                <td className="border border-gray-300 px-3 py-2 font-mono text-sm">{product.barcode}</td>
-                <td className="border border-gray-300 px-3 py-2">{product.category}</td>
-                <td className="border border-gray-300 px-3 py-2">{product.brand || "N/A"}</td>
-                <td className="border border-gray-300 px-3 py-2">{product.quantity}</td>
-                <td className="border border-gray-300 px-3 py-2">₱{Number.parseFloat(product.unit_price || 0).toFixed(2)}</td>
-                <td className="border border-gray-300 px-3 py-2">{product.supplier_name || "N/A"}</td>
-  
-                {/* Batch */}
-                <td className="border border-gray-300 px-3 py-2 text-sm text-center">
-                  {product.batch_reference || <span className="text-gray-400 italic">None</span>}
-                </td>
-  
-                {/* Expiration */}
-                <td className="border border-gray-300 px-3 py-2 text-sm text-center">
-                  {product.expiration ? new Date(product.expiration).toLocaleDateString() : <span className="text-gray-400 italic">None</span>}
-                </td>
-  
-                {/* Type - Bulk / Rx / Both / None */}
-                <td className="border border-gray-300 px-3 py-2 text-center">
-                  {(() => {
-                    const bulk = Number(product.bulk);
-                    const prescription = Number(product.prescription);
-  
-                    if (bulk && prescription) {
-                      return <span className="inline-block px-2 py-0.5 text-xs font-medium bg-yellow-100 text-yellow-800 rounded-full">Bulk & Rx</span>;
-                    } else if (bulk) {
-                      return <span className="inline-block px-2 py-0.5 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">Bulk</span>;
-                    } else if (prescription) {
-                      return <span className="inline-block px-2 py-0.5 text-xs font-medium bg-red-100 text-red-800 rounded-full">Rx</span>;
-                    } else {
-                      return <span className="inline-block px-2 py-0.5 text-xs font-medium bg-gray-100 text-gray-700 rounded-full">Regular</span>;
-                    }
-                  })()}
-                </td>
-  
-                {/* Status (Active or Archived) */}
-                <td className="border border-gray-300 px-3 py-2 text-center">
-                  <span className={`inline-block px-2 py-0.5 text-xs font-medium rounded-full ${
-                    product.status === "Available"
-                      ? "bg-green-100 text-green-800"
-                      : "bg-red-100 text-red-800"
-                  }`}>
-                    {product.status || "Available"}
-                  </span>
-                </td>
-  
-                {/* Stock Level */}
-                <td className="border border-gray-300 px-3 py-2 text-center">
-                  <span className={`inline-block px-2 py-0.5 text-xs font-medium rounded-full ${
-                    product.stock_status === 'out of stock'
-                      ? 'bg-red-100 text-red-700'
-                      : product.stock_status === 'low stock'
-                      ? 'bg-yellow-100 text-yellow-700'
-                      : 'bg-green-100 text-green-700'
-                  }`}>
-                    {product.stock_status}
-                  </span>
-                </td>
-  
-                {/* Actions */}
-                <td className="border border-gray-300 px-3 py-2 text-center">
-                  <div className="flex items-center justify-center space-x-2">
-                    <button onClick={() => openEditModal(product)} className="text-blue-500 hover:text-blue-700">
-                      <Edit className="h-4 w-4" />
-                    </button>
-                    <button onClick={() => openDeleteModal(product)} className="text-red-500 hover:text-red-700">
-                      <Trash2 className="h-4 w-4" />
-                    </button>
-                  </div>
+            {inventoryData.length === 0 ? (
+              <tr>
+                <td colSpan="14" className="border border-gray-300 px-3 py-2 text-center text-gray-500">
+                  No products found. {console.log("🔍 No products to display")}
                 </td>
               </tr>
-            ))}
+            ) : (
+              inventoryData.map((product) => {
+                console.log("🔍 Rendering product:", product);
+                return (
+                  <tr key={product.product_id} className="hover:bg-gray-50">
+                    <td className="border border-gray-300 px-3 py-2 font-medium">{product.product_name}</td>
+                    <td className="border border-gray-300 px-3 py-2 font-mono text-sm">{product.barcode}</td>
+                    <td className="border border-gray-300 px-3 py-2">{product.category}</td>
+                    <td className="border border-gray-300 px-3 py-2">{product.brand || "N/A"}</td>
+                    <td className="border border-gray-300 px-3 py-2">{product.quantity}</td>
+                    <td className="border border-gray-300 px-3 py-2">₱{Number.parseFloat(product.unit_price || 0).toFixed(2)}</td>
+                    <td className="border border-gray-300 px-3 py-2">{product.supplier_name || "N/A"}</td>
+      
+                    {/* Batch */}
+                    <td className="border border-gray-300 px-3 py-2 text-sm text-center">
+                      {product.batch_reference || <span className="text-gray-400 italic">None</span>}
+                    </td>
+      
+                    {/* Expiration */}
+                    <td className="border border-gray-300 px-3 py-2 text-sm text-center">
+                      {product.expiration ? new Date(product.expiration).toLocaleDateString() : <span className="text-gray-400 italic">None</span>}
+                    </td>
+
+                    {/* Date Added */}
+                    <td className="border border-gray-300 px-3 py-2 text-sm text-center">
+                      {product.date_added ? new Date(product.date_added).toLocaleDateString('en-US', {
+                        month: '2-digit',
+                        day: '2-digit',
+                        year: '2-digit'
+                      }) : <span className="text-gray-400 italic">N/A</span>}
+                    </td>
+      
+                    {/* Type - Bulk / Rx / Both / None */}
+                    <td className="border border-gray-300 px-3 py-2 text-center">
+                      {(() => {
+                        const bulk = Number(product.bulk);
+                        const prescription = Number(product.prescription);
+      
+                        if (bulk && prescription) {
+                          return <span className="inline-block px-2 py-0.5 text-xs font-medium bg-yellow-100 text-yellow-800 rounded-full">Bulk & Rx</span>;
+                        } else if (bulk) {
+                          return <span className="inline-block px-2 py-0.5 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">Bulk</span>;
+                        } else if (prescription) {
+                          return <span className="inline-block px-2 py-0.5 text-xs font-medium bg-red-100 text-red-800 rounded-full">Rx</span>;
+                        } else {
+                          return <span className="inline-block px-2 py-0.5 text-xs font-medium bg-gray-100 text-gray-700 rounded-full">Regular</span>;
+                        }
+                      })()}
+                    </td>
+      
+                    {/* Status (Active or Archived) */}
+                    <td className="border border-gray-300 px-3 py-2 text-center">
+                      <span className={`inline-block px-2 py-0.5 text-xs font-medium rounded-full ${
+                        product.status === "Available"
+                          ? "bg-green-100 text-green-800"
+                          : "bg-red-100 text-red-800"
+                      }`}>
+                        {product.status || "Available"}
+                      </span>
+                    </td>
+      
+                    {/* Stock Level */}
+                    <td className="border border-gray-300 px-3 py-2 text-center">
+                      <span className={`inline-block px-2 py-0.5 text-xs font-medium rounded-full ${
+                        product.stock_status === 'out of stock'
+                          ? 'bg-red-100 text-red-700'
+                          : product.stock_status === 'low stock'
+                          ? 'bg-yellow-100 text-yellow-700'
+                          : 'bg-green-100 text-green-700'
+                      }`}>
+                        {product.stock_status}
+                      </span>
+                    </td>
+      
+                    {/* Actions */}
+                    <td className="border border-gray-300 px-3 py-2 text-center">
+                      <div className="flex items-center justify-center space-x-2">
+                        <button onClick={() => openFifoModal(product)} className="text-green-500 hover:text-green-700" title="View FIFO Stock">
+                          <Package className="h-4 w-4" />
+                        </button>
+                        <button onClick={() => openEditProductModal(product)} className="text-blue-500 hover:text-blue-700" title="Edit Product">
+                          <Edit className="h-4 w-4" />
+                        </button>
+                        <button onClick={() => openDeleteModal(product)} className="text-orange-500 hover:text-orange-700" title="Archive Product">
+                          <Archive className="h-4 w-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })
+            )}
           </tbody>
         </table>
       </div>
@@ -1505,8 +1285,8 @@ function Warehouse() {
                             <button onClick={() => openEditModal(supplier)} className="text-blue-500 hover:text-blue-700">
                               <Edit className="h-4 w-4" />
                             </button>
-                            <button onClick={() => openDeleteModal(supplier)} className="text-red-500 hover:text-red-700">
-                              <Trash2 className="h-4 w-4" />
+                            <button onClick={() => openDeleteModal(supplier)} className="text-orange-500 hover:text-orange-700" title="Archive Supplier">
+                              <Archive className="h-4 w-4" />
                             </button>
                           </div>
                         </td>
@@ -1521,8 +1301,8 @@ function Warehouse() {
   
         {/* SUPPLIER MODAL - ALL FIELDS KEPT */}
         {showSupplierModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+          <div className="fixed inset-0 bg-gray-100 bg-opacity-80 flex items-center justify-center z-50">
+            <div className="rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto border-2 border-gray-400">
               <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
                 <h3 className="text-lg font-semibold text-gray-900">Add New Supplier</h3>
                 <button onClick={closeSupplierModal} className="text-gray-400 hover:text-gray-600">
@@ -1539,7 +1319,7 @@ function Warehouse() {
                       required
                       value={supplierFormData.supplier_name}
                       onChange={(e) => handleSupplierInputChange("supplier_name", e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
   
@@ -1550,7 +1330,7 @@ function Warehouse() {
                       required
                       value={supplierFormData.supplier_contact}
                       onChange={(e) => handleSupplierInputChange("supplier_contact", e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
   
@@ -1561,7 +1341,7 @@ function Warehouse() {
                       required
                       value={supplierFormData.supplier_email}
                       onChange={(e) => handleSupplierInputChange("supplier_email", e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
   
@@ -1571,7 +1351,7 @@ function Warehouse() {
                       type="text"
                       value={supplierFormData.primary_phone}
                       onChange={(e) => handleSupplierInputChange("primary_phone", e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
   
@@ -1581,7 +1361,7 @@ function Warehouse() {
                       type="email"
                       value={supplierFormData.primary_email}
                       onChange={(e) => handleSupplierInputChange("primary_email", e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
   
@@ -1591,77 +1371,77 @@ function Warehouse() {
                       type="text"
                       value={supplierFormData.contact_person}
                       onChange={(e) => handleSupplierInputChange("contact_person", e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
   
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Contact Title</label>
-                    <input
+                                        <input
                       type="text"
                       value={supplierFormData.contact_title}
                       onChange={(e) => handleSupplierInputChange("contact_title", e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
-  
+
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Payment Terms</label>
                     <input
                       type="text"
                       value={supplierFormData.payment_terms}
                       onChange={(e) => handleSupplierInputChange("payment_terms", e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
-  
+
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Lead Time (Days)</label>
                     <input
                       type="number"
                       value={supplierFormData.lead_time_days}
                       onChange={(e) => handleSupplierInputChange("lead_time_days", e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
-  
+
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Order Level</label>
                     <input
                       type="number"
                       value={supplierFormData.order_level}
                       onChange={(e) => handleSupplierInputChange("order_level", e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
-  
+
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Credit Rating</label>
                     <input
                       type="text"
                       value={supplierFormData.credit_rating}
                       onChange={(e) => handleSupplierInputChange("credit_rating", e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
   
-                  <div className="md:col-span-2">
+                                    <div className="md:col-span-2">
                     <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
                     <textarea
                       rows={3}
                       value={supplierFormData.supplier_address}
                       onChange={(e) => handleSupplierInputChange("supplier_address", e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
-  
+
                   <div className="md:col-span-2">
                     <label className="block text-sm font-medium text-gray-700 mb-1">Notes</label>
                     <textarea
                       rows={3}
                       value={supplierFormData.notes}
                       onChange={(e) => handleSupplierInputChange("notes", e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
                 </div>
@@ -1687,10 +1467,10 @@ function Warehouse() {
           </div>
         )}
   
-        {/* Edit Modal */}
+        {/* Edit Supplier Modal */}
         {showEditModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+          <div className="fixed inset-0 bg-gray-100 bg-opacity-80 flex items-center justify-center z-50">
+            <div className="bg-transparent backdrop-blur-sm rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto border-2 border-gray-400">
               <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
                 <h3 className="text-lg font-semibold text-gray-900">Edit Supplier</h3>
                 <button onClick={closeEditModal} className="text-gray-400 hover:text-gray-600">
@@ -1707,21 +1487,21 @@ function Warehouse() {
                       required
                       value={editFormData.supplier_name || ""}
                       onChange={(e) => handleEditInputChange("supplier_name", e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
   
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Contact Number *</label>
-                    <input
+                                        <input
                       type="text"
                       required
                       value={editFormData.supplier_contact || ""}
                       onChange={(e) => handleEditInputChange("supplier_contact", e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
-  
+
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Email *</label>
                     <input
@@ -1729,57 +1509,57 @@ function Warehouse() {
                       required
                       value={editFormData.supplier_email || ""}
                       onChange={(e) => handleEditInputChange("supplier_email", e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
-  
+
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Contact Person</label>
                     <input
                       type="text"
                       value={editFormData.contact_person || ""}
                       onChange={(e) => handleEditInputChange("contact_person", e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
-  
+
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Payment Terms</label>
                     <input
                       type="text"
                       value={editFormData.payment_terms || ""}
                       onChange={(e) => handleEditInputChange("payment_terms", e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
-  
+
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Lead Time (Days)</label>
                     <input
                       type="number"
                       value={editFormData.lead_time_days || ""}
                       onChange={(e) => handleEditInputChange("lead_time_days", e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
   
-                  <div className="md:col-span-2">
+                                    <div className="md:col-span-2">
                     <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
                     <textarea
                       rows={3}
                       value={editFormData.supplier_address || ""}
                       onChange={(e) => handleEditInputChange("supplier_address", e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
-  
+
                   <div className="md:col-span-2">
                     <label className="block text-sm font-medium text-gray-700 mb-1">Notes</label>
                     <textarea
                       rows={3}
                       value={editFormData.notes || ""}
                       onChange={(e) => handleEditInputChange("notes", e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
                 </div>
@@ -1804,14 +1584,191 @@ function Warehouse() {
             </div>
           </div>
         )}
+
+        {/* Edit Product Modal */}
+        {showEditProductModal && (
+          <div className="fixed inset-0 bg-gray-100 bg-opacity-80 flex items-center justify-center z-50">
+            <div className="bg-transparent backdrop-blur-sm rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto border-2 border-gray-400">
+              <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+                <h3 className="text-lg font-semibold text-gray-900">Edit Product</h3>
+                <button onClick={closeEditProductModal} className="text-gray-400 hover:text-gray-600">
+                  <X className="h-6 w-6" />
+                </button>
+              </div>
+  
+              <form onSubmit={handleUpdateProduct} className="p-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Product Name *</label>
+                    <input
+                      type="text"
+                      required
+                      value={editProductFormData.product_name || ""}
+                      onChange={(e) => handleEditProductInputChange("product_name", e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Barcode</label>
+                    <input
+                      type="text"
+                      value={editProductFormData.barcode || ""}
+                      onChange={(e) => handleEditProductInputChange("barcode", e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Category *</label>
+                    <select
+                      required
+                      value={editProductFormData.category || ""}
+                      onChange={(e) => handleEditProductInputChange("category", e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                      <option value="">Select Category</option>
+                      {categoriesData.map((category) => (
+                        <option key={category.category_id} value={category.category_name}>
+                          {category.category_name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Unit Price *</label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      required
+                      value={editProductFormData.unit_price || ""}
+                      onChange={(e) => handleEditProductInputChange("unit_price", e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Quantity *</label>
+                    <input
+                      type="number"
+                      required
+                      value={editProductFormData.quantity || ""}
+                      onChange={(e) => handleEditProductInputChange("quantity", e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Brand</label>
+                    <select
+                      value={editProductFormData.brand_id || ""}
+                      onChange={(e) => handleEditProductInputChange("brand_id", e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                      <option value="">Select Brand</option>
+                      {brandsData.map((brand) => (
+                        <option key={brand.brand_id} value={brand.brand_id}>
+                          {brand.brand}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Supplier</label>
+                    <select
+                      value={editProductFormData.supplier_id || ""}
+                      onChange={(e) => handleEditProductInputChange("supplier_id", e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                      <option value="">Select Supplier</option>
+                      {suppliersData.map((supplier) => (
+                        <option key={supplier.supplier_id} value={supplier.supplier_id}>
+                          {supplier.supplier_name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Expiration Date</label>
+                    <input
+                      type="date"
+                      value={editProductFormData.expiration || ""}
+                      onChange={(e) => handleEditProductInputChange("expiration", e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                    <textarea
+                      rows={3}
+                      value={editProductFormData.description || ""}
+                      onChange={(e) => handleEditProductInputChange("description", e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+
+                  <div className="md:col-span-2">
+                    <div className="flex items-center space-x-6">
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="editPrescription"
+                          checked={editProductFormData.prescription === 1}
+                          onChange={(e) => handleEditProductInputChange("prescription", e.target.checked ? 1 : 0)}
+                          className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                        />
+                        <label htmlFor="editPrescription" className="text-sm font-medium text-gray-700">
+                          Prescription Required
+                        </label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="checkbox"
+                          id="editBulk"
+                          checked={editProductFormData.bulk === 1}
+                          onChange={(e) => handleEditProductInputChange("bulk", e.target.checked ? 1 : 0)}
+                          className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                        />
+                        <label htmlFor="editBulk" className="text-sm font-medium text-gray-700">
+                          Bulk Product
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+  
+                <div className="flex justify-end space-x-4 mt-6">
+                  <button
+                    type="button"
+                    onClick={closeEditProductModal}
+                    className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md disabled:opacity-50"
+                  >
+                    {loading ? "Updating..." : "Update Product"}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
   
   
   {/* Delete Confirmation Modal */}
   {showDeleteModal && (
-    <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50">
-      <div className="bg-white rounded-lg shadow-xl p-6 border border-gray-300 w-96">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Confirm archive</h3>
-        <p className="text-gray-700 mb-4">Are you sure you want to archive  this item?</p>
+    <div className="fixed inset-0 bg-gray-100 bg-opacity-80 flex items-center justify-center z-50">
+      <div className="bg-transparent backdrop-blur-sm rounded-lg shadow-xl p-6 border-2 border-gray-400 w-96">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">Confirm Archive</h3>
+        <p className="text-gray-700 mb-4">Are you sure you want to archive this item?</p>
         <div className="flex justify-end space-x-4">
           <button
             type="button"
@@ -1820,20 +1777,480 @@ function Warehouse() {
           >
             Cancel
           </button>
-          <button
-            type="button"
-            onClick={handleDeleteItem}
-            className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md disabled:opacity-50"
-          >
-            {loading ? "Deleting..." : "Delete"}
+                      <button
+              type="button"
+              onClick={handleDeleteItem}
+              className="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-md disabled:opacity-50"
+            >
+              {loading ? "Archiving..." : "Archive"}
+            </button>
+        </div>
+      </div>
+    </div>
+  )}
+  
+  {/* Update Product Stock Modal */}
+  {showUpdateStockModal && existingProduct && (
+    <div className="fixed inset-0 bg-gray-100 bg-opacity-80 flex items-center justify-center z-50">
+      <div className="bg-transparent backdrop-blur-sm rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto border-2 border-gray-400">
+        <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+          <h3 className="text-lg font-semibold text-gray-900">Update Product Stock</h3>
+          <button onClick={closeUpdateStockModal} className="text-gray-400 hover:text-gray-600">
+            <X className="h-6 w-6" />
           </button>
         </div>
+
+        <div className="p-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Product Name</label>
+              <input
+                type="text"
+                value={existingProduct.product_name}
+                readOnly
+                className="w-full px-3 py-2 border border-gray-300 rounded-md bg-transparent text-gray-700"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Barcode</label>
+              <input
+                type="text"
+                value={existingProduct.barcode}
+                readOnly
+                className="w-full px-3 py-2 border border-gray-300 rounded-md bg-transparent text-gray-700"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+              <input
+                type="text"
+                value={existingProduct.category}
+                readOnly
+                className="w-full px-3 py-2 border border-gray-300 rounded-md bg-transparent text-gray-700"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Brand</label>
+              <input
+                type="text"
+                value={existingProduct.brand || "N/A"}
+                readOnly
+                className="w-full px-3 py-2 border border-gray-300 rounded-md bg-transparent text-gray-700"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Current Stock</label>
+              <input
+                type="text"
+                value={existingProduct.quantity}
+                readOnly
+                className="w-full px-3 py-2 border border-gray-300 rounded-md bg-transparent text-gray-700"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Unit Price</label>
+              <input
+                type="text"
+                value={`₱${Number.parseFloat(existingProduct.unit_price || 0).toFixed(2)}`}
+                readOnly
+                className="w-full px-3 py-2 border border-gray-300 rounded-md bg-transparent text-gray-700"
+              />
+            </div>
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+              <textarea
+                value={existingProduct.description || ""}
+                readOnly
+                rows={3}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md bg-transparent text-gray-700"
+              />
+            </div>
+          </div>
+
+          <div className="border-t pt-6">
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-1">New Stock to Add *</label>
+              <input
+                type="number"
+                value={newStockQuantity}
+                onChange={(e) => setNewStockQuantity(e.target.value)}
+                placeholder="Enter quantity to add"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div className="text-sm text-gray-600 mb-4">
+              Current Stock: <span className="font-semibold">{existingProduct.quantity}</span> | 
+              New Total: <span className="font-semibold">{existingProduct.quantity + (parseInt(newStockQuantity) || 0)}</span>
+            </div>
+          </div>
+
+          <div className="flex justify-end space-x-4 mt-6">
+            <button
+              type="button"
+              onClick={closeUpdateStockModal}
+              className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={handleUpdateStock}
+              disabled={loading || !newStockQuantity || newStockQuantity <= 0}
+              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md disabled:opacity-50"
+            >
+              {loading ? "Updating..." : "Update Stock"}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  )}
+
+            {showNewProductModal && (
+        <div className="fixed inset-0 bg-gray-100 bg-opacity-80 flex items-center justify-center z-50">
+          <div className="bg-transparent backdrop-blur-sm rounded-lg shadow-2xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto border-2 border-gray-400">
+        <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+          <h3 className="text-lg font-semibold text-gray-900">Add New Product</h3>
+          <button onClick={closeNewProductModal} className="text-gray-400 hover:text-gray-600">
+            <X className="h-6 w-6" />
+          </button>
+        </div>
+
+        <form onSubmit={handleAddNewProduct} className="p-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Product Name *</label>
+              <input
+                type="text"
+                required
+                value={newProductForm.product_name}
+                onChange={(e) => handleNewProductInputChange("product_name", e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Barcode</label>
+              <input
+                type="text"
+                value={newProductForm.barcode}
+                readOnly
+                className="w-full px-3 py-2 border border-gray-300 rounded-md bg-transparent text-gray-700"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Category *</label>
+              <select
+                required
+                value={newProductForm.category}
+                onChange={(e) => {
+                  handleNewProductInputChange("category", e.target.value);
+                }}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">Select Category</option>
+                {categoriesData.map((category) => (
+                  <option key={category.category_id} value={category.category_name}>
+                    {category.category_name}
+                  </option>
+                ))}
+              </select>
+              <p className="text-xs text-gray-500 mt-1">Available categories: {categoriesData.length}</p>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Unit Price *</label>
+              <input
+                type="number"
+                step="0.01"
+                required
+                value={newProductForm.unit_price}
+                onChange={(e) => handleNewProductInputChange("unit_price", e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Initial Stock *</label>
+              <input
+                type="number"
+                required
+                value={newProductForm.quantity}
+                onChange={(e) => handleNewProductInputChange("quantity", e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Brand</label>
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="Type to search brands..."
+                  value={newProductForm.brand_search || ""}
+                  onChange={(e) => {
+                    const searchTerm = e.target.value;
+                    handleNewProductInputChange("brand_search", searchTerm);
+                    // Find the brand that matches the search term
+                    const matchingBrand = brandsData.find(brand => 
+                      brand.brand.toLowerCase().startsWith(searchTerm.toLowerCase())
+                    );
+                    if (matchingBrand) {
+                      handleNewProductInputChange("brand_id", matchingBrand.brand_id);
+                    } else {
+                      handleNewProductInputChange("brand_id", "");
+                    }
+                  }}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                {newProductForm.brand_search && (
+                  <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-40 overflow-y-auto">
+                    {brandsData
+                      .filter(brand => 
+                        brand.brand.toLowerCase().startsWith(newProductForm.brand_search.toLowerCase())
+                      )
+                      .map((brand) => (
+                        <div
+                          key={brand.brand_id}
+                          className="px-3 py-2 hover:bg-gray-100 cursor-pointer"
+                          onClick={() => {
+                            handleNewProductInputChange("brand_search", brand.brand);
+                            handleNewProductInputChange("brand_id", brand.brand_id);
+                          }}
+                        >
+                          {brand.brand}
+                        </div>
+                      ))}
+                  </div>
+                )}
+              </div>
+              <p className="text-xs text-gray-500 mt-1">Available brands: {brandsData.length}</p>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Supplier</label>
+              <select
+                value={newProductForm.supplier_id}
+                onChange={(e) => handleNewProductInputChange("supplier_id", e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">Select Supplier</option>
+                {suppliersData.map((supplier) => (
+                  <option key={supplier.supplier_id} value={supplier.supplier_id}>
+                    {supplier.supplier_name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Expiration Date</label>
+              <input
+                type="date"
+                value={newProductForm.expiration}
+                onChange={(e) => handleNewProductInputChange("expiration", e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Batch Number</label>
+              <input
+                type="text"
+                value={newProductForm.batch}
+                onChange={(e) => handleNewProductInputChange("batch", e.target.value)}
+                placeholder="Enter batch number"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <button
+                type="button"
+                onClick={() => handleNewProductInputChange("batch", generateBatchRef())}
+                className="mt-1 px-3 py-1 text-xs bg-blue-100 hover:bg-blue-200 text-blue-700 rounded border border-blue-300"
+              >
+                Generate New Batch
+              </button>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Order Number</label>
+              <input
+                type="text"
+                value={newProductForm.order_number}
+                onChange={(e) => handleNewProductInputChange("order_number", e.target.value)}
+                placeholder="Enter order number"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Date Added</label>
+              <input
+                type="date"
+                value={newProductForm.date_added}
+                readOnly
+                className="w-full px-3 py-2 border border-gray-300 rounded-md bg-transparent text-gray-700 cursor-not-allowed"
+              />
+              <p className="text-xs text-gray-500 mt-1">Automatically set to current date</p>
+            </div>
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+              <textarea
+                rows={3}
+                value={newProductForm.description}
+                onChange={(e) => handleNewProductInputChange("description", e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div className="md:col-span-2">
+              <div className="flex items-center space-x-6">
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    id="newPrescription"
+                    checked={newProductForm.prescription === 1}
+                    onChange={(e) => handleNewProductInputChange("prescription", e.target.checked ? 1 : 0)}
+                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  />
+                  <label htmlFor="newPrescription" className="text-sm font-medium text-gray-700">
+                    Prescription Required
+                  </label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    id="newBulk"
+                    checked={newProductForm.bulk === 1}
+                    onChange={(e) => handleNewProductInputChange("bulk", e.target.checked ? 1 : 0)}
+                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  />
+                  <label htmlFor="newBulk" className="text-sm font-medium text-gray-700">
+                    Bulk Product
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex justify-end space-x-4 mt-6">
+            <button
+              type="button"
+              onClick={closeNewProductModal}
+              className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={loading}
+              className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md disabled:opacity-50"
+            >
+              {loading ? "Adding..." : "Add Product"}
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   )}
   
   
   
+        {/* FIFO Stock Modal */}
+        {showFifoModal && selectedProductForFifo && (
+          <div className="fixed inset-0 bg-gray-100 bg-opacity-80 flex items-center justify-center z-50">
+            <div className="bg-transparent backdrop-blur-sm rounded-lg shadow-xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto border-2 border-gray-400">
+              <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+                <h3 className="text-lg font-semibold text-gray-900">
+                  FIFO Stock Details - {selectedProductForFifo.product_name}
+                </h3>
+                <button onClick={closeFifoModal} className="text-gray-400 hover:text-gray-600">
+                  <X className="h-6 w-6" />
+                </button>
+              </div>
+
+              <div className="p-6">
+                <div className="mb-6">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                    <div className="bg-blue-50 p-4 rounded-lg">
+                      <h4 className="font-semibold text-blue-900">Product Info</h4>
+                      <p className="text-sm text-blue-700">Barcode: {selectedProductForFifo.barcode}</p>
+                      <p className="text-sm text-blue-700">Category: {selectedProductForFifo.category}</p>
+                      <p className="text-sm text-blue-700">Total Stock: {selectedProductForFifo.quantity}</p>
+                    </div>
+                    <div className="bg-green-50 p-4 rounded-lg">
+                      <h4 className="font-semibold text-green-900">Stock Status</h4>
+                      <p className="text-sm text-green-700">Status: {selectedProductForFifo.stock_status}</p>
+                      <p className="text-sm text-green-700">Unit Price: ₱{Number.parseFloat(selectedProductForFifo.unit_price || 0).toFixed(2)}</p>
+                    </div>
+                    <div className="bg-yellow-50 p-4 rounded-lg">
+                      <h4 className="font-semibold text-yellow-900">FIFO Summary</h4>
+                      <p className="text-sm text-yellow-700">Batches: {fifoStockData.length}</p>
+                      <p className="text-sm text-yellow-700">Available: {fifoStockData.reduce((sum, batch) => sum + parseInt(batch.available_quantity), 0)}</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="overflow-x-auto">
+                  <table className="w-full border-collapse border border-gray-300">
+                    <thead>
+                      <tr className="bg-gray-100">
+                        <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold">FIFO Order</th>
+                        <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold">Batch Reference</th>
+                        <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold">Available Qty</th>
+                        <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold">Unit Cost</th>
+                        <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold">Expiration Date</th>
+                        <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold">Days Until Expiry</th>
+                        <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold">Batch Date</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {fifoStockData.map((batch, index) => (
+                        <tr key={batch.summary_id} className="hover:bg-gray-50">
+                          <td className="border border-gray-300 px-3 py-2 text-center font-medium">
+                            #{index + 1}
+                          </td>
+                          <td className="border border-gray-300 px-3 py-2 font-mono text-sm">
+                            {batch.batch_reference}
+                          </td>
+                          <td className="border border-gray-300 px-3 py-2 text-center">
+                            <span className={`inline-block px-2 py-1 text-xs font-medium rounded-full ${
+                              batch.available_quantity <= 0 ? 'bg-red-100 text-red-700' :
+                              batch.available_quantity <= 10 ? 'bg-yellow-100 text-yellow-700' :
+                              'bg-green-100 text-green-700'
+                            }`}>
+                              {batch.available_quantity}
+                            </span>
+                          </td>
+                          <td className="border border-gray-300 px-3 py-2">
+                            ₱{Number.parseFloat(batch.unit_cost || 0).toFixed(2)}
+                          </td>
+                          <td className="border border-gray-300 px-3 py-2 text-center">
+                            {batch.expiration_date ? new Date(batch.expiration_date).toLocaleDateString() : 'N/A'}
+                          </td>
+                          <td className="border border-gray-300 px-3 py-2 text-center">
+                            {batch.days_until_expiry !== null ? (
+                              <span className={`inline-block px-2 py-1 text-xs font-medium rounded-full ${
+                                batch.days_until_expiry <= 7 ? 'bg-red-100 text-red-700' :
+                                batch.days_until_expiry <= 30 ? 'bg-yellow-100 text-yellow-700' :
+                                'bg-green-100 text-green-700'
+                              }`}>
+                                {batch.days_until_expiry} days
+                              </span>
+                            ) : 'N/A'}
+                          </td>
+                          <td className="border border-gray-300 px-3 py-2 text-center text-sm">
+                            {batch.batch_date ? new Date(batch.batch_date).toLocaleDateString() : 'N/A'}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                {fifoStockData.length === 0 && (
+                  <div className="text-center py-8">
+                    <Package className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                    <p className="text-gray-500">No FIFO stock data available for this product.</p>
+                    <p className="text-sm text-gray-400 mt-2">This product may not have batch tracking enabled.</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+
+
         <ToastContainer />
       </div>
     )

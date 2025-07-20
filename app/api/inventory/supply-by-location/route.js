@@ -1,0 +1,42 @@
+import { NextResponse } from 'next/server';
+
+export async function POST(request) {
+  try {
+    const body = await request.json();
+    const { product, location } = body;
+    
+    console.log('Supply by Location API called with:', { product, location });
+    
+    // Call the PHP backend
+    const phpUrl = 'http://localhost/Enguio_Project/backend.php';
+    
+    const phpResponse = await fetch(phpUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        action: 'get_supply_by_location',
+        product: product || 'All',
+        location: location || 'All'
+      }),
+    });
+
+    if (!phpResponse.ok) {
+      const errorText = await phpResponse.text();
+      console.error('PHP response error:', errorText);
+      throw new Error(`PHP backend error: ${phpResponse.status} - ${errorText}`);
+    }
+
+    const result = await phpResponse.json();
+    console.log('Supply by Location response:', result);
+    
+    return NextResponse.json(result);
+    
+  } catch (error) {
+    console.error('Supply by Location API error:', error);
+    
+    // Return empty data if API fails
+    return NextResponse.json([]);
+  }
+} 

@@ -22,7 +22,7 @@ const MovementHistory = () => {
   // API call function
   const handleApiCall = async (action, data = {}) => {
     try {
-      const response = await fetch('http://localhost/Enguio_Project/backend.php', {
+      const response = await fetch('http://localhost/Enguio_Project/Api/backend.php', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -37,7 +37,16 @@ const MovementHistory = () => {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
 
-      const result = await response.json();
+      const responseText = await response.text();
+      
+      // Check if response is valid JSON
+      let result;
+      try {
+        result = JSON.parse(responseText);
+      } catch (jsonError) {
+        console.error('Invalid JSON response:', responseText);
+        throw new Error('Server returned invalid JSON. Please check the server logs.');
+      }
       
       if (!result.success) {
         throw new Error(result.message || 'API call failed');

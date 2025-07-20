@@ -50,7 +50,7 @@ function InventoryTransfer() {
     deliveryDate: "",
   })
 
-  const API_BASE_URL = "http://localhost/Enguio_Project/backend.php"
+  const API_BASE_URL = "http://localhost/Enguio_Project/Api/backend.php"
 
   // API function
   async function handleApiCall(action, data = {}) {
@@ -799,7 +799,7 @@ function InventoryTransfer() {
         {/* Delete Confirmation Modal */}
         {showDeleteModal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg shadow-xl p-6 w-96">
+            <div className="bg-transparent backdrop-blur-sm rounded-lg shadow-xl p-6 w-96 border-2 border-gray-400">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Delete Transfer</h3>
               <p className="text-gray-700 mb-4">
                 Are you sure you want to delete transfer TR-{transferToDelete?.transfer_header_id}? This action cannot

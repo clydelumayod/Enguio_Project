@@ -426,6 +426,7 @@ switch ($action) {
             $supplier_id = isset($data['supplier_id']) ? intval($data['supplier_id']) : 0;
             $brand_id = isset($data['brand_id']) ? intval($data['brand_id']) : 30; // Default to first brand (30)
             $expiration = isset($data['expiration']) ? trim($data['expiration']) : null;
+            $date_added = isset($data['date_added']) ? trim($data['date_added']) : date('Y-m-d');
             $status = isset($data['status']) ? trim($data['status']) : 'active';
             $stock_status = isset($data['stock_status']) ? trim($data['stock_status']) : 'in stock';
             $reference = isset($data['reference']) ? trim($data['reference']) : '';
@@ -477,11 +478,11 @@ switch ($action) {
             $stmt = $conn->prepare("
                 INSERT INTO tbl_product (
                     product_name, category, barcode, description, prescription, bulk,
-                    expiration, quantity, unit_price, brand_id, supplier_id,
+                    expiration, date_added, quantity, unit_price, brand_id, supplier_id,
                     location_id, batch_id, status, Variation, stock_status
                 ) VALUES (
                     :product_name, :category, :barcode, :description, :prescription, :bulk,
-                    :expiration, :quantity, :unit_price, :brand_id, :supplier_id,
+                    :expiration, :date_added, :quantity, :unit_price, :brand_id, :supplier_id,
                     :location_id, :batch_id, :status, :variation, :stock_status
                 )
             ");
@@ -494,6 +495,7 @@ switch ($action) {
             $stmt->bindParam(':prescription', $prescription);
             $stmt->bindParam(':bulk', $bulk);
             $stmt->bindParam(':expiration', $expiration);
+            $stmt->bindParam(':date_added', $date_added);
             $stmt->bindParam(':quantity', $quantity);
             $stmt->bindParam(':unit_price', $unit_price);
             $stmt->bindParam(':brand_id', $brand_id);
@@ -523,8 +525,279 @@ switch ($action) {
         }
         break;
 
-   case 'get_products':
+    case 'update_product':
+        try {
+            // Extract and sanitize data
+            $product_id = isset($data['product_id']) ? intval($data['product_id']) : 0;
+            $product_name = isset($data['product_name']) ? trim($data['product_name']) : '';
+            $category = isset($data['category']) ? trim($data['category']) : '';
+            $barcode = isset($data['barcode']) ? trim($data['barcode']) : '';
+            $description = isset($data['description']) ? trim($data['description']) : '';
+            $prescription = isset($data['prescription']) ? intval($data['prescription']) : 0;
+            $bulk = isset($data['bulk']) ? intval($data['bulk']) : 0;
+            $quantity = isset($data['quantity']) ? intval($data['quantity']) : 0;
+            $unit_price = isset($data['unit_price']) ? floatval($data['unit_price']) : 0;
+            $supplier_id = isset($data['supplier_id']) ? intval($data['supplier_id']) : 0;
+            $brand_id = isset($data['brand_id']) ? intval($data['brand_id']) : 0;
+            $expiration = isset($data['expiration']) ? trim($data['expiration']) : null;
+            
+            if ($product_id <= 0) {
+                echo json_encode([
+                    "success" => false,
+                    "message" => "Invalid product ID"
+                ]);
+                break;
+            }
+            
+            // Start transaction
+            $conn->beginTransaction();
+            
+            // Update product
+            $stmt = $conn->prepare("
+                UPDATE tbl_product SET 
+                    product_name = ?,
+                    category = ?,
+                    barcode = ?,
+                    description = ?,
+                    prescription = ?,
+                    bulk = ?,
+                    quantity = ?,
+                    unit_price = ?,
+                    supplier_id = ?,
+                    brand_id = ?,
+                    expiration = ?,
+                    stock_status = CASE 
+                        WHEN ? <= 0 THEN 'out of stock'
+                        WHEN ? <= 10 THEN 'low stock'
+                        ELSE 'in stock'
+                    END
+                WHERE product_id = ?
+            ");
+            
+            $stmt->execute([
+                $product_name,
+                $category,
+                $barcode,
+                $description,
+                $prescription,
+                $bulk,
+                $quantity,
+                $unit_price,
+                $supplier_id,
+                $brand_id,
+                $expiration,
+                $quantity,
+                $quantity,
+                $product_id
+            ]);
+            
+            $conn->commit();
+            echo json_encode([
+                "success" => true,
+                "message" => "Product updated successfully"
+            ]);
+            
+        } catch (Exception $e) {
+            if (isset($conn)) {
+                $conn->rollback();
+            }
+            echo json_encode([
+                "success" => false,
+                "message" => "Database error: " . $e->getMessage()
+            ]);
+        }
+        break;
+
+    case 'get_inventory_kpis':
+        try {
+            $product_filter = isset($data['product']) && $data['product'] !== 'All' ? $data['product'] : null;
+            $location_filter = isset($data['location']) && $data['location'] !== 'All' ? $data['location'] : null;
+            
+            $whereConditions = ["(p.status IS NULL OR p.status <> 'archived')"];
+            $params = [];
+            
+            if ($product_filter) {
+                $whereConditions[] = "p.category = ?";
+                $params[] = $product_filter;
+            }
+            
+            if ($location_filter) {
+                $whereConditions[] = "l.location_name = ?";
+                $params[] = $location_filter;
+            }
+            
+            $whereClause = "WHERE " . implode(" AND ", $whereConditions);
+            
+            $stmt = $conn->prepare("
+                SELECT 
+                    SUM(CASE WHEN p.stock_status = 'in stock' THEN p.quantity ELSE 0 END) as physicalAvailable,
+                    SUM(CASE WHEN p.stock_status = 'low stock' THEN p.quantity ELSE 0 END) as softReserved,
+                    SUM(CASE WHEN p.stock_status = 'in stock' THEN p.quantity ELSE 0 END) as onhandInventory,
+                    COUNT(CASE WHEN p.quantity <= 10 THEN 1 END) as newOrderLineQty,
+                    SUM(CASE WHEN p.stock_status = 'out of stock' THEN p.quantity ELSE 0 END) as returned,
+                    ROUND(COUNT(CASE WHEN p.stock_status = 'out of stock' THEN 1 END) * 100.0 / COUNT(*), 1) as returnRate,
+                    ROUND(COUNT(CASE WHEN p.stock_status = 'in stock' THEN 1 END) * 100.0 / COUNT(*), 1) as sellRate,
+                    SUM(CASE WHEN p.stock_status = 'out of stock' THEN p.quantity ELSE 0 END) as outOfStock
+                FROM tbl_product p
+                LEFT JOIN tbl_location l ON p.location_id = l.location_id
+                $whereClause
+            ");
+            $stmt->execute($params);
+            $kpis = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            echo json_encode($kpis);
+        } catch (Exception $e) {
+            echo json_encode([
+                "success" => false,
+                "message" => "Database error: " . $e->getMessage()
+            ]);
+        }
+        break;
+
+    case 'get_supply_by_location':
+        try {
+            $product_filter = isset($data['product']) && $data['product'] !== 'All' ? $data['product'] : null;
+            $location_filter = isset($data['location']) && $data['location'] !== 'All' ? $data['location'] : null;
+            
+            $whereConditions = ["(p.status IS NULL OR p.status <> 'archived')"];
+            $params = [];
+            
+            if ($product_filter) {
+                $whereConditions[] = "p.category = ?";
+                $params[] = $product_filter;
+            }
+            
+            if ($location_filter) {
+                $whereConditions[] = "l.location_name = ?";
+                $params[] = $location_filter;
+            }
+            
+            $whereClause = "WHERE " . implode(" AND ", $whereConditions);
+            
+            $stmt = $conn->prepare("
+                SELECT 
+                    l.location_name as location,
+                    SUM(CASE WHEN p.stock_status = 'in stock' THEN p.quantity ELSE 0 END) as onhand,
+                    SUM(CASE WHEN p.stock_status = 'low stock' THEN p.quantity ELSE 0 END) as softReserved,
+                    SUM(CASE WHEN p.stock_status = 'out of stock' THEN p.quantity ELSE 0 END) as returned
+                FROM tbl_product p
+                LEFT JOIN tbl_location l ON p.location_id = l.location_id
+                $whereClause
+                GROUP BY l.location_name
+                ORDER BY onhand DESC
+                LIMIT 10
+            ");
+            $stmt->execute($params);
+            $supplyData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            echo json_encode($supplyData);
+        } catch (Exception $e) {
+            echo json_encode([
+                "success" => false,
+                "message" => "Database error: " . $e->getMessage()
+            ]);
+        }
+        break;
+
+    case 'get_return_rate_by_product':
+        try {
+            $product_filter = isset($data['product']) && $data['product'] !== 'All' ? $data['product'] : null;
+            $location_filter = isset($data['location']) && $data['location'] !== 'All' ? $data['location'] : null;
+            
+            $whereConditions = ["(p.status IS NULL OR p.status <> 'archived')"];
+            $params = [];
+            
+            if ($product_filter) {
+                $whereConditions[] = "p.category = ?";
+                $params[] = $product_filter;
+            }
+            
+            if ($location_filter) {
+                $whereConditions[] = "l.location_name = ?";
+                $params[] = $location_filter;
+            }
+            
+            $whereClause = "WHERE " . implode(" AND ", $whereConditions);
+            
+            $stmt = $conn->prepare("
+                SELECT 
+                    p.product_name as product,
+                    ROUND(COUNT(CASE WHEN p.stock_status = 'out of stock' THEN 1 END) * 100.0 / COUNT(*), 1) as returnRate
+                FROM tbl_product p
+                LEFT JOIN tbl_location l ON p.location_id = l.location_id
+                $whereClause
+                GROUP BY p.product_name
+                HAVING returnRate > 0
+                ORDER BY returnRate DESC
+                LIMIT 10
+            ");
+            $stmt->execute($params);
+            $returnRateData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            echo json_encode($returnRateData);
+        } catch (Exception $e) {
+            echo json_encode([
+                "success" => false,
+                "message" => "Database error: " . $e->getMessage()
+            ]);
+        }
+        break;
+
+    case 'get_stockout_items':
+        try {
+            $product_filter = isset($data['product']) && $data['product'] !== 'All' ? $data['product'] : null;
+            $location_filter = isset($data['location']) && $data['location'] !== 'All' ? $data['location'] : null;
+            
+            $whereConditions = ["(p.status IS NULL OR p.status <> 'archived')"];
+            $params = [];
+            
+            if ($product_filter) {
+                $whereConditions[] = "p.category = ?";
+                $params[] = $product_filter;
+            }
+            
+            if ($location_filter) {
+                $whereConditions[] = "l.location_name = ?";
+                $params[] = $location_filter;
+            }
+            
+            $whereClause = "WHERE " . implode(" AND ", $whereConditions);
+            
+            $stmt = $conn->prepare("
+                SELECT 
+                    p.product_name as product,
+                    p.quantity as stockout
+                FROM tbl_product p
+                LEFT JOIN tbl_location l ON p.location_id = l.location_id
+                $whereClause
+                AND (p.quantity <= 10 OR p.stock_status = 'out of stock')
+                ORDER BY p.quantity ASC
+                LIMIT 10
+            ");
+            $stmt->execute($params);
+            $stockoutData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            echo json_encode($stockoutData);
+        } catch (Exception $e) {
+            echo json_encode([
+                "success" => false,
+                "message" => "Database error: " . $e->getMessage()
+            ]);
+        }
+        break;
+
+    case 'get_products':
     try {
+        $location_id = $data['location_id'] ?? null;
+        
+        $whereClause = "WHERE (p.status IS NULL OR p.status <> 'archived')";
+        $params = [];
+        
+        if ($location_id) {
+            $whereClause .= " AND p.location_id = ?";
+            $params[] = $location_id;
+        }
+        
         $stmt = $conn->prepare("
             SELECT 
                 p.*,
@@ -533,20 +806,18 @@ switch ($action) {
                 l.location_name,
                 batch.batch as batch_reference,
                 batch.entry_date,
-                batch.entry_by
+                batch.entry_by,
+                COALESCE(p.date_added, CURDATE()) as date_added
             FROM tbl_product p 
             LEFT JOIN tbl_supplier s ON p.supplier_id = s.supplier_id 
             LEFT JOIN tbl_brand b ON p.brand_id = b.brand_id 
             LEFT JOIN tbl_location l ON p.location_id = l.location_id
             LEFT JOIN tbl_batch batch ON p.batch_id = batch.batch_id
-            WHERE (p.status IS NULL OR p.status <> 'archived')
+            $whereClause
             ORDER BY p.product_id DESC
         ");
-        $stmt->execute();
+        $stmt->execute($params);
         $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        // Optional: Debug log
-        // error_log(json_encode($products));
 
         echo json_encode([
             "success" => true,
@@ -593,6 +864,25 @@ switch ($action) {
             echo json_encode([
                 "success" => true,
                 "data" => $brands
+            ]);
+        } catch (Exception $e) {
+            echo json_encode([
+                "success" => false,
+                "message" => "Database error: " . $e->getMessage(),
+                "data" => []
+            ]);
+        }
+        break;
+
+    case 'get_categories':
+        try {
+            $stmt = $conn->prepare("SELECT * FROM tbl_category ORDER BY category_id");
+            $stmt->execute();
+            $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            echo json_encode([
+                "success" => true,
+                "data" => $categories
             ]);
         } catch (Exception $e) {
             echo json_encode([
@@ -706,7 +996,7 @@ switch ($action) {
             $source_location_id = $data['source_location_id'] ?? 0;
             $destination_location_id = $data['destination_location_id'] ?? 0;
             $employee_id = $data['employee_id'] ?? 0;
-            $status = $data['status'] ?? 'New';
+            $status = $data['status'] ?? 'Completed'; // Changed from 'New' to 'Completed'
             $products = $data['products'] ?? [];
             
             if (empty($products)) {
@@ -722,17 +1012,17 @@ switch ($action) {
                 $product_id = $product['product_id'];
                 $transfer_qty = $product['quantity'];
                 
-                // Check current quantity - look for product regardless of location first
+                // Check current quantity - look for product in source location
                 $checkStmt = $conn->prepare("
                     SELECT quantity, product_name, location_id 
                     FROM tbl_product 
-                    WHERE product_id = ?
+                    WHERE product_id = ? AND location_id = ?
                 ");
-                $checkStmt->execute([$product_id]);
+                $checkStmt->execute([$product_id, $source_location_id]);
                 $currentProduct = $checkStmt->fetch(PDO::FETCH_ASSOC);
                 
                 if (!$currentProduct) {
-                    throw new Exception("Product not found in database - Product ID: " . $product_id);
+                    throw new Exception("Product not found in source location - Product ID: " . $product_id);
                 }
                 
                 if ($currentProduct['quantity'] < $transfer_qty) {
@@ -755,17 +1045,11 @@ switch ($action) {
             $stmt->execute([$source_location_id, $destination_location_id, $employee_id, $status]);
             $transfer_header_id = $conn->lastInsertId();
             
-            // Insert transfer details and update product quantities
+            // Insert transfer details and process the transfer
             $stmt2 = $conn->prepare("
                 INSERT INTO tbl_transfer_dtl (
                     transfer_header_id, product_id, qty
                 ) VALUES (?, ?, ?)
-            ");
-            
-            $updateStmt = $conn->prepare("
-                UPDATE tbl_product 
-                SET quantity = quantity - ? 
-                WHERE product_id = ?
             ");
             
             foreach ($products as $product) {
@@ -779,32 +1063,114 @@ switch ($action) {
                     $transfer_qty
                 ]);
                 
-                // Update product quantity (decrease)
-                $updateStmt->execute([$transfer_qty, $product_id]);
-                
-                // Log the quantity update
-                error_log("Transfer quantity update - Product ID: $product_id, Reduced by: $transfer_qty");
-                
-                // Update stock status based on new quantity
-                $updateStockStatusStmt = $conn->prepare("
-                    UPDATE tbl_product 
-                    SET stock_status = CASE 
-                        WHEN quantity <= 0 THEN 'out of stock'
-                        WHEN quantity <= 10 THEN 'low stock'
-                        ELSE 'in stock'
-                    END
-                    WHERE product_id = ?
+                // Get the original product details from source location
+                $productStmt = $conn->prepare("
+                    SELECT product_name, category, barcode, description, prescription, bulk,
+                           expiration, unit_price, brand_id, supplier_id, batch_id, status, Variation
+                    FROM tbl_product 
+                    WHERE product_id = ? AND location_id = ?
+                    LIMIT 1
                 ");
-                $updateStockStatusStmt->execute([$product_id]);
+                $productStmt->execute([$product_id, $source_location_id]);
+                $productDetails = $productStmt->fetch(PDO::FETCH_ASSOC);
                 
-                // Log the stock status update
-                error_log("Transfer stock status update - Product ID: $product_id");
+                if ($productDetails) {
+                    // Decrease quantity in source location
+                    $updateSourceStmt = $conn->prepare("
+                        UPDATE tbl_product 
+                        SET quantity = quantity - ?,
+                            stock_status = CASE 
+                                WHEN quantity - ? <= 0 THEN 'out of stock'
+                                WHEN quantity - ? <= 10 THEN 'low stock'
+                                ELSE 'in stock'
+                            END
+                        WHERE product_id = ? AND location_id = ?
+                    ");
+                    $updateSourceStmt->execute([$transfer_qty, $transfer_qty, $transfer_qty, $product_id, $source_location_id]);
+                    
+                    // Check if product exists in destination location by barcode
+                    $checkDestStmt = $conn->prepare("
+                        SELECT product_id, quantity 
+                        FROM tbl_product 
+                        WHERE barcode = ? AND location_id = ?
+                    ");
+                    $checkDestStmt->execute([$productDetails['barcode'], $destination_location_id]);
+                    $existingProduct = $checkDestStmt->fetch(PDO::FETCH_ASSOC);
+                    
+                    if ($existingProduct) {
+                        // Update existing product quantity in destination
+                        $updateDestStmt = $conn->prepare("
+                            UPDATE tbl_product 
+                            SET quantity = quantity + ?,
+                                stock_status = CASE 
+                                    WHEN quantity + ? <= 0 THEN 'out of stock'
+                                    WHEN quantity + ? <= 10 THEN 'low stock'
+                                    ELSE 'in stock'
+                                END
+                            WHERE product_id = ? AND location_id = ?
+                        ");
+                        $updateDestStmt->execute([$transfer_qty, $transfer_qty, $transfer_qty, $existingProduct['product_id'], $destination_location_id]);
+                        
+                        error_log("Updated existing product in destination - Product ID: " . $existingProduct['product_id'] . 
+                                 ", Barcode: " . $productDetails['barcode'] . ", Added Qty: $transfer_qty");
+                    } else {
+                        // Create new product entry in destination location
+                        // Use INSERT IGNORE to handle potential duplicate barcode gracefully
+                        $insertDestStmt = $conn->prepare("
+                            INSERT IGNORE INTO tbl_product (
+                                product_name, category, barcode, description, prescription, bulk,
+                                expiration, quantity, unit_price, brand_id, supplier_id,
+                                location_id, batch_id, status, Variation, stock_status
+                            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        ");
+                        $insertResult = $insertDestStmt->execute([
+                            $productDetails['product_name'],
+                            $productDetails['category'],
+                            $productDetails['barcode'],
+                            $productDetails['description'],
+                            $productDetails['prescription'],
+                            $productDetails['bulk'],
+                            $productDetails['expiration'],
+                            $transfer_qty,
+                            $productDetails['unit_price'],
+                            $productDetails['brand_id'],
+                            $productDetails['supplier_id'],
+                            $destination_location_id,
+                            $productDetails['batch_id'],
+                            $productDetails['status'],
+                            $productDetails['Variation'],
+                            $transfer_qty <= 0 ? 'out of stock' : ($transfer_qty <= 10 ? 'low stock' : 'in stock')
+                        ]);
+                        
+                        if ($insertResult && $insertDestStmt->rowCount() > 0) {
+                            error_log("Created new product in destination - Barcode: " . $productDetails['barcode'] . ", Qty: $transfer_qty");
+                        } else {
+                            // If INSERT IGNORE didn't insert (duplicate), try to update the existing one
+                            $updateExistingStmt = $conn->prepare("
+                                UPDATE tbl_product 
+                                SET quantity = quantity + ?,
+                                    stock_status = CASE 
+                                        WHEN quantity + ? <= 0 THEN 'out of stock'
+                                        WHEN quantity + ? <= 10 THEN 'low stock'
+                                        ELSE 'in stock'
+                                    END
+                                WHERE barcode = ? AND location_id = ?
+                            ");
+                            $updateExistingStmt->execute([$transfer_qty, $transfer_qty, $transfer_qty, $productDetails['barcode'], $destination_location_id]);
+                            
+                            error_log("Updated existing product (INSERT IGNORE fallback) - Barcode: " . $productDetails['barcode'] . ", Added Qty: $transfer_qty");
+                        }
+                    }
+                    
+                    // Log the transfer
+                    error_log("Transfer completed - Product ID: $product_id, Quantity: $transfer_qty, From: $source_location_id, To: $destination_location_id");
+                }
             }
             
             $conn->commit();
             echo json_encode([
                 "success" => true, 
-                "message" => "Transfer created successfully. Product quantities updated in source location."
+                "message" => "Transfer completed successfully. Products moved to destination location."
             ]);
             
         } catch (Exception $e) {
@@ -1134,6 +1500,1254 @@ switch ($action) {
         }
         break;
     
+    case 'get_locations_for_filter':
+        try {
+            $stmt = $conn->prepare("
+                SELECT DISTINCT location_name 
+                FROM tbl_location 
+                ORDER BY location_name
+            ");
+            $stmt->execute();
+            $locations = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            echo json_encode([
+                "success" => true,
+                "data" => $locations
+            ]);
+        } catch (Exception $e) {
+            echo json_encode([
+                "success" => false,
+                "message" => "Database error: " . $e->getMessage(),
+                "data" => []
+            ]);
+        }
+        break;
+
+    case 'get_products_by_location':
+        try {
+            $location_name = $data['location_name'] ?? '';
+            
+            if (empty($location_name)) {
+                echo json_encode([
+                    "success" => false,
+                    "message" => "Location name is required"
+                ]);
+                break;
+            }
+            
+            $stmt = $conn->prepare("
+                SELECT 
+                    p.*,
+                    s.supplier_name,
+                    b.brand,
+                    l.location_name,
+                    batch.batch as batch_reference,
+                    batch.entry_date,
+                    batch.entry_by
+                FROM tbl_product p 
+                LEFT JOIN tbl_supplier s ON p.supplier_id = s.supplier_id 
+                LEFT JOIN tbl_brand b ON p.brand_id = b.brand_id 
+                LEFT JOIN tbl_location l ON p.location_id = l.location_id
+                LEFT JOIN tbl_batch batch ON p.batch_id = batch.batch_id
+                WHERE (p.status IS NULL OR p.status <> 'archived')
+                AND l.location_name = ?
+                ORDER BY p.product_id DESC
+            ");
+            $stmt->execute([$location_name]);
+            $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            echo json_encode([
+                "success" => true,
+                "data" => $products
+            ]);
+        } catch (Exception $e) {
+            echo json_encode([
+                "success" => false,
+                "message" => "Database error: " . $e->getMessage(),
+                "data" => []
+            ]);
+        }
+        break;
+
+    case 'check_barcode':
+        try {
+            $barcode = $data['barcode'] ?? '';
+            $location_name = $data['location_name'] ?? null;
+            
+            if (empty($barcode)) {
+                echo json_encode([
+                    "success" => false,
+                    "message" => "Barcode is required"
+                ]);
+                break;
+            }
+            
+            $whereClause = "WHERE p.barcode = ?";
+            $params = [$barcode];
+            
+            if ($location_name) {
+                $whereClause .= " AND l.location_name = ?";
+                $params[] = $location_name;
+            }
+            
+            $stmt = $conn->prepare("
+                SELECT 
+                    p.*,
+                    s.supplier_name,
+                    b.brand,
+                    l.location_name
+                FROM tbl_product p 
+                LEFT JOIN tbl_supplier s ON p.supplier_id = s.supplier_id 
+                LEFT JOIN tbl_brand b ON p.brand_id = b.brand_id 
+                LEFT JOIN tbl_location l ON p.location_id = l.location_id
+                $whereClause
+                AND (p.status IS NULL OR p.status <> 'archived')
+                LIMIT 1
+            ");
+            $stmt->execute($params);
+            $product = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            if ($product) {
+                echo json_encode([
+                    "success" => true,
+                    "product" => $product,
+                    "message" => "Product found"
+                ]);
+            } else {
+                echo json_encode([
+                    "success" => false,
+                    "product" => null,
+                    "message" => "Product not found"
+                ]);
+            }
+        } catch (Exception $e) {
+            echo json_encode([
+                "success" => false,
+                "message" => "Database error: " . $e->getMessage(),
+                "product" => null
+            ]);
+        }
+        break;
+
+    case 'update_product_stock':
+        try {
+            $product_id = $data['product_id'] ?? 0;
+            $new_quantity = $data['new_quantity'] ?? 0;
+            $batch_reference = $data['batch_reference'] ?? '';
+            $expiration_date = $data['expiration_date'] ?? null;
+            $unit_cost = $data['unit_cost'] ?? 0;
+            $entry_by = $data['entry_by'] ?? 'admin';
+            
+            if ($product_id <= 0 || $new_quantity <= 0) {
+                echo json_encode([
+                    "success" => false,
+                    "message" => "Invalid product ID or quantity"
+                ]);
+                break;
+            }
+            
+            // Start transaction
+            $conn->beginTransaction();
+            
+            // Get current product details
+            $productStmt = $conn->prepare("
+                SELECT product_name, category, barcode, description, prescription, bulk,
+                       expiration, unit_price, brand_id, supplier_id, location_id, status, Variation
+                FROM tbl_product 
+                WHERE product_id = ?
+                LIMIT 1
+            ");
+            $productStmt->execute([$product_id]);
+            $productDetails = $productStmt->fetch(PDO::FETCH_ASSOC);
+            
+            if (!$productDetails) {
+                throw new Exception("Product not found");
+            }
+            
+            // Create batch record if batch reference is provided
+            $batch_id = null;
+            if ($batch_reference) {
+                $batchStmt = $conn->prepare("
+                    INSERT INTO tbl_batch (
+                        batch, supplier_id, location_id, entry_date, entry_time, 
+                        entry_by, order_no
+                    ) VALUES (?, ?, ?, CURDATE(), CURTIME(), ?, ?)
+                ");
+                $batchStmt->execute([$batch_reference, $productDetails['supplier_id'], $productDetails['location_id'], $entry_by, '']);
+                $batch_id = $conn->lastInsertId();
+            }
+            
+            // Update product quantity
+            $updateStmt = $conn->prepare("
+                UPDATE tbl_product 
+                SET quantity = quantity + ?,
+                    stock_status = CASE 
+                        WHEN quantity + ? <= 0 THEN 'out of stock'
+                        WHEN quantity + ? <= 10 THEN 'low stock'
+                        ELSE 'in stock'
+                    END,
+                    batch_id = COALESCE(?, batch_id),
+                    expiration = COALESCE(?, expiration)
+                WHERE product_id = ?
+            ");
+            $updateStmt->execute([$new_quantity, $new_quantity, $new_quantity, $batch_id, $expiration_date, $product_id]);
+            
+            // Create FIFO stock entry if batch_id is available
+            if ($batch_id) {
+                $fifoStmt = $conn->prepare("
+                    INSERT INTO tbl_fifo_stock (
+                        product_id, batch_id, batch_reference, quantity, unit_cost,
+                        expiration_date, entry_date, entry_by
+                    ) VALUES (?, ?, ?, ?, ?, ?, CURDATE(), ?)
+                ");
+                $fifoStmt->execute([
+                    $product_id, $batch_id, $batch_reference, $new_quantity, 
+                    $unit_cost, $expiration_date, $entry_by
+                ]);
+            }
+            
+            $conn->commit();
+            echo json_encode([
+                "success" => true,
+                "message" => "Stock updated successfully with FIFO tracking"
+            ]);
+            
+        } catch (Exception $e) {
+            if (isset($conn)) {
+                $conn->rollback();
+            }
+            echo json_encode([
+                "success" => false,
+                "message" => "Database error: " . $e->getMessage()
+            ]);
+        }
+        break;
+
+    case 'get_movement_history':
+        try {
+            $search = $data['search'] ?? '';
+            $movement_type = $data['movement_type'] ?? 'all';
+            $location = $data['location'] ?? 'all';
+            $date_range = $data['date_range'] ?? 'all';
+            
+            // Build WHERE clause for filtering
+            $whereConditions = [];
+            $params = [];
+            
+            if ($search) {
+                $whereConditions[] = "(p.product_name LIKE ? OR p.barcode LIKE ? OR e.Fname LIKE ? OR e.Lname LIKE ?)";
+                $searchTerm = "%$search%";
+                $params[] = $searchTerm;
+                $params[] = $searchTerm;
+                $params[] = $searchTerm;
+                $params[] = $searchTerm;
+            }
+            
+            if ($location !== 'all') {
+                $whereConditions[] = "(sl.location_name = ? OR dl.location_name = ?)";
+                $params[] = $location;
+                $params[] = $location;
+            }
+            
+            if ($date_range !== 'all') {
+                switch ($date_range) {
+                    case 'today':
+                        $whereConditions[] = "DATE(th.date) = CURDATE()";
+                        break;
+                    case 'week':
+                        $whereConditions[] = "th.date >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)";
+                        break;
+                    case 'month':
+                        $whereConditions[] = "th.date >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)";
+                        break;
+                }
+            }
+            
+            $whereClause = !empty($whereConditions) ? "WHERE " . implode(" AND ", $whereConditions) : "";
+            
+            $stmt = $conn->prepare("
+                SELECT 
+                    th.transfer_header_id as id,
+                    p.product_name,
+                    p.barcode as productId,
+                    'Transfer' as movementType,
+                    td.qty as quantity,
+                    sl.location_name as fromLocation,
+                    dl.location_name as toLocation,
+                    CONCAT(e.Fname, ' ', e.Lname) as movedBy,
+                    th.date,
+                    TIME(th.date) as time,
+                    CASE 
+                        WHEN th.status = '' OR th.status IS NULL THEN 'Completed'
+                        WHEN th.status = 'pending' THEN 'Pending'
+                        WHEN th.status = 'approved' THEN 'Completed'
+                        WHEN th.status = 'rejected' THEN 'Cancelled'
+                        ELSE th.status
+                    END as status,
+                    NULL as notes,
+                    CONCAT('TR-', th.transfer_header_id) as reference,
+                    p.category,
+                    p.description,
+                    p.unit_price,
+                    b.brand
+                FROM tbl_transfer_header th
+                JOIN tbl_transfer_dtl td ON th.transfer_header_id = td.transfer_header_id
+                JOIN tbl_product p ON td.product_id = p.product_id
+                LEFT JOIN tbl_location sl ON th.source_location_id = sl.location_id
+                LEFT JOIN tbl_location dl ON th.destination_location_id = dl.location_id
+                LEFT JOIN tbl_employee e ON th.employee_id = e.emp_id
+                LEFT JOIN tbl_brand b ON p.brand_id = b.brand_id
+                $whereClause
+                ORDER BY th.date DESC, th.transfer_header_id DESC
+            ");
+            $stmt->execute($params);
+            $movements = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            echo json_encode([
+                "success" => true,
+                "data" => $movements
+            ]);
+        } catch (Exception $e) {
+            echo json_encode([
+                "success" => false,
+                "message" => "Database error: " . $e->getMessage(),
+                "data" => []
+            ]);
+        }
+        break;
+
+    case 'get_fifo_stock':
+        try {
+            $product_id = isset($data['product_id']) ? intval($data['product_id']) : 0;
+            
+            if ($product_id <= 0) {
+                echo json_encode([
+                    "success" => false,
+                    "message" => "Invalid product ID"
+                ]);
+                break;
+            }
+            
+            // Query to get FIFO stock data for the product
+            $stmt = $conn->prepare("
+                SELECT 
+                    fs.batch_id,
+                    fs.batch_reference,
+                    fs.available_quantity,
+                    fs.unit_cost,
+                    fs.expiration_date,
+                    fs.batch_date,
+                    fs.fifo_order,
+                    CASE 
+                        WHEN fs.expiration_date IS NULL THEN NULL
+                        ELSE DATEDIFF(fs.expiration_date, CURDATE())
+                    END as days_until_expiry
+                FROM v_fifo_stock fs
+                WHERE fs.product_id = ? AND fs.available_quantity > 0
+                ORDER BY fs.fifo_order ASC
+            ");
+            
+            $stmt->execute([$product_id]);
+            $fifoData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            echo json_encode([
+                "success" => true,
+                "data" => $fifoData
+            ]);
+        } catch (Exception $e) {
+            echo json_encode([
+                "success" => false,
+                "message" => "Database error: " . $e->getMessage(),
+                "data" => []
+            ]);
+        }
+        break;
+
+    case 'consume_stock_fifo':
+        try {
+            $product_id = $data['product_id'] ?? 0;
+            $quantity = $data['quantity'] ?? 0;
+            $reference_no = $data['reference_no'] ?? '';
+            $notes = $data['notes'] ?? '';
+            $created_by = $data['created_by'] ?? 'admin';
+            
+            if ($product_id <= 0 || $quantity <= 0) {
+                echo json_encode([
+                    "success" => false,
+                    "message" => "Invalid product ID or quantity"
+                ]);
+                break;
+            }
+            
+            // Start transaction
+            $conn->beginTransaction();
+            
+            // Get FIFO stock data for the product
+            $fifoStmt = $conn->prepare("
+                SELECT 
+                    fs.batch_id,
+                    fs.batch_reference,
+                    fs.available_quantity,
+                    fs.unit_cost
+                FROM v_fifo_stock fs
+                WHERE fs.product_id = ? AND fs.available_quantity > 0
+                ORDER BY fs.fifo_order ASC
+            ");
+            $fifoStmt->execute([$product_id]);
+            $fifoStock = $fifoStmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            if (empty($fifoStock)) {
+                throw new Exception("No FIFO stock available for this product");
+            }
+            
+            $remaining_quantity = $quantity;
+            $consumed_batches = [];
+            
+            // Consume stock from FIFO order
+            foreach ($fifoStock as $batch) {
+                if ($remaining_quantity <= 0) break;
+                
+                $batch_quantity = min($remaining_quantity, $batch['available_quantity']);
+                
+                // Update FIFO stock
+                $updateStmt = $conn->prepare("
+                    UPDATE tbl_fifo_stock 
+                    SET available_quantity = available_quantity - ?
+                    WHERE batch_id = ? AND product_id = ?
+                ");
+                $updateStmt->execute([$batch_quantity, $batch['batch_id'], $product_id]);
+                
+                // Update main product quantity
+                $productStmt = $conn->prepare("
+                    UPDATE tbl_product 
+                    SET quantity = quantity - ?,
+                        stock_status = CASE 
+                            WHEN quantity - ? <= 0 THEN 'out of stock'
+                            WHEN quantity - ? <= 10 THEN 'low stock'
+                            ELSE 'in stock'
+                        END
+                    WHERE product_id = ?
+                ");
+                $productStmt->execute([$batch_quantity, $batch_quantity, $batch_quantity, $product_id]);
+                
+                $consumed_batches[] = [
+                    'batch_reference' => $batch['batch_reference'],
+                    'quantity' => $batch_quantity,
+                    'unit_cost' => $batch['unit_cost']
+                ];
+                
+                $remaining_quantity -= $batch_quantity;
+            }
+            
+            if ($remaining_quantity > 0) {
+                throw new Exception("Insufficient stock available. Only " . ($quantity - $remaining_quantity) . " units consumed.");
+            }
+            
+            // Log the consumption
+            $logStmt = $conn->prepare("
+                INSERT INTO tbl_stock_consumption (
+                    product_id, quantity, reference_no, notes, created_by, consumed_date
+                ) VALUES (?, ?, ?, ?, ?, NOW())
+            ");
+            $logStmt->execute([$product_id, $quantity, $reference_no, $notes, $created_by]);
+            
+            $conn->commit();
+            echo json_encode([
+                "success" => true,
+                "message" => "Stock consumed successfully using FIFO method",
+                "consumed_batches" => $consumed_batches
+            ]);
+            
+        } catch (Exception $e) {
+            if (isset($conn)) {
+                $conn->rollback();
+            }
+            echo json_encode([
+                "success" => false,
+                "message" => "Database error: " . $e->getMessage()
+            ]);
+        }
+        break;
+
+    case 'get_expiring_products':
+        try {
+            $days_threshold = $data['days_threshold'] ?? 30;
+            
+            $stmt = $conn->prepare("
+                SELECT 
+                    p.product_id,
+                    p.product_name,
+                    p.barcode,
+                    p.category,
+                    p.quantity,
+                    p.unit_price,
+                    b.brand,
+                    s.supplier_name,
+                    p.expiration,
+                    DATEDIFF(p.expiration, CURDATE()) as days_until_expiry
+                FROM tbl_product p
+                LEFT JOIN tbl_brand b ON p.brand_id = b.brand_id
+                LEFT JOIN tbl_supplier s ON p.supplier_id = s.supplier_id
+                WHERE p.expiration IS NOT NULL 
+                AND p.expiration >= CURDATE()
+                AND DATEDIFF(p.expiration, CURDATE()) <= ?
+                AND (p.status IS NULL OR p.status <> 'archived')
+                ORDER BY p.expiration ASC
+            ");
+            
+            $stmt->execute([$days_threshold]);
+            $expiringProducts = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            echo json_encode([
+                "success" => true,
+                "data" => $expiringProducts
+            ]);
+        } catch (Exception $e) {
+            echo json_encode([
+                "success" => false,
+                "message" => "Database error: " . $e->getMessage(),
+                "data" => []
+            ]);
+        }
+        break;
+
+    // Inventory Dashboard Actions
+    case 'get_inventory_kpis':
+        try {
+            $product_filter = isset($data['product']) && $data['product'] !== 'All' ? $data['product'] : null;
+            $location_filter = isset($data['location']) && $data['location'] !== 'All' ? $data['location'] : null;
+            
+            $whereConditions = ["(p.status IS NULL OR p.status <> 'archived')"];
+            $params = [];
+            
+            if ($product_filter) {
+                $whereConditions[] = "p.category = ?";
+                $params[] = $product_filter;
+            }
+            
+            if ($location_filter) {
+                $whereConditions[] = "l.location_name = ?";
+                $params[] = $location_filter;
+            }
+            
+            $whereClause = "WHERE " . implode(" AND ", $whereConditions);
+            
+            // Get main KPIs
+            $stmt = $conn->prepare("
+                SELECT 
+                    SUM(p.quantity) as physicalAvailable,
+                    SUM(CASE WHEN p.stock_status = 'low stock' THEN p.quantity ELSE 0 END) as softReserved,
+                    SUM(CASE WHEN p.stock_status = 'in stock' THEN p.quantity ELSE 0 END) as onhandInventory,
+                    COUNT(CASE WHEN p.quantity <= 10 THEN 1 END) as newOrderLineQty,
+                    COUNT(CASE WHEN p.stock_status = 'out of stock' THEN 1 END) as returned,
+                    ROUND(COUNT(CASE WHEN p.stock_status = 'out of stock' THEN 1 END) * 100.0 / COUNT(*), 2) as returnRate,
+                    ROUND(COUNT(CASE WHEN p.stock_status = 'in stock' THEN 1 END) * 100.0 / COUNT(*), 2) as sellRate,
+                    SUM(CASE WHEN p.stock_status = 'out of stock' THEN p.quantity ELSE 0 END) as outOfStock
+                FROM tbl_product p
+                LEFT JOIN tbl_location l ON p.location_id = l.location_id
+                $whereClause
+            ");
+            $stmt->execute($params);
+            $kpis = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            echo json_encode($kpis);
+        } catch (Exception $e) {
+            echo json_encode([
+                "success" => false,
+                "message" => "Database error: " . $e->getMessage()
+            ]);
+        }
+        break;
+
+    case 'get_supply_by_product':
+        try {
+            $product_filter = isset($data['product']) && $data['product'] !== 'All' ? $data['product'] : null;
+            $location_filter = isset($data['location']) && $data['location'] !== 'All' ? $data['location'] : null;
+            
+            $whereConditions = ["(p.status IS NULL OR p.status <> 'archived')"];
+            $params = [];
+            
+            if ($product_filter) {
+                $whereConditions[] = "p.category = ?";
+                $params[] = $product_filter;
+            }
+            
+            if ($location_filter) {
+                $whereConditions[] = "l.location_name = ?";
+                $params[] = $location_filter;
+            }
+            
+            $whereClause = "WHERE " . implode(" AND ", $whereConditions);
+            
+            $stmt = $conn->prepare("
+                SELECT 
+                    p.product_name as product,
+                    SUM(CASE WHEN p.stock_status = 'in stock' THEN p.quantity ELSE 0 END) as onhand,
+                    SUM(CASE WHEN p.stock_status = 'low stock' THEN p.quantity ELSE 0 END) as softReserved,
+                    SUM(CASE WHEN p.stock_status = 'out of stock' THEN p.quantity ELSE 0 END) as returned
+                FROM tbl_product p
+                LEFT JOIN tbl_location l ON p.location_id = l.location_id
+                $whereClause
+                GROUP BY p.product_name
+                ORDER BY onhand DESC
+                LIMIT 11
+            ");
+            $stmt->execute($params);
+            $supplyData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            echo json_encode($supplyData);
+        } catch (Exception $e) {
+            echo json_encode([
+                "success" => false,
+                "message" => "Database error: " . $e->getMessage()
+            ]);
+        }
+        break;
+
+    case 'get_supply_by_location':
+        try {
+            $product_filter = isset($data['product']) && $data['product'] !== 'All' ? $data['product'] : null;
+            $location_filter = isset($data['location']) && $data['location'] !== 'All' ? $data['location'] : null;
+            
+            $whereConditions = ["(p.status IS NULL OR p.status <> 'archived')"];
+            $params = [];
+            
+            if ($product_filter) {
+                $whereConditions[] = "p.category = ?";
+                $params[] = $product_filter;
+            }
+            
+            if ($location_filter) {
+                $whereConditions[] = "l.location_name = ?";
+                $params[] = $location_filter;
+            }
+            
+            $whereClause = "WHERE " . implode(" AND ", $whereConditions);
+            
+            $stmt = $conn->prepare("
+                SELECT 
+                    l.location_name as location,
+                    SUM(CASE WHEN p.stock_status = 'in stock' THEN p.quantity ELSE 0 END) as onhand,
+                    SUM(CASE WHEN p.stock_status = 'low stock' THEN p.quantity ELSE 0 END) as softReserved,
+                    SUM(CASE WHEN p.stock_status = 'out of stock' THEN p.quantity ELSE 0 END) as returned
+                FROM tbl_product p
+                LEFT JOIN tbl_location l ON p.location_id = l.location_id
+                $whereClause
+                GROUP BY l.location_name
+                ORDER BY onhand DESC
+            ");
+            $stmt->execute($params);
+            $supplyData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            echo json_encode($supplyData);
+        } catch (Exception $e) {
+            echo json_encode([
+                "success" => false,
+                "message" => "Database error: " . $e->getMessage()
+            ]);
+        }
+        break;
+
+    case 'get_return_rate_by_product':
+        try {
+            $product_filter = isset($data['product']) && $data['product'] !== 'All' ? $data['product'] : null;
+            $location_filter = isset($data['location']) && $data['location'] !== 'All' ? $data['location'] : null;
+            
+            $whereConditions = ["(p.status IS NULL OR p.status <> 'archived')"];
+            $params = [];
+            
+            if ($product_filter) {
+                $whereConditions[] = "p.category = ?";
+                $params[] = $product_filter;
+            }
+            
+            if ($location_filter) {
+                $whereConditions[] = "l.location_name = ?";
+                $params[] = $location_filter;
+            }
+            
+            $whereClause = "WHERE " . implode(" AND ", $whereConditions);
+            
+            $stmt = $conn->prepare("
+                SELECT 
+                    p.product_name as product,
+                    ROUND(COUNT(CASE WHEN p.stock_status = 'out of stock' THEN 1 END) * 100.0 / COUNT(*), 1) as returnRate
+                FROM tbl_product p
+                LEFT JOIN tbl_location l ON p.location_id = l.location_id
+                $whereClause
+                GROUP BY p.product_name
+                HAVING returnRate > 0
+                ORDER BY returnRate DESC
+                LIMIT 12
+            ");
+            $stmt->execute($params);
+            $returnData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            echo json_encode($returnData);
+        } catch (Exception $e) {
+            echo json_encode([
+                "success" => false,
+                "message" => "Database error: " . $e->getMessage()
+            ]);
+        }
+        break;
+
+    case 'get_stockout_items':
+        try {
+            $product_filter = isset($data['product']) && $data['product'] !== 'All' ? $data['product'] : null;
+            $location_filter = isset($data['location']) && $data['location'] !== 'All' ? $data['location'] : null;
+            
+            $whereConditions = ["(p.status IS NULL OR p.status <> 'archived')"];
+            $params = [];
+            
+            if ($product_filter) {
+                $whereConditions[] = "p.category = ?";
+                $params[] = $product_filter;
+            }
+            
+            if ($location_filter) {
+                $whereConditions[] = "l.location_name = ?";
+                $params[] = $location_filter;
+            }
+            
+            $whereClause = "WHERE " . implode(" AND ", $whereConditions);
+            
+            $stmt = $conn->prepare("
+                SELECT 
+                    p.product_name as product,
+                    -p.quantity as stockout
+                FROM tbl_product p
+                LEFT JOIN tbl_location l ON p.location_id = l.location_id
+                $whereClause
+                AND p.stock_status = 'out of stock'
+                ORDER BY stockout ASC
+                LIMIT 15
+            ");
+            $stmt->execute($params);
+            $stockoutData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            echo json_encode($stockoutData);
+        } catch (Exception $e) {
+            echo json_encode([
+                "success" => false,
+                "message" => "Database error: " . $e->getMessage()
+            ]);
+        }
+        break;
+
+    case 'get_product_kpis':
+        try {
+            $product_filter = isset($data['product']) && $data['product'] !== 'All' ? $data['product'] : null;
+            $location_filter = isset($data['location']) && $data['location'] !== 'All' ? $data['location'] : null;
+            
+            $whereConditions = ["(p.status IS NULL OR p.status <> 'archived')"];
+            $params = [];
+            
+            if ($product_filter) {
+                $whereConditions[] = "p.category = ?";
+                $params[] = $product_filter;
+            }
+            
+            if ($location_filter) {
+                $whereConditions[] = "l.location_name = ?";
+                $params[] = $location_filter;
+            }
+            
+            $whereClause = "WHERE " . implode(" AND ", $whereConditions);
+            
+            $stmt = $conn->prepare("
+                SELECT 
+                    p.product_name as product,
+                    SUM(CASE WHEN p.stock_status = 'in stock' THEN p.quantity ELSE 0 END) as physicalAvailable,
+                    SUM(CASE WHEN p.stock_status = 'low stock' THEN p.quantity ELSE 0 END) as softReserved,
+                    SUM(CASE WHEN p.stock_status = 'in stock' THEN p.quantity ELSE 0 END) as onhandInventory,
+                    COUNT(CASE WHEN p.quantity <= 10 THEN 1 END) as newOrderLineQty,
+                    SUM(CASE WHEN p.stock_status = 'out of stock' THEN p.quantity ELSE 0 END) as returned,
+                    ROUND(COUNT(CASE WHEN p.stock_status = 'out of stock' THEN 1 END) * 100.0 / COUNT(*), 1) as returnRate,
+                    ROUND(COUNT(CASE WHEN p.stock_status = 'in stock' THEN 1 END) * 100.0 / COUNT(*), 1) as sellRate,
+                    SUM(CASE WHEN p.stock_status = 'out of stock' THEN p.quantity ELSE 0 END) as outOfStock
+                FROM tbl_product p
+                LEFT JOIN tbl_location l ON p.location_id = l.location_id
+                $whereClause
+                GROUP BY p.product_name
+                ORDER BY physicalAvailable DESC
+                LIMIT 10
+            ");
+            $stmt->execute($params);
+            $productKPIs = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            echo json_encode($productKPIs);
+        } catch (Exception $e) {
+            echo json_encode([
+                "success" => false,
+                "message" => "Database error: " . $e->getMessage()
+            ]);
+        }
+        break;
+
+    // Warehouse-specific API endpoints
+    case 'get_warehouse_kpis':
+        try {
+            $product_filter = isset($data['product']) && $data['product'] !== 'All' ? $data['product'] : null;
+            $location_filter = isset($data['location']) && $data['location'] !== 'All' ? $data['location'] : null;
+            
+            $whereConditions = ["(p.status IS NULL OR p.status <> 'archived')"];
+            $params = [];
+            
+            if ($product_filter) {
+                $whereConditions[] = "p.category = ?";
+                $params[] = $product_filter;
+            }
+            
+            if ($location_filter) {
+                $whereConditions[] = "l.location_name = ?";
+                $params[] = $location_filter;
+            }
+            
+            $whereClause = "WHERE " . implode(" AND ", $whereConditions);
+            
+            // Get warehouse-specific KPIs
+            $stmt = $conn->prepare("
+                SELECT 
+                    COUNT(DISTINCT p.product_id) as totalProducts,
+                    COUNT(DISTINCT s.supplier_id) as totalSuppliers,
+                    ROUND(COUNT(DISTINCT p.product_id) * 100.0 / 1000, 1) as storageCapacity,
+                    SUM(p.quantity * p.unit_price) as warehouseValue,
+                    COUNT(CASE WHEN p.quantity <= 10 AND p.quantity > 0 THEN 1 END) as lowStockItems,
+                    COUNT(CASE WHEN p.expiration IS NOT NULL AND p.expiration <= DATE_ADD(CURDATE(), INTERVAL 30 DAY) THEN 1 END) as expiringSoon,
+                    COUNT(DISTINCT b.batch_id) as totalBatches,
+                    COUNT(CASE WHEN t.status = 'pending' THEN 1 END) as activeTransfers
+                FROM tbl_product p
+                LEFT JOIN tbl_location l ON p.location_id = l.location_id
+                LEFT JOIN tbl_supplier s ON p.supplier_id = s.supplier_id
+                LEFT JOIN tbl_batch b ON p.batch_id = b.batch_id
+                LEFT JOIN tbl_transfer t ON p.product_id = t.product_id
+                $whereClause
+            ");
+            $stmt->execute($params);
+            $warehouseKPIs = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            echo json_encode($warehouseKPIs);
+        } catch (Exception $e) {
+            echo json_encode([
+                "success" => false,
+                "message" => "Database error: " . $e->getMessage()
+            ]);
+        }
+        break;
+
+    case 'get_warehouse_supply_by_product':
+        try {
+            $product_filter = isset($data['product']) && $data['product'] !== 'All' ? $data['product'] : null;
+            $location_filter = isset($data['location']) && $data['location'] !== 'All' ? $data['location'] : null;
+            
+            $whereConditions = ["(p.status IS NULL OR p.status <> 'archived')"];
+            $params = [];
+            
+            if ($product_filter) {
+                $whereConditions[] = "p.category = ?";
+                $params[] = $product_filter;
+            }
+            
+            if ($location_filter) {
+                $whereConditions[] = "l.location_name = ?";
+                $params[] = $location_filter;
+            }
+            
+            $whereClause = "WHERE " . implode(" AND ", $whereConditions);
+            
+            $stmt = $conn->prepare("
+                SELECT 
+                    p.product_name as product,
+                    SUM(CASE WHEN p.stock_status = 'in stock' THEN p.quantity ELSE 0 END) as onhand,
+                    SUM(CASE WHEN p.stock_status = 'low stock' THEN p.quantity ELSE 0 END) as softReserved,
+                    SUM(CASE WHEN p.stock_status = 'out of stock' THEN p.quantity ELSE 0 END) as returned
+                FROM tbl_product p
+                LEFT JOIN tbl_location l ON p.location_id = l.location_id
+                $whereClause
+                GROUP BY p.product_name
+                ORDER BY onhand DESC
+                LIMIT 10
+            ");
+            $stmt->execute($params);
+            $supplyData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            echo json_encode($supplyData);
+        } catch (Exception $e) {
+            echo json_encode([
+                "success" => false,
+                "message" => "Database error: " . $e->getMessage()
+            ]);
+        }
+        break;
+
+    case 'get_warehouse_supply_by_location':
+        try {
+            $product_filter = isset($data['product']) && $data['product'] !== 'All' ? $data['product'] : null;
+            $location_filter = isset($data['location']) && $data['location'] !== 'All' ? $data['location'] : null;
+            
+            $whereConditions = ["(p.status IS NULL OR p.status <> 'archived')"];
+            $params = [];
+            
+            if ($product_filter) {
+                $whereConditions[] = "p.category = ?";
+                $params[] = $product_filter;
+            }
+            
+            if ($location_filter) {
+                $whereConditions[] = "l.location_name = ?";
+                $params[] = $location_filter;
+            }
+            
+            $whereClause = "WHERE " . implode(" AND ", $whereConditions);
+            
+            $stmt = $conn->prepare("
+                SELECT 
+                    l.location_name as location,
+                    SUM(CASE WHEN p.stock_status = 'in stock' THEN p.quantity ELSE 0 END) as onhand,
+                    SUM(CASE WHEN p.stock_status = 'low stock' THEN p.quantity ELSE 0 END) as softReserved,
+                    SUM(CASE WHEN p.stock_status = 'out of stock' THEN p.quantity ELSE 0 END) as returned
+                FROM tbl_product p
+                LEFT JOIN tbl_location l ON p.location_id = l.location_id
+                $whereClause
+                GROUP BY l.location_name
+                ORDER BY onhand DESC
+                LIMIT 8
+            ");
+            $stmt->execute($params);
+            $supplyData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            echo json_encode($supplyData);
+        } catch (Exception $e) {
+            echo json_encode([
+                "success" => false,
+                "message" => "Database error: " . $e->getMessage()
+            ]);
+        }
+        break;
+
+    case 'get_warehouse_stockout_items':
+        try {
+            $product_filter = isset($data['product']) && $data['product'] !== 'All' ? $data['product'] : null;
+            $location_filter = isset($data['location']) && $data['location'] !== 'All' ? $data['location'] : null;
+            
+            $whereConditions = ["(p.status IS NULL OR p.status <> 'archived')"];
+            $params = [];
+            
+            if ($product_filter) {
+                $whereConditions[] = "p.category = ?";
+                $params[] = $product_filter;
+            }
+            
+            if ($location_filter) {
+                $whereConditions[] = "l.location_name = ?";
+                $params[] = $location_filter;
+            }
+            
+            $whereClause = "WHERE " . implode(" AND ", $whereConditions);
+            
+            $stmt = $conn->prepare("
+                SELECT 
+                    p.product_name as product,
+                    -p.quantity as stockout
+                FROM tbl_product p
+                LEFT JOIN tbl_location l ON p.location_id = l.location_id
+                $whereClause
+                AND p.stock_status = 'out of stock'
+                ORDER BY stockout ASC
+                LIMIT 12
+            ");
+            $stmt->execute($params);
+            $stockoutData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            echo json_encode($stockoutData);
+        } catch (Exception $e) {
+            echo json_encode([
+                "success" => false,
+                "message" => "Database error: " . $e->getMessage()
+            ]);
+        }
+        break;
+
+    case 'get_warehouse_product_kpis':
+        try {
+            $product_filter = isset($data['product']) && $data['product'] !== 'All' ? $data['product'] : null;
+            $location_filter = isset($data['location']) && $data['location'] !== 'All' ? $data['location'] : null;
+            
+            $whereConditions = ["(p.status IS NULL OR p.status <> 'archived')"];
+            $params = [];
+            
+            if ($product_filter) {
+                $whereConditions[] = "p.category = ?";
+                $params[] = $product_filter;
+            }
+            
+            if ($location_filter) {
+                $whereConditions[] = "l.location_name = ?";
+                $params[] = $location_filter;
+            }
+            
+            $whereClause = "WHERE " . implode(" AND ", $whereConditions);
+            
+            $stmt = $conn->prepare("
+                SELECT 
+                    p.product_name as product,
+                    p.quantity,
+                    p.unit_price,
+                    s.supplier_name as supplier,
+                    b.batch as batch,
+                    p.status,
+                    p.onhandInventory
+                FROM tbl_product p
+                LEFT JOIN tbl_location l ON p.location_id = l.location_id
+                LEFT JOIN tbl_supplier s ON p.supplier_id = s.supplier_id
+                LEFT JOIN tbl_batch b ON p.batch_id = b.batch_id
+                $whereClause
+                ORDER BY p.quantity DESC
+                LIMIT 10
+            ");
+            $stmt->execute($params);
+            $productKPIs = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            echo json_encode($productKPIs);
+        } catch (Exception $e) {
+            echo json_encode([
+                "success" => false,
+                "message" => "Database error: " . $e->getMessage()
+            ]);
+        }
+        break;
+
+    // Chart-specific API endpoints
+    case 'get_top_products_by_quantity':
+        try {
+            $product_filter = isset($data['product']) && $data['product'] !== 'All' ? $data['product'] : null;
+            $location_filter = isset($data['location']) && $data['location'] !== 'All' ? $data['location'] : null;
+            
+            $whereConditions = ["(p.status IS NULL OR p.status <> 'archived')"];
+            $params = [];
+            
+            if ($product_filter) {
+                $whereConditions[] = "p.category = ?";
+                $params[] = $product_filter;
+            }
+            
+            if ($location_filter) {
+                $whereConditions[] = "l.location_name = ?";
+                $params[] = $location_filter;
+            }
+            
+            $whereClause = "WHERE " . implode(" AND ", $whereConditions);
+            
+            $stmt = $conn->prepare("
+                SELECT 
+                    p.product_name as product,
+                    p.quantity
+                FROM tbl_product p
+                LEFT JOIN tbl_location l ON p.location_id = l.location_id
+                $whereClause
+                ORDER BY p.quantity DESC
+                LIMIT 10
+            ");
+            $stmt->execute($params);
+            $topProducts = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            echo json_encode($topProducts);
+        } catch (Exception $e) {
+            echo json_encode([
+                "success" => false,
+                "message" => "Database error: " . $e->getMessage()
+            ]);
+        }
+        break;
+
+    case 'get_stock_distribution_by_category':
+        try {
+            $product_filter = isset($data['product']) && $data['product'] !== 'All' ? $data['product'] : null;
+            $location_filter = isset($data['location']) && $data['location'] !== 'All' ? $data['location'] : null;
+            
+            $whereConditions = ["(p.status IS NULL OR p.status <> 'archived')"];
+            $params = [];
+            
+            if ($product_filter) {
+                $whereConditions[] = "p.category = ?";
+                $params[] = $product_filter;
+            }
+            
+            if ($location_filter) {
+                $whereConditions[] = "l.location_name = ?";
+                $params[] = $location_filter;
+            }
+            
+            $whereClause = "WHERE " . implode(" AND ", $whereConditions);
+            
+            $stmt = $conn->prepare("
+                SELECT 
+                    p.category,
+                    SUM(p.quantity) as quantity
+                FROM tbl_product p
+                LEFT JOIN tbl_location l ON p.location_id = l.location_id
+                $whereClause
+                GROUP BY p.category
+                ORDER BY quantity DESC
+                LIMIT 8
+            ");
+            $stmt->execute($params);
+            $categoryDistribution = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            echo json_encode($categoryDistribution);
+        } catch (Exception $e) {
+            echo json_encode([
+                "success" => false,
+                "message" => "Database error: " . $e->getMessage()
+            ]);
+        }
+        break;
+
+    case 'get_fast_moving_items_trend':
+        try {
+            $product_filter = isset($data['product']) && $data['product'] !== 'All' ? $data['product'] : null;
+            $location_filter = isset($data['location']) && $data['location'] !== 'All' ? $data['location'] : null;
+            
+            $whereConditions = ["(p.status IS NULL OR p.status <> 'archived')"];
+            $params = [];
+            
+            if ($product_filter) {
+                $whereConditions[] = "p.category = ?";
+                $params[] = $product_filter;
+            }
+            
+            if ($location_filter) {
+                $whereConditions[] = "l.location_name = ?";
+                $params[] = $location_filter;
+            }
+            
+            $whereClause = "WHERE " . implode(" AND ", $whereConditions);
+            
+            // Generate sample trend data for fast-moving items
+            $months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
+            $trendData = [];
+            
+            // Get top 3 products by quantity
+            $stmt = $conn->prepare("
+                SELECT 
+                    p.product_name as product,
+                    p.quantity
+                FROM tbl_product p
+                LEFT JOIN tbl_location l ON p.location_id = l.location_id
+                $whereClause
+                ORDER BY p.quantity DESC
+                LIMIT 3
+            ");
+            $stmt->execute($params);
+            $topProducts = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            foreach ($topProducts as $product) {
+                foreach ($months as $month) {
+                    $trendData[] = [
+                        'product' => $product['product'],
+                        'month' => $month,
+                        'quantity' => rand(50, 200) // Sample trend data
+                    ];
+                }
+            }
+            
+            echo json_encode($trendData);
+        } catch (Exception $e) {
+            echo json_encode([
+                "success" => false,
+                "message" => "Database error: " . $e->getMessage()
+            ]);
+        }
+        break;
+
+    case 'get_critical_stock_alerts':
+        try {
+            $product_filter = isset($data['product']) && $data['product'] !== 'All' ? $data['product'] : null;
+            $location_filter = isset($data['location']) && $data['location'] !== 'All' ? $data['location'] : null;
+            
+            $whereConditions = ["(p.status IS NULL OR p.status <> 'archived')"];
+            $params = [];
+            
+            if ($product_filter) {
+                $whereConditions[] = "p.category = ?";
+                $params[] = $product_filter;
+            }
+            
+            if ($location_filter) {
+                $whereConditions[] = "l.location_name = ?";
+                $params[] = $location_filter;
+            }
+            
+            $whereClause = "WHERE " . implode(" AND ", $whereConditions);
+            
+            $stmt = $conn->prepare("
+                SELECT 
+                    p.product_name as product,
+                    p.quantity
+                FROM tbl_product p
+                LEFT JOIN tbl_location l ON p.location_id = l.location_id
+                $whereClause
+                AND p.quantity <= 10
+                ORDER BY p.quantity ASC
+                LIMIT 10
+            ");
+            $stmt->execute($params);
+            $criticalAlerts = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            echo json_encode($criticalAlerts);
+        } catch (Exception $e) {
+            echo json_encode([
+                "success" => false,
+                "message" => "Database error: " . $e->getMessage()
+            ]);
+        }
+        break;
+
+    case 'get_inventory_by_branch_category':
+        try {
+            $product_filter = isset($data['product']) && $data['product'] !== 'All' ? $data['product'] : null;
+            $location_filter = isset($data['location']) && $data['location'] !== 'All' ? $data['location'] : null;
+            
+            $whereConditions = ["(p.status IS NULL OR p.status <> 'archived')"];
+            $params = [];
+            
+            if ($product_filter) {
+                $whereConditions[] = "p.category = ?";
+                $params[] = $product_filter;
+            }
+            
+            if ($location_filter) {
+                $whereConditions[] = "l.location_name = ?";
+                $params[] = $location_filter;
+            }
+            
+            $whereClause = "WHERE " . implode(" AND ", $whereConditions);
+            
+            $stmt = $conn->prepare("
+                SELECT 
+                    l.location_name as location,
+                    p.category,
+                    SUM(p.quantity) as quantity
+                FROM tbl_product p
+                LEFT JOIN tbl_location l ON p.location_id = l.location_id
+                $whereClause
+                GROUP BY l.location_name, p.category
+                ORDER BY l.location_name, quantity DESC
+                LIMIT 20
+            ");
+            $stmt->execute($params);
+            $branchCategoryData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            echo json_encode($branchCategoryData);
+        } catch (Exception $e) {
+            echo json_encode([
+                "success" => false,
+                "message" => "Database error: " . $e->getMessage()
+            ]);
+        }
+        break;
+
     default:
         echo json_encode(["success" => false, "message" => "Invalid action: " . $action]);
         break;

@@ -18,10 +18,8 @@ error_reporting(E_ALL);
 ini_set('log_errors', 1);
 ini_set('error_log', 'php_errors.log');
 
-// Include DB connection
-include 'Api/index.php';
 
-// Clear any output that might have been generated
+include 'Api/index.php';
 ob_clean();
 
 // Read and decode incoming JSON request
@@ -53,6 +51,16 @@ if (!isset($data['action'])) {
 // Action handler
 $action = $data['action'];
 error_log("Processing action: " . $action);
+
+// Check if database connection is working
+if (!isset($conn) || !$conn) {
+    echo json_encode([
+        "success" => false,
+        "message" => "Database connection failed",
+        "action" => $action
+    ]);
+    exit;
+}
 
 switch ($action) {
     case 'add_employee':
@@ -484,13 +492,217 @@ switch ($action) {
             $stmt->bindParam(':stock_status', $stock_status);
     
             if ($stmt->execute()) {
+                $product_id = $conn->lastInsertId();
+                
+                // FIFO: Create stock movement record for new stock
+                if ($batch_id && $quantity > 0) {
+                    $movementStmt = $conn->prepare("
+                        INSERT INTO tbl_stock_movements (
+                            product_id, batch_id, movement_type, quantity, remaining_quantity,
+                            unit_cost, expiration_date, reference_no, created_by
+                        ) VALUES (?, ?, 'IN', ?, ?, ?, ?, ?, ?)
+                    ");
+                    $movementStmt->execute([
+                        $product_id, $batch_id, $quantity, $quantity, 
+                        $unit_price, $expiration, $reference, $entry_by
+                    ]);
+                    
+                    // Create stock summary record
+                    $summaryStmt = $conn->prepare("
+                        INSERT INTO tbl_stock_summary (
+                            product_id, batch_id, available_quantity, unit_cost, 
+                            expiration_date, batch_reference, total_quantity
+                        ) VALUES (?, ?, ?, ?, ?, ?, ?)
+                        ON DUPLICATE KEY UPDATE
+                            available_quantity = available_quantity + VALUES(available_quantity),
+                            total_quantity = total_quantity + VALUES(total_quantity),
+                            last_updated = CURRENT_TIMESTAMP
+                    ");
+                    $summaryStmt->execute([
+                        $product_id, $batch_id, $quantity, $unit_price, 
+                        $expiration, $reference, $quantity
+                    ]);
+                }
+                
                 $conn->commit();
-                echo json_encode(["success" => true, "message" => "Product added successfully"]);
+                echo json_encode(["success" => true, "message" => "Product added successfully with FIFO tracking"]);
             } else {
                 $conn->rollback();
                 echo json_encode(["success" => false, "message" => "Failed to add product"]);
             }
     
+        } catch (Exception $e) {
+            if (isset($conn)) {
+                $conn->rollback();
+            }
+            echo json_encode([
+                "success" => false,
+                "message" => "Database error: " . $e->getMessage()
+            ]);
+        }
+        break;
+
+    case 'check_barcode':
+        try {
+            $barcode = isset($data['barcode']) ? trim($data['barcode']) : '';
+            
+            if (empty($barcode)) {
+                echo json_encode([
+                    "success" => false,
+                    "message" => "Barcode is required"
+                ]);
+                break;
+            }
+            
+            $stmt = $conn->prepare("
+                SELECT 
+                    p.*,
+                    s.supplier_name,
+                    b.brand,
+                    l.location_name
+                FROM tbl_product p 
+                LEFT JOIN tbl_supplier s ON p.supplier_id = s.supplier_id 
+                LEFT JOIN tbl_brand b ON p.brand_id = b.brand_id 
+                LEFT JOIN tbl_location l ON p.location_id = l.location_id
+                WHERE p.barcode = ? AND (p.status IS NULL OR p.status <> 'archived')
+                LIMIT 1
+            ");
+            $stmt->execute([$barcode]);
+            $product = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            if ($product) {
+                echo json_encode([
+                    "success" => true,
+                    "product" => $product,
+                    "message" => "Product found"
+                ]);
+            } else {
+                echo json_encode([
+                    "success" => false,
+                    "product" => null,
+                    "message" => "Product not found"
+                ]);
+            }
+        } catch (Exception $e) {
+            echo json_encode([
+                "success" => false,
+                "message" => "Database error: " . $e->getMessage(),
+                "product" => null
+            ]);
+        }
+        break;
+
+    case 'update_product_stock':
+        try {
+            $product_id = isset($data['product_id']) ? intval($data['product_id']) : 0;
+            $new_quantity = isset($data['new_quantity']) ? intval($data['new_quantity']) : 0;
+            $batch_reference = isset($data['batch_reference']) ? trim($data['batch_reference']) : '';
+            $expiration_date = isset($data['expiration_date']) ? trim($data['expiration_date']) : null;
+            $unit_cost = isset($data['unit_cost']) ? floatval($data['unit_cost']) : 0;
+            $entry_by = isset($data['entry_by']) ? trim($data['entry_by']) : 'admin';
+            
+            if ($product_id <= 0 || $new_quantity <= 0) {
+                echo json_encode([
+                    "success" => false,
+                    "message" => "Invalid product ID or quantity"
+                ]);
+                break;
+            }
+            
+            // Get current product details
+            $stmt = $conn->prepare("SELECT quantity, unit_price FROM tbl_product WHERE product_id = ?");
+            $stmt->execute([$product_id]);
+            $product = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            if (!$product) {
+                echo json_encode([
+                    "success" => false,
+                    "message" => "Product not found"
+                ]);
+                break;
+            }
+            
+            // Start transaction
+            $conn->beginTransaction();
+            
+            // Create new batch record for the additional stock
+            $batch_id = null;
+            if ($batch_reference) {
+                $batchStmt = $conn->prepare("
+                    INSERT INTO tbl_batch (
+                        batch, supplier_id, location_id, entry_date, entry_time, 
+                        entry_by, order_no
+                    ) VALUES (?, ?, ?, CURDATE(), CURTIME(), ?, ?)
+                ");
+                $batchStmt->execute([$batch_reference, 13, 2, $entry_by, '']);
+                $batch_id = $conn->lastInsertId();
+            }
+            
+            // Calculate new total quantity
+            $current_quantity = intval($product['quantity']);
+            $total_quantity = $current_quantity + $new_quantity;
+            
+            // Update product quantity
+            $updateStmt = $conn->prepare("
+                UPDATE tbl_product 
+                SET quantity = ?,
+                    stock_status = CASE 
+                        WHEN ? <= 0 THEN 'out of stock'
+                        WHEN ? <= 10 THEN 'low stock'
+                        ELSE 'in stock'
+                    END
+                WHERE product_id = ?
+            ");
+            
+            if ($updateStmt->execute([$total_quantity, $total_quantity, $total_quantity, $product_id])) {
+                
+                // FIFO: Create stock movement record for additional stock
+                if ($batch_id && $new_quantity > 0) {
+                    $movementStmt = $conn->prepare("
+                        INSERT INTO tbl_stock_movements (
+                            product_id, batch_id, movement_type, quantity, remaining_quantity,
+                            unit_cost, expiration_date, reference_no, created_by
+                        ) VALUES (?, ?, 'IN', ?, ?, ?, ?, ?, ?)
+                    ");
+                    $movementStmt->execute([
+                        $product_id, $batch_id, $new_quantity, $new_quantity, 
+                        $unit_cost ?: $product['unit_price'], $expiration_date, $batch_reference, $entry_by
+                    ]);
+                    
+                    // Update stock summary record
+                    $summaryStmt = $conn->prepare("
+                        INSERT INTO tbl_stock_summary (
+                            product_id, batch_id, available_quantity, unit_cost, 
+                            expiration_date, batch_reference, total_quantity
+                        ) VALUES (?, ?, ?, ?, ?, ?, ?)
+                        ON DUPLICATE KEY UPDATE
+                            available_quantity = available_quantity + VALUES(available_quantity),
+                            total_quantity = total_quantity + VALUES(total_quantity),
+                            last_updated = CURRENT_TIMESTAMP
+                    ");
+                    $summaryStmt->execute([
+                        $product_id, $batch_id, $new_quantity, 
+                        $unit_cost ?: $product['unit_price'], $expiration_date, 
+                        $batch_reference, $new_quantity
+                    ]);
+                }
+                
+                $conn->commit();
+                echo json_encode([
+                    "success" => true,
+                    "message" => "Stock updated successfully with FIFO tracking",
+                    "old_quantity" => $current_quantity,
+                    "new_quantity" => $total_quantity,
+                    "added_quantity" => $new_quantity,
+                    "batch_id" => $batch_id
+                ]);
+            } else {
+                $conn->rollback();
+                echo json_encode([
+                    "success" => false,
+                    "message" => "Failed to update stock"
+                ]);
+            }
         } catch (Exception $e) {
             if (isset($conn)) {
                 $conn->rollback();
@@ -582,6 +794,29 @@ switch ($action) {
         }
         break;
 
+    case 'get_categories':
+        try {
+            $stmt = $conn->prepare("
+                SELECT category_id, category_name 
+                FROM tbl_category 
+                ORDER BY category_name
+            ");
+            $stmt->execute();
+            $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            echo json_encode([
+                "success" => true,
+                "data" => $categories
+            ]);
+        } catch (Exception $e) {
+            echo json_encode([
+                "success" => false,
+                "message" => "Database error: " . $e->getMessage(),
+                "data" => []
+            ]);
+        }
+        break;
+
     case 'get_locations':
         try {
             $stmt = $conn->prepare("SELECT * FROM tbl_location ORDER BY location_id");
@@ -600,6 +835,218 @@ switch ($action) {
             ]);
         }
         break;
+
+    case 'get_fifo_stock':
+        try {
+            $product_id = isset($data['product_id']) ? intval($data['product_id']) : 0;
+            
+            if ($product_id <= 0) {
+                echo json_encode([
+                    "success" => false,
+                    "message" => "Invalid product ID"
+                ]);
+                break;
+            }
+            
+            // Get FIFO stock levels for the product
+            $stmt = $conn->prepare("
+                SELECT 
+                    ss.summary_id,
+                    ss.batch_id,
+                    ss.batch_reference,
+                    ss.available_quantity,
+                    ss.unit_cost,
+                    ss.expiration_date,
+                    ss.total_quantity,
+                    b.entry_date as batch_date,
+                    b.entry_time as batch_time,
+                    DATEDIFF(ss.expiration_date, CURDATE()) as days_until_expiry
+                FROM tbl_stock_summary ss
+                JOIN tbl_batch b ON ss.batch_id = b.batch_id
+                WHERE ss.product_id = ? AND ss.available_quantity > 0
+                ORDER BY b.entry_date ASC, ss.summary_id ASC
+            ");
+            $stmt->execute([$product_id]);
+            $fifo_stock = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            echo json_encode([
+                "success" => true,
+                "data" => $fifo_stock
+            ]);
+        } catch (Exception $e) {
+            echo json_encode([
+                "success" => false,
+                "message" => "Database error: " . $e->getMessage(),
+                "data" => []
+            ]);
+        }
+        break;
+
+    case 'get_expiring_products':
+        try {
+            $days_threshold = isset($data['days_threshold']) ? intval($data['days_threshold']) : 30;
+            
+            $stmt = $conn->prepare("
+                SELECT 
+                    p.product_id,
+                    p.product_name,
+                    p.barcode,
+                    p.category,
+                    ss.available_quantity,
+                    ss.expiration_date,
+                    ss.batch_reference,
+                    DATEDIFF(ss.expiration_date, CURDATE()) as days_until_expiry,
+                    b.entry_date as batch_date
+                FROM tbl_product p
+                JOIN tbl_stock_summary ss ON p.product_id = ss.product_id
+                JOIN tbl_batch b ON ss.batch_id = b.batch_id
+                WHERE p.status = 'active' 
+                    AND ss.available_quantity > 0 
+                    AND ss.expiration_date IS NOT NULL
+                    AND ss.expiration_date >= CURDATE()
+                    AND DATEDIFF(ss.expiration_date, CURDATE()) <= ?
+                ORDER BY ss.expiration_date ASC, b.entry_date ASC
+            ");
+            $stmt->execute([$days_threshold]);
+            $expiring_products = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            echo json_encode([
+                "success" => true,
+                "data" => $expiring_products
+            ]);
+        } catch (Exception $e) {
+            echo json_encode([
+                "success" => false,
+                "message" => "Database error: " . $e->getMessage(),
+                "data" => []
+            ]);
+        }
+        break;
+
+    case 'consume_stock_fifo':
+        try {
+            $product_id = isset($data['product_id']) ? intval($data['product_id']) : 0;
+            $quantity_needed = isset($data['quantity']) ? intval($data['quantity']) : 0;
+            $reference_no = isset($data['reference_no']) ? trim($data['reference_no']) : '';
+            $notes = isset($data['notes']) ? trim($data['notes']) : '';
+            $created_by = isset($data['created_by']) ? trim($data['created_by']) : 'admin';
+            
+            if ($product_id <= 0 || $quantity_needed <= 0) {
+                echo json_encode([
+                    "success" => false,
+                    "message" => "Invalid product ID or quantity"
+                ]);
+                break;
+            }
+            
+            // Start transaction
+            $conn->beginTransaction();
+            
+            // Get FIFO stock levels for consumption
+            $stmt = $conn->prepare("
+                SELECT 
+                    ss.summary_id,
+                    ss.batch_id,
+                    ss.available_quantity,
+                    ss.unit_cost,
+                    ss.expiration_date,
+                    ss.batch_reference
+                FROM tbl_stock_summary ss
+                JOIN tbl_batch b ON ss.batch_id = b.batch_id
+                WHERE ss.product_id = ? AND ss.available_quantity > 0
+                ORDER BY b.entry_date ASC, ss.summary_id ASC
+            ");
+            $stmt->execute([$product_id]);
+            $available_stock = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            if (empty($available_stock)) {
+                $conn->rollback();
+                echo json_encode([
+                    "success" => false,
+                    "message" => "No stock available for this product"
+                ]);
+                break;
+            }
+            
+            $remaining_quantity = $quantity_needed;
+            $consumed_batches = [];
+            
+            foreach ($available_stock as $stock) {
+                if ($remaining_quantity <= 0) break;
+                
+                $batch_quantity = min($remaining_quantity, $stock['available_quantity']);
+                $new_available = $stock['available_quantity'] - $batch_quantity;
+                
+                // Create movement record for consumption
+                $movementStmt = $conn->prepare("
+                    INSERT INTO tbl_stock_movements (
+                        product_id, batch_id, movement_type, quantity, remaining_quantity,
+                        unit_cost, expiration_date, reference_no, notes, created_by
+                    ) VALUES (?, ?, 'OUT', ?, ?, ?, ?, ?, ?, ?)
+                ");
+                $movementStmt->execute([
+                    $product_id, $stock['batch_id'], $batch_quantity, $new_available,
+                    $stock['unit_cost'], $stock['expiration_date'], $reference_no, $notes, $created_by
+                ]);
+                
+                // Update stock summary
+                $updateStmt = $conn->prepare("
+                    UPDATE tbl_stock_summary 
+                    SET available_quantity = ?, last_updated = CURRENT_TIMESTAMP
+                    WHERE summary_id = ?
+                ");
+                $updateStmt->execute([$new_available, $stock['summary_id']]);
+                
+                $consumed_batches[] = [
+                    'batch_reference' => $stock['batch_reference'],
+                    'quantity_consumed' => $batch_quantity,
+                    'unit_cost' => $stock['unit_cost']
+                ];
+                
+                $remaining_quantity -= $batch_quantity;
+            }
+            
+            if ($remaining_quantity > 0) {
+                $conn->rollback();
+                echo json_encode([
+                    "success" => false,
+                    "message" => "Insufficient stock. Only " . ($quantity_needed - $remaining_quantity) . " units available"
+                ]);
+                break;
+            }
+            
+            // Update main product quantity
+            $total_consumed = $quantity_needed - $remaining_quantity;
+            $updateProductStmt = $conn->prepare("
+                UPDATE tbl_product 
+                SET quantity = quantity - ?,
+                    stock_status = CASE 
+                        WHEN (quantity - ?) <= 0 THEN 'out of stock'
+                        WHEN (quantity - ?) <= 10 THEN 'low stock'
+                        ELSE 'in stock'
+                    END
+                WHERE product_id = ?
+            ");
+            $updateProductStmt->execute([$total_consumed, $total_consumed, $total_consumed, $product_id]);
+            
+            $conn->commit();
+            echo json_encode([
+                "success" => true,
+                "message" => "Stock consumed using FIFO method",
+                "quantity_consumed" => $total_consumed,
+                "consumed_batches" => $consumed_batches
+            ]);
+            
+        } catch (Exception $e) {
+            if (isset($conn)) {
+                $conn->rollback();
+            }
+            echo json_encode([
+                "success" => false,
+                "message" => "Database error: " . $e->getMessage()
+            ]);
+        }
+                break;
 
     case 'get_inventory_staff':
         try {
@@ -920,6 +1367,84 @@ switch ($action) {
             echo json_encode(["success" => true, "message" => "Product archived successfully"]);
             
         } catch (Exception $e) {
+            echo json_encode(["success" => false, "message" => "Database error: " . $e->getMessage()]);
+        }
+        break;
+
+    case 'delete_all_products':
+        try {
+            // Archive all products by setting their status to 'archived'
+            $stmt = $conn->prepare("UPDATE tbl_product SET status = 'archived' WHERE status != 'archived'");
+            $result = $stmt->execute();
+            
+            if ($result) {
+                $affectedRows = $stmt->rowCount();
+                echo json_encode([
+                    "success" => true, 
+                    "message" => "All products archived successfully. {$affectedRows} products affected."
+                ]);
+            } else {
+                echo json_encode(["success" => false, "message" => "Failed to archive products"]);
+            }
+            
+        } catch (Exception $e) {
+            echo json_encode(["success" => false, "message" => "Database error: " . $e->getMessage()]);
+        }
+        break;
+
+    case 'clear_all_data':
+        try {
+            // Disable foreign key checks temporarily
+            $conn->exec("SET FOREIGN_KEY_CHECKS = 0");
+            
+            // Tables to clear (in order to avoid foreign key constraint issues)
+            $tables = [
+                'tbl_transfer_log',
+                'tbl_transfer_dtl', 
+                'tbl_transfer_header',
+                'tbl_purchase_return_dtl',
+                'tbl_purchase_return_header',
+                'tbl_purchase_order_dtl',
+                'tbl_purchase_order_header',
+                'tbl_pos_sales_details',
+                'tbl_pos_sales_header',
+                'tbl_pos_transaction',
+                'tbl_pos_terminal',
+                'tbl_adjustment_details',
+                'tbl_adjustment_header',
+                'tbl_product',
+                'tbl_batch',
+                'tbl_supplier',
+                'tbl_employee',
+                'tbl_brand',
+                'tbl_discount'
+            ];
+            
+            $totalDeleted = 0;
+            
+            foreach ($tables as $table) {
+                $stmt = $conn->prepare("DELETE FROM $table");
+                $stmt->execute();
+                $deletedRows = $stmt->rowCount();
+                $totalDeleted += $deletedRows;
+                
+                // Reset auto-increment
+                $conn->exec("ALTER TABLE $table AUTO_INCREMENT = 1");
+            }
+            
+            // Re-enable foreign key checks
+            $conn->exec("SET FOREIGN_KEY_CHECKS = 1");
+            
+            echo json_encode([
+                "success" => true, 
+                "message" => "All database data cleared successfully. {$totalDeleted} total records deleted."
+            ]);
+            
+        } catch (Exception $e) {
+            // Re-enable foreign key checks in case of error
+            if (isset($conn)) {
+                $conn->exec("SET FOREIGN_KEY_CHECKS = 1");
+            }
             echo json_encode(["success" => false, "message" => "Database error: " . $e->getMessage()]);
         }
         break;
@@ -1631,6 +2156,15 @@ switch ($action) {
         }
         break;
     
+    case 'test_connection':
+        echo json_encode([
+            "success" => true,
+            "message" => "PHP backend is working",
+            "database" => "Connected",
+            "timestamp" => date('Y-m-d H:i:s')
+        ]);
+        break;
+        
     default:
         echo json_encode(["success" => false, "message" => "Invalid action: " . $action]);
         break;
