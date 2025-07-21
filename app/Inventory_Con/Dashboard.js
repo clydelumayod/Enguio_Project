@@ -39,11 +39,20 @@ function Dashboard() {
   const [criticalStockAlerts, setCriticalStockAlerts] = useState([]);
   const [inventoryByBranchCategory, setInventoryByBranchCategory] = useState([]);
 
+  // Add new state for other modules' KPIs
+  const [convenienceKPIs, setConvenienceKPIs] = useState({ totalProducts: 0, lowStock: 0, expiringSoon: 0 });
+  const [pharmacyKPIs, setPharmacyKPIs] = useState({ totalProducts: 0, lowStock: 0, expiringSoon: 0 });
+  const [transferKPIs, setTransferKPIs] = useState({ totalTransfers: 0, activeTransfers: 0 });
+
   // Fetch data from database
   useEffect(() => {
     fetchCategoriesAndLocations();
     fetchWarehouseData();
     fetchChartData();
+    // Add new useEffect to fetch KPIs from all modules
+    fetchConvenienceKPIs();
+    fetchPharmacyKPIs();
+    fetchTransferKPIs();
   }, [selectedProduct, selectedLocation]);
 
   const fetchCategoriesAndLocations = async () => {
@@ -240,6 +249,92 @@ function Dashboard() {
     } catch (error) {
       console.error('Error fetching chart data:', error);
     }
+  };
+
+  // Fetch Convenience Store KPIs
+  const fetchConvenienceKPIs = async () => {
+    try {
+      // Get location ID for convenience store
+      const locRes = await fetch("http://localhost/Enguio_Project/Api/backend.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "get_locations" })
+      });
+      const locData = await locRes.json();
+      let locationId = null;
+      if (locData.success && Array.isArray(locData.data)) {
+        const loc = locData.data.find(l => l.location_name.toLowerCase().includes("convenience"));
+        if (loc) locationId = loc.location_id;
+      }
+      if (!locationId) return;
+      // Fetch products for convenience store
+      const prodRes = await fetch("http://localhost/Enguio_Project/Api/backend.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "get_products_by_location_name", location_name: "Convenience" })
+      });
+      const prodData = await prodRes.json();
+      if (prodData.success && Array.isArray(prodData.data)) {
+        const products = prodData.data;
+        setConvenienceKPIs({
+          totalProducts: products.length,
+          lowStock: products.filter(p => p.stock_status === 'low stock').length,
+          expiringSoon: products.filter(p => p.expiry_status === 'expiring soon').length
+        });
+      }
+    } catch (e) { setConvenienceKPIs({ totalProducts: 0, lowStock: 0, expiringSoon: 0 }); }
+  };
+
+  // Fetch Pharmacy KPIs
+  const fetchPharmacyKPIs = async () => {
+    try {
+      // Get location ID for pharmacy
+      const locRes = await fetch("http://localhost/Enguio_Project/Api/backend.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "get_locations" })
+      });
+      const locData = await locRes.json();
+      let locationId = null;
+      if (locData.success && Array.isArray(locData.data)) {
+        const loc = locData.data.find(l => l.location_name.toLowerCase().includes("pharmacy"));
+        if (loc) locationId = loc.location_id;
+      }
+      if (!locationId) return;
+      // Fetch products for pharmacy
+      const prodRes = await fetch("http://localhost/Enguio_Project/Api/backend.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "get_products_by_location_name", location_name: "Pharmacy" })
+      });
+      const prodData = await prodRes.json();
+      if (prodData.success && Array.isArray(prodData.data)) {
+        const products = prodData.data;
+        setPharmacyKPIs({
+          totalProducts: products.length,
+          lowStock: products.filter(p => p.stock_status === 'low stock').length,
+          expiringSoon: products.filter(p => p.expiry_status === 'expiring soon').length
+        });
+      }
+    } catch (e) { setPharmacyKPIs({ totalProducts: 0, lowStock: 0, expiringSoon: 0 }); }
+  };
+
+  // Fetch Transfer KPIs
+  const fetchTransferKPIs = async () => {
+    try {
+      const res = await fetch("http://localhost/Enguio_Project/Api/backend.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "get_transfers_with_details" })
+      });
+      const data = await res.json();
+      if (data.success && Array.isArray(data.data)) {
+        setTransferKPIs({
+          totalTransfers: data.data.length,
+          activeTransfers: data.data.filter(t => t.status === 'pending').length
+        });
+      }
+    } catch (e) { setTransferKPIs({ totalTransfers: 0, activeTransfers: 0 }); }
   };
 
   const setEmptyData = () => {
@@ -579,6 +674,74 @@ function Dashboard() {
           <div className="bg-white p-4 rounded-lg shadow-sm">
             <p className="text-sm text-gray-600 mb-1">Active Transfers</p>
             <p className="text-2xl font-bold text-gray-900">{formatNumber(warehouseData.activeTransfers)}</p>
+          </div>
+        </div>
+
+        {/* Add new KPI cards for each module below the warehouse KPIs section */}
+        <div className="grid grid-cols-3 gap-4 mb-8">
+          {/* Convenience Store KPIs */}
+          <div className="bg-white p-4 rounded-lg shadow-sm">
+            <p className="text-sm text-gray-600 mb-1">Convenience Store - Total Products</p>
+            <p className="text-2xl font-bold text-gray-900">{formatNumber(convenienceKPIs.totalProducts)}</p>
+            <p className="text-sm text-gray-600 mb-1">Low Stock</p>
+            <p className="text-xl font-bold text-yellow-600">{formatNumber(convenienceKPIs.lowStock)}</p>
+            <p className="text-sm text-gray-600 mb-1">Expiring Soon</p>
+            <p className="text-xl font-bold text-orange-600">{formatNumber(convenienceKPIs.expiringSoon)}</p>
+          </div>
+          {/* Pharmacy KPIs */}
+          <div className="bg-white p-4 rounded-lg shadow-sm">
+            <p className="text-sm text-gray-600 mb-1">Pharmacy - Total Products</p>
+            <p className="text-2xl font-bold text-gray-900">{formatNumber(pharmacyKPIs.totalProducts)}</p>
+            <p className="text-sm text-gray-600 mb-1">Low Stock</p>
+            <p className="text-xl font-bold text-yellow-600">{formatNumber(pharmacyKPIs.lowStock)}</p>
+            <p className="text-sm text-gray-600 mb-1">Expiring Soon</p>
+            <p className="text-xl font-bold text-orange-600">{formatNumber(pharmacyKPIs.expiringSoon)}</p>
+          </div>
+          {/* Transfer KPIs */}
+          <div className="bg-white p-4 rounded-lg shadow-sm">
+            <p className="text-sm text-gray-600 mb-1">Total Transfers</p>
+            <p className="text-2xl font-bold text-gray-900">{formatNumber(transferKPIs.totalTransfers)}</p>
+            <p className="text-sm text-gray-600 mb-1">Active Transfers</p>
+            <p className="text-xl font-bold text-blue-600">{formatNumber(transferKPIs.activeTransfers)}</p>
+          </div>
+        </div>
+
+        {/* Product Table Section */}
+        <div className="bg-white p-6 rounded-lg shadow-sm mb-8">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Warehouse Products</h3>
+          <div className="overflow-x-auto">
+            <table className="min-w-full text-sm">
+              <thead>
+                <tr className="border-b border-gray-200">
+                  <th className="text-left py-2">Product Name</th>
+                  <th className="text-right py-2">Quantity</th>
+                  <th className="text-right py-2">Unit Price</th>
+                  <th className="text-right py-2">Total Value</th>
+                  <th className="text-right py-2">Supplier</th>
+                  <th className="text-right py-2">Batch</th>
+                  <th className="text-right py-2">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {Array.isArray(productKPIs) && productKPIs.length > 0 ? (
+                  productKPIs.map((item, index) => (
+                    <tr key={index} className="border-b border-gray-100">
+                      <td className="py-2 text-gray-900">{item.product || 'Unknown Product'}</td>
+                      <td className="py-2 text-right text-gray-600">{item.quantity || 0}</td>
+                      <td className="py-2 text-right text-gray-600">{formatCurrency(item.unitPrice || 0)}</td>
+                      <td className="py-2 text-right text-gray-600">{formatCurrency((item.quantity || 0) * (item.unitPrice || 0))}</td>
+                      <td className="py-2 text-right text-gray-600">{item.supplier || 'N/A'}</td>
+                      <td className="py-2 text-right text-gray-600">{item.batch || 'N/A'}</td>
+                      <td className="py-2 text-right text-gray-600">{item.status || 'Active'}</td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={7} className="py-4 text-center text-gray-500">No products found.</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
           </div>
         </div>
 

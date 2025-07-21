@@ -7634,3 +7634,11 @@ Stack trace:
 2025-07-21T11:19:57+02:00 Table 'enguio2.tbl_purchase_order_delivery' doesn't exist
 2025-07-21T11:19:57+02:00 Table 'enguio2.tbl_purchase_order_delivery' doesn't exist
 2025-07-21T11:19:58+02:00 Table 'enguio2.tbl_purchase_order_delivery' doesn't exist
+2025-07-21T17:22:46+02:00 Unknown column 'po_number' in 'field list'
+2025-07-21T17:22:48+02:00 Table 'enguio2.tbl_purchase_order_delivery' doesn't exist
+2025-07-21T17:22:49+02:00 Table 'enguio2.tbl_purchase_order_delivery' doesn't exist
+2025-07-21T17:27:16+02:00 Unknown column 'po_number' in 'field list'
+2025-07-21T17:30:22+02:00 Unknown column 'po_number' in 'field list'
+2025-07-21T17:30:25+02:00 Unknown column 'po_number' in 'field list'
+2025-07-21T17:38:33+02:00 Unknown column 'expected_delivery_date' in 'field list'
+2025-07-21T17:39:53+02:00 Unknown column 'created_by' in 'field list'

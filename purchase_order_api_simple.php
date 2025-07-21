@@ -20,15 +20,20 @@ if (!$conn) {
 $method = $_SERVER['REQUEST_METHOD'];
 $action = $_GET['action'] ?? '';
 
-switch($method) {
-    case 'GET':
-        handleGet($conn, $action);
-        break;
-    case 'POST':
-        handlePost($conn, $action);
-        break;
-    default:
-        echo json_encode(['success' => false, 'error' => 'Method not allowed']);
+try {
+    switch($method) {
+        case 'GET':
+            handleGet($conn, $action);
+            break;
+        case 'POST':
+            handlePost($conn, $action);
+            break;
+        default:
+            echo json_encode(['success' => false, 'error' => 'Method not allowed']);
+    }
+} catch (Exception $e) {
+    echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+    exit;
 }
 
 function handleGet($conn, $action) {

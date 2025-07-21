@@ -459,6 +459,8 @@ function Warehouse() {
 
                   setInventoryData(warehouseProducts);
                   updateStats("totalProducts", warehouseProducts.length);
+                  calculateWarehouseValue(warehouseProducts);
+                  calculateLowStockAndExpiring(warehouseProducts); // <-- Add this line
                   console.log("✅ Products loaded successfully:", warehouseProducts.length, "products");
                 })
                 .catch((error) => {
@@ -581,7 +583,15 @@ function Warehouse() {
       const totalValue = products.reduce((sum, product) => {
         return sum + (Number.parseFloat(product.quantity) || 0) * (Number.parseFloat(product.unit_price) || 0)
       }, 0)
-      updateStats("warehouseValue", totalValue)
+      // Assume max capacity is 1000 products for demonstration
+      const maxCapacity = 1000;
+      const usedCapacity = products.reduce((sum, product) => sum + (Number(product.quantity) || 0), 0);
+      const storageCapacity = Math.min(100, Math.round((usedCapacity / maxCapacity) * 100));
+      setStats((prev) => ({
+        ...prev,
+        warehouseValue: totalValue,
+        storageCapacity: storageCapacity,
+      }))
     }
   
     // Reset Functions
@@ -975,8 +985,27 @@ function Warehouse() {
   
     // Component Lifecycle
     useEffect(() => {
-      console.log("Component mounted, loading data...")
-      loadData("all")
+      // Fetch warehouse KPIs on mount
+      async function fetchWarehouseKPIs() {
+        try {
+          const response = await handleApiCall("get_warehouse_kpis", { location: "warehouse" });
+          if (response && response.success !== false && response !== null) {
+            setStats((prev) => ({
+              ...prev,
+              totalProducts: response.totalProducts ?? prev.totalProducts,
+              totalSuppliers: response.totalSuppliers ?? prev.totalSuppliers,
+              storageCapacity: response.storageCapacity ?? prev.storageCapacity,
+              warehouseValue: response.warehouseValue ?? prev.warehouseValue,
+              lowStockItems: response.lowStockItems ?? prev.lowStockItems,
+              expiringSoon: response.expiringSoon ?? prev.expiringSoon,
+            }));
+          }
+        } catch (error) {
+          console.error("Failed to fetch warehouse KPIs", error);
+        }
+      }
+      fetchWarehouseKPIs();
+      loadData("all");
     }, [])
   
     // Debug useEffect to track categoriesData changes
@@ -989,6 +1018,34 @@ function Warehouse() {
       }
     }, [categoriesData])
 
+    function calculateLowStockAndExpiring(products) {
+      // Low stock threshold can also be made dynamic if needed
+      const LOW_STOCK_THRESHOLD = 10;
+
+      // Get expiry warning days from localStorage, fallback to 30
+      const expiryWarningDays = parseInt(localStorage.getItem("expiryWarningDays")) || 30;
+
+      const now = new Date();
+
+      // Low stock: quantity <= threshold
+      const lowStockCount = products.filter(
+        (product) => Number(product.quantity) <= LOW_STOCK_THRESHOLD
+      ).length;
+
+      // Expiring soon: expiration within threshold days
+      const expiringSoonCount = products.filter((product) => {
+        if (!product.expiration) return false;
+        const expDate = new Date(product.expiration);
+        const diffDays = (expDate - now) / (1000 * 60 * 60 * 24);
+        return diffDays >= 0 && diffDays <= expiryWarningDays;
+      }).length;
+
+      setStats((prev) => ({
+        ...prev,
+        lowStockItems: lowStockCount,
+        expiringSoon: expiringSoonCount,
+      }));
+    }
 
   
 

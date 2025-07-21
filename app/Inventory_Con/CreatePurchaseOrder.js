@@ -766,7 +766,11 @@ function CreatePurchaseOrder() {
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
                   {purchaseOrders.map((po) => (
-                    <tr key={po.purchase_header_id} className="hover:bg-gray-50">
+                    <tr
+                      key={po.purchase_header_id}
+                      className="hover:bg-gray-50 cursor-pointer"
+                      onClick={() => viewDetails(po.purchase_header_id)}
+                    >
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                         {po.po_number || `PO-${po.purchase_header_id}`}
                       </td>
@@ -786,47 +790,7 @@ function CreatePurchaseOrder() {
                         {getDeliveryStatusBadge(po.delivery_status)}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                        <button
-                          onClick={() => viewDetails(po.purchase_header_id)}
-                          className="text-blue-600 hover:text-blue-900"
-                        >
-                          View
-                        </button>
-                        
-                        {po.status === 'pending' && (
-                          <>
-                            <button
-                              onClick={() => handleApprove(po.purchase_header_id, 'approved')}
-                              className="text-green-600 hover:text-green-900"
-                            >
-                              Approve
-                            </button>
-                            <button
-                              onClick={() => handleApprove(po.purchase_header_id, 'rejected')}
-                              className="text-red-600 hover:text-red-900"
-                            >
-                              Reject
-                            </button>
-                          </>
-                        )}
-                        
-                        {po.status === 'approved' && po.delivery_status === 'pending' && (
-                          <button
-                            onClick={() => handleUpdateDelivery(po.purchase_header_id, 'in_transit')}
-                            className="text-blue-600 hover:text-blue-900"
-                          >
-                            Mark In Transit
-                          </button>
-                        )}
-                        
-                        {po.delivery_status === 'in_transit' && (
-                          <button
-                            onClick={() => handleUpdateDelivery(po.purchase_header_id, 'delivered')}
-                            className="text-green-600 hover:text-green-900"
-                          >
-                            Mark Delivered
-                          </button>
-                        )}
+                        {/* Keep other action buttons if needed */}
                       </td>
                     </tr>
                   ))}
