@@ -422,8 +422,10 @@ function Warehouse() {
             })
           break
             case "products":
-                console.log("🔄 Loading products...");
-                handleApiCall("get_products")
+                console.log("🔄 Loading warehouse products...");
+                // After fixing database, uncomment the line below to only show warehouse products
+                // handleApiCall("get_products", { location_id: 1 }) // Only load warehouse products (location_id = 1)
+                handleApiCall("get_products") // Load all products for now
               .then((response) => {
                 console.log("📦 Products API response:", response);
                 console.log("📦 Products response.data:", response.data);
@@ -447,12 +449,17 @@ function Warehouse() {
                     (product) => (product.status || "").toLowerCase() !== "archived"
                   );
   
-                  console.log("🔍 Active products after filtering:", activeProducts);
-                  console.log("🔍 Active products length:", activeProducts.length);
-  
-                  setInventoryData(activeProducts);
-                  updateStats("totalProducts", activeProducts.length);
-                  console.log("✅ Products loaded successfully:", activeProducts.length, "products");
+                  // Remove products that are now in Convenience store (location_id === 4)
+                  const warehouseProducts = activeProducts.filter(
+                    (product) => product.location_id !== 4
+                  );
+
+                  console.log("🔍 Active products after filtering:", warehouseProducts);
+                  console.log("🔍 Active products length:", warehouseProducts.length);
+
+                  setInventoryData(warehouseProducts);
+                  updateStats("totalProducts", warehouseProducts.length);
+                  console.log("✅ Products loaded successfully:", warehouseProducts.length, "products");
                 })
                 .catch((error) => {
                   console.error("❌ Error loading products:", error);

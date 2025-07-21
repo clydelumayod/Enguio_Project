@@ -7631,3 +7631,6 @@ Stack trace:
 [20-Jul-2025 10:48:22 Europe/Berlin] Processing action: get_product_kpis
 [20-Jul-2025 10:48:22 Europe/Berlin] Raw input: {"action":"get_product_kpis","product":"All","location":"All"}
 [20-Jul-2025 10:48:22 Europe/Berlin] Processing action: get_product_kpis
+2025-07-21T11:19:57+02:00 Table 'enguio2.tbl_purchase_order_delivery' doesn't exist
+2025-07-21T11:19:57+02:00 Table 'enguio2.tbl_purchase_order_delivery' doesn't exist
+2025-07-21T11:19:58+02:00 Table 'enguio2.tbl_purchase_order_delivery' doesn't exist

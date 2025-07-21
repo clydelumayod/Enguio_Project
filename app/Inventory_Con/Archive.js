@@ -15,97 +15,45 @@ const Archive = () => {
   const [selectedItem, setSelectedItem] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Sample data - replace with actual API calls
-  const sampleData = [
-    {
-      id: 1,
-      name: "Paracetamol 500mg",
-      type: "Product",
-      category: "Pain Relief",
-      archivedBy: "John Doe",
-      archivedDate: "2024-01-15",
-      archivedTime: "10:30 AM",
-      reason: "Discontinued product",
-      originalStock: 150,
-      originalValue: 750.00,
-      status: "Archived",
-      notes: "Product discontinued by manufacturer"
-    },
-    {
-      id: 2,
-      name: "Amoxicillin 250mg",
-      type: "Product",
-      category: "Antibiotics",
-      archivedBy: "Jane Smith",
-      archivedDate: "2024-01-14",
-      archivedTime: "02:15 PM",
-      reason: "Expired stock",
-      originalStock: 75,
-      originalValue: 956.25,
-      status: "Archived",
-      notes: "All stock expired and disposed"
-    },
-    {
-      id: 3,
-      name: "Vitamin C 1000mg",
-      type: "Product",
-      category: "Vitamins",
-      archivedBy: "Mike Johnson",
-      archivedDate: "2024-01-13",
-      archivedTime: "09:45 AM",
-      reason: "Supplier change",
-      originalStock: 200,
-      originalValue: 1650.00,
-      status: "Archived",
-      notes: "Switching to new supplier"
-    },
-    {
-      id: 4,
-      name: "Omeprazole 20mg",
-      type: "Product",
-      category: "Gastrointestinal",
-      archivedBy: "Sarah Wilson",
-      archivedDate: "2024-01-12",
-      archivedTime: "04:20 PM",
-      reason: "Quality issues",
-      originalStock: 45,
-      originalValue: 715.50,
-      status: "Archived",
-      notes: "Quality control issues reported"
-    },
-    {
-      id: 5,
-      name: "Ibuprofen 400mg",
-      type: "Product",
-      category: "Pain Relief",
-      archivedBy: "David Brown",
-      archivedDate: "2024-01-11",
-      archivedTime: "11:30 AM",
-      reason: "Regulatory compliance",
-      originalStock: 120,
-      originalValue: 816.00,
-      status: "Archived",
-      notes: "New regulatory requirements not met"
-    },
-    {
-      id: 6,
-      name: "Aspirin 100mg",
-      type: "Product",
-      category: "Pain Relief",
-      archivedBy: "Lisa Chen",
-      archivedDate: "2024-01-10",
-      archivedTime: "08:15 AM",
-      reason: "Low demand",
-      originalStock: 80,
-      originalValue: 320.00,
-      status: "Archived",
-      notes: "Poor sales performance"
+  // API call function (copied from Warehouse.js for consistency)
+  async function handleApiCall(action, data = {}) {
+    const API_BASE_URL = "http://localhost/Enguio_Project/Api/backend.php";
+    const payload = { action, ...data };
+    try {
+      const response = await fetch(API_BASE_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const resData = await response.json();
+      return resData;
+    } catch (error) {
+      console.error("❌ API Call Error:", error);
+      return { success: false, message: error.message, error: "REQUEST_ERROR" };
     }
-  ];
+  }
 
+  // Fetch archived products from backend on mount
   useEffect(() => {
-    setArchivedItems(sampleData);
-    setFilteredItems(sampleData);
+    async function fetchArchivedProducts() {
+      setIsLoading(true);
+      try {
+        const response = await handleApiCall("get_archived_products");
+        if (response.success && Array.isArray(response.data)) {
+          setArchivedItems(response.data);
+          setFilteredItems(response.data);
+        } else {
+          setArchivedItems([]);
+          setFilteredItems([]);
+        }
+      } catch (error) {
+        setArchivedItems([]);
+        setFilteredItems([]);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    fetchArchivedProducts();
   }, []);
 
   useEffect(() => {
@@ -355,6 +303,7 @@ const Archive = () => {
               <TableColumn>ITEM NAME</TableColumn>
               <TableColumn>TYPE</TableColumn>
               <TableColumn>CATEGORY</TableColumn>
+              <TableColumn>STATUS</TableColumn>
               <TableColumn>ARCHIVED BY</TableColumn>
               <TableColumn>DATE & TIME</TableColumn>
               <TableColumn>REASON</TableColumn>
@@ -363,39 +312,38 @@ const Archive = () => {
             </TableHeader>
             <TableBody>
               {items.map((item) => (
-                <TableRow key={item.id}>
+                <TableRow key={item.id || item.product_id}>
                   <TableCell>
                     <div>
-                      <div className="font-semibold">{item.name}</div>
-                      <div className="text-sm text-gray-500">ID: {item.id}</div>
+                      <div className="font-semibold">{item.name || item.product_name}</div>
+                      <div className="text-sm text-gray-500">ID: {item.id || item.product_id}</div>
                     </div>
                   </TableCell>
                   <TableCell>
                     <Chip 
-                      color={getTypeColor(item.type)} 
+                      color={getTypeColor(item.type || 'Product')} 
                       variant="flat"
                       startContent={<FaBox />}
                     >
-                      {item.type}
+                      {item.type || 'Product'}
                     </Chip>
                   </TableCell>
                   <TableCell>{item.category}</TableCell>
-                  <TableCell>{item.archivedBy}</TableCell>
+                  <TableCell>{item.status}</TableCell>
+                  <TableCell>{item.archivedBy || '-'}</TableCell>
                   <TableCell>
                     <div>
-                      <div className="font-semibold">{item.archivedDate}</div>
-                      <div className="text-sm text-gray-500">{item.archivedTime}</div>
+                      <div className="font-semibold">{item.archivedDate || item.date_added}</div>
+                      <div className="text-sm text-gray-500">{item.archivedTime || ''}</div>
                     </div>
                   </TableCell>
                   <TableCell>
-                    <div className="max-w-xs truncate" title={item.reason}>
-                      {item.reason}
-                    </div>
+                    <div className="max-w-xs truncate" title={item.reason}>{item.reason || '-'}</div>
                   </TableCell>
                   <TableCell>
                     <div>
-                      <div className="font-semibold">₱{item.originalValue.toFixed(2)}</div>
-                      <div className="text-sm text-gray-500">{item.originalStock} units</div>
+                      <div className="font-semibold">₱{item.originalValue ? item.originalValue.toFixed(2) : (item.unit_price ? Number(item.unit_price).toFixed(2) : '0.00')}</div>
+                      <div className="text-sm text-gray-500">{item.originalStock || item.quantity} units</div>
                     </div>
                   </TableCell>
                   <TableCell>
@@ -403,10 +351,10 @@ const Archive = () => {
                       <Button isIconOnly size="sm" variant="light" onPress={() => handleViewDetails(item)}>
                         <FaEye className="text-blue-500" />
                       </Button>
-                      <Button isIconOnly size="sm" variant="light" onPress={() => handleRestore(item.id)}>
+                      <Button isIconOnly size="sm" variant="light" onPress={() => handleRestore(item.id || item.product_id)}>
                         <FaUndo className="text-green-500" />
                       </Button>
-                      <Button isIconOnly size="sm" variant="light" onPress={() => handleDelete(item.id)}>
+                      <Button isIconOnly size="sm" variant="light" onPress={() => handleDelete(item.id || item.product_id)}>
                         <FaTrash className="text-red-500" />
                       </Button>
                     </div>

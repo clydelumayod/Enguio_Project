@@ -75,8 +75,11 @@ function ConvenienceInventory() {
           loc.location_name.toLowerCase().includes('convenience')
         );
         if (convenienceLocation) {
+          console.log("📍 Found convenience location:", convenienceLocation);
           setConvenienceLocationId(convenienceLocation.location_id);
           return convenienceLocation.location_id;
+        } else {
+          console.warn("⚠️ No convenience store location found");
         }
       }
     } catch (error) {
@@ -91,18 +94,33 @@ function ConvenienceInventory() {
     
     setLoading(true);
     try {
-      const response = await handleApiCall("get_location_products", {
-        location_id: convenienceLocationId,
-        search: searchTerm,
-        category: selectedCategory
+      console.log("🔄 Loading convenience store products...");
+      
+      // Try the new location-specific API first
+      const response = await handleApiCall("get_products_by_location_name", {
+        location_name: "Convenience"
       });
+      
+      console.log("📦 API Response:", response);
       
       if (response.success && Array.isArray(response.data)) {
         console.log("✅ Loaded convenience store products:", response.data.length);
+        console.log("📋 Products:", response.data.map(p => `${p.product_name} (${p.quantity})`));
         setProducts(response.data);
       } else {
-        console.warn("⚠️ No products found for convenience store");
-        setProducts([]);
+        console.warn("⚠️ Primary API failed, trying fallback...");
+        // Fallback to the original API with location_id
+        const fallbackResponse = await handleApiCall("get_products", {
+          location_id: convenienceLocationId
+        });
+        
+        if (fallbackResponse.success && Array.isArray(fallbackResponse.data)) {
+          console.log("✅ Loaded convenience store products (fallback):", fallbackResponse.data.length);
+          setProducts(fallbackResponse.data);
+        } else {
+          console.warn("⚠️ No products found for convenience store");
+          setProducts([]);
+        }
       }
     } catch (error) {
       console.error("Error loading products:", error);
@@ -130,6 +148,25 @@ function ConvenienceInventory() {
       loadProducts();
     }
   }, [searchTerm, selectedCategory, convenienceLocationId]);
+
+  // Auto-refresh products every 30 seconds to catch new transfers
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (convenienceLocationId && !loading) {
+        console.log("🔄 Auto-refreshing convenience store products...");
+        const previousCount = products.length;
+        loadProducts().then(() => {
+          // Check if new products were added
+          if (products.length > previousCount) {
+            const newProducts = products.length - previousCount;
+            toast.success(`🆕 ${newProducts} new product(s) transferred to convenience store!`);
+          }
+        });
+      }
+    }, 30000); // 30 seconds
+
+    return () => clearInterval(interval);
+  }, [convenienceLocationId, loading]);
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -225,17 +262,27 @@ function ConvenienceInventory() {
       <div className="bg-white rounded-xl shadow-md p-8 mb-8">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-bold text-gray-900">STORE INVENTORY OVERVIEW</h2>
-          {/* Search Bar */}
-          <div className="flex items-center w-80">
-            <input
-              type="text"
-              placeholder="Search store inventory..."
-              value={searchTerm}
-              onChange={e => setSearchTerm(e.target.value)}
-              className="flex-1 border border-gray-300 rounded-l-lg px-4 py-2 focus:outline-none bg-gray-50"
-            />
-            <button className="bg-gray-200 border border-l-0 border-gray-300 rounded-r-lg px-4 py-2">
-              <Search className="h-5 w-5 text-gray-600" />
+          {/* Search Bar and Refresh Button */}
+          <div className="flex items-center gap-3">
+            <div className="flex items-center w-80">
+              <input
+                type="text"
+                placeholder="Search store inventory..."
+                value={searchTerm}
+                onChange={e => setSearchTerm(e.target.value)}
+                className="flex-1 border border-gray-300 rounded-l-lg px-4 py-2 focus:outline-none bg-gray-50"
+              />
+              <button className="bg-gray-200 border border-l-0 border-gray-300 rounded-r-lg px-4 py-2">
+                <Search className="h-5 w-5 text-gray-600" />
+              </button>
+            </div>
+            <button
+              onClick={loadProducts}
+              disabled={loading}
+              className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white px-4 py-2 rounded-lg flex items-center gap-2"
+            >
+              <Package className="h-4 w-4" />
+              {loading ? "Refreshing..." : "Refresh"}
             </button>
           </div>
         </div>

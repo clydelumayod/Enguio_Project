@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 17, 2025 at 05:16 PM
+-- Generation Time: Jul 21, 2025 at 10:27 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -73,7 +73,11 @@ CREATE TABLE `tbl_batch` (
 --
 
 INSERT INTO `tbl_batch` (`batch_id`, `date`, `time`, `batch`, `batch_reference`, `supplier_id`, `location_id`, `entry_date`, `entry_time`, `entry_by`, `order_no`, `order_ref`) VALUES
-(35, '0000-00-00', '2025-07-16 15:25:52', 'BR-20250716-232504', NULL, 13, 2, '2025-07-16', '23:25:52', 'admin', '019823', NULL);
+(35, '0000-00-00', '2025-07-16 15:25:52', 'BR-20250716-232504', NULL, 13, 2, '2025-07-16', '23:25:52', 'admin', '019823', NULL),
+(36, '0000-00-00', '2025-07-17 15:40:41', 'BR-20250717-233925', NULL, 14, 2, '2025-07-17', '23:40:41', 'admin', '24', NULL),
+(37, '0000-00-00', '2025-07-19 14:20:41', 'BR-20250719-221948', NULL, 13, 2, '2025-07-19', '22:20:41', 'admin', '24', NULL),
+(38, '0000-00-00', '2025-07-19 15:14:16', 'BR-20250719-231211', NULL, 12, 2, '2025-07-19', '23:14:16', 'admin', '011101', NULL),
+(55, '0000-00-00', '2025-07-20 08:37:30', 'BR-20250720-163405', NULL, 12, 2, '2025-07-20', '16:37:30', 'admin', '24', NULL);
 
 -- --------------------------------------------------------
 
@@ -92,6 +96,41 @@ CREATE TABLE `tbl_brand` (
 --
 
 INSERT INTO `tbl_brand` (`brand_id`, `brand`, `category_id`) VALUES
+(1, 'Wow Ulam', 9),
+(2, 'Century', 9),
+(3, 'Argentina', 9),
+(4, '555', 9),
+(5, 'Purefoods', 9),
+(6, 'Nestle Bear Brand', 10),
+(7, 'Alaska', 10),
+(8, 'Magnolia', 10),
+(9, 'Nestle Yogurt', 10),
+(10, 'Cheez Whiz', 10),
+(11, 'Wilkins', 11),
+(12, 'Coca-Cola', 11),
+(13, 'Zest-O', 11),
+(14, 'Gatorade', 11),
+(15, 'Lipton', 11),
+(16, 'Centrum', 12),
+(17, 'Enervon', 12),
+(18, 'Myra E', 12),
+(19, 'Caltrate', 12),
+(20, 'Neurobion', 12),
+(21, 'Biogesic', 13),
+(22, 'Neozep', 13),
+(23, 'Solmux', 13),
+(24, 'Amoxicillin', 13),
+(25, 'Bioflu', 13),
+(26, 'Safeguard', 14),
+(27, 'Colgate', 14),
+(28, 'Pond\'s', 14),
+(29, 'Palmolive', 14),
+(30, 'Modess', 14),
+(31, 'Nivea', 15),
+(32, 'Maybelline', 15),
+(33, 'Garnier', 15),
+(34, 'Avon', 15),
+(35, 'SkinWhite', 15),
 (59, 'Lucky Me', 9),
 (60, 'Argentina', 9),
 (61, 'CDO', 9),
@@ -379,16 +418,55 @@ CREATE TABLE `tbl_product` (
   `batch_id` int(11) DEFAULT NULL,
   `status` enum('active','inactive') DEFAULT 'active',
   `Variation` varchar(255) DEFAULT NULL,
-  `stock_status` varchar(20) DEFAULT 'in stock'
+  `stock_status` varchar(20) DEFAULT 'in stock',
+  `date_added` date DEFAULT curdate()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `tbl_product`
 --
 
-INSERT INTO `tbl_product` (`product_id`, `product_name`, `category`, `barcode`, `description`, `prescription`, `bulk`, `expiration`, `quantity`, `unit_price`, `brand_id`, `supplier_id`, `location_id`, `batch_id`, `status`, `Variation`, `stock_status`) VALUES
-(94, 'Purified bottled drinking water', 'Beverages', 4891208040174, '', '0', 0, NULL, 10, 100.00, 59, 14, 2, NULL, 'active', '', 'low stock'),
-(95, 'condensed milk', 'Dairy', 20357122682, 'dawdaw', '1', 0, '2025-07-17', 10, 50.00, 75, 13, 2, 35, 'active', '', 'low stock');
+INSERT INTO `tbl_product` (`product_id`, `product_name`, `category`, `barcode`, `description`, `prescription`, `bulk`, `expiration`, `quantity`, `unit_price`, `brand_id`, `supplier_id`, `location_id`, `batch_id`, `status`, `Variation`, `stock_status`, `date_added`) VALUES
+(169, 'Corned Beef', 'Processed Foods', 1000000000001, 'Canned beef product', '0', 0, '2026-07-21', 50, 60.00, 1, 13, 2, 35, 'active', '', 'In Stock', '2025-07-21'),
+(170, 'Hotdog Jumbo', 'Processed Foods', 1000000000002, 'Hotdog by Purefoods', '0', 0, '2026-07-21', 80, 45.00, 1, 13, 2, 35, 'active', '', 'In Stock', '2025-07-21'),
+(171, 'Luncheon Meat', 'Processed Foods', 1000000000003, 'Canned pork meat', '0', 0, '2026-07-21', 60, 52.00, 2, 13, 2, 35, 'active', '', 'In Stock', '2025-07-21'),
+(172, 'Tuna Flakes', 'Processed Foods', 1000000000004, 'Century Tuna Flakes in Oil', '0', 0, '2026-07-21', 100, 38.00, 3, 13, 2, 35, 'active', '', 'In Stock', '2025-07-21'),
+(173, 'Meat Loaf', 'Processed Foods', 1000000000005, 'Easy-open canned meat loaf', '0', 0, '2026-07-21', 90, 50.00, 2, 13, 2, 35, 'active', '', 'In Stock', '2025-07-21'),
+(174, 'Fresh Milk', 'Dairy', 1000000000006, 'Pasteurized milk 1L', '0', 0, '2026-07-21', 40, 80.00, 4, 14, 2, 36, 'active', '', 'In Stock', '2025-07-21'),
+(175, 'Condensed Milk', 'Dairy', 1000000000007, 'Sweetened condensed milk', '0', 0, '2026-07-21', 60, 42.00, 5, 14, 2, 36, 'active', '', 'In Stock', '2025-07-21'),
+(176, 'Cheese Block', 'Dairy', 1000000000008, 'Magnolia Cheese block', '0', 0, '2026-07-21', 30, 55.00, 4, 14, 2, 36, 'active', '', 'in stock', '2025-07-21'),
+(177, 'Yogurt Strawberry', 'Dairy', 1000000000009, 'Nestle Yogurt Strawberry 125g', '0', 0, '2026-07-21', 30, 28.00, 5, 14, 2, 36, 'active', '', 'In Stock', '2025-07-21'),
+(178, 'Evaporated Milk', 'Dairy', 1000000000010, 'Alaska Evap 370ml', '0', 0, '2026-07-21', 70, 40.00, 4, 14, 2, 36, 'active', '', 'In Stock', '2025-07-21'),
+(179, 'Wilkins Purified Water', 'Beverages', 1000000000011, '500ml bottled water', '0', 0, '2026-07-21', 120, 15.00, 6, 13, 2, 37, 'active', '', 'In Stock', '2025-07-21'),
+(180, 'Coca-Cola Mismo', 'Beverages', 1000000000012, 'Coke 300ml bottle', '0', 0, '2026-07-21', 100, 20.00, 7, 13, 2, 37, 'active', '', 'In Stock', '2025-07-21'),
+(181, 'Zesto Orange', 'Beverages', 1000000000013, 'Zesto Doypack Orange', '0', 0, '2026-07-21', 120, 9.00, 8, 13, 2, 37, 'active', '', 'in stock', '2025-07-21'),
+(182, 'Sprite Bottle', 'Beverages', 1000000000014, 'Sprite Softdrink Bottle', '0', 0, '2026-07-21', 90, 20.00, 7, 13, 2, 37, 'active', '', 'In Stock', '2025-07-21'),
+(183, 'C2 Apple', 'Beverages', 1000000000015, 'C2 Apple Green Tea 355ml', '0', 0, '2026-07-21', 80, 18.00, 9, 13, 2, 37, 'active', '', 'in stock', '2025-07-21'),
+(184, 'Vitamin C 500mg', 'Vitamins & Supplements', 1000000000016, 'Immune booster tablets', '0', 0, '2026-07-21', 60, 12.00, 10, 12, 2, 38, 'active', '', 'In Stock', '2025-07-21'),
+(185, 'Ferrous Sulfate', 'Vitamins & Supplements', 1000000000017, 'Iron supplement 60s', '0', 0, '2026-07-21', 45, 28.00, 11, 12, 2, 38, 'active', '', 'In Stock', '2025-07-21'),
+(186, 'Calcium + D3', 'Vitamins & Supplements', 1000000000018, 'Bone health supplement', '0', 0, '2026-07-21', 30, 35.00, 11, 12, 2, 38, 'active', '', 'In Stock', '2025-07-21'),
+(187, 'Zinc Capsules', 'Vitamins & Supplements', 1000000000019, 'Zinc 10mg capsules', '0', 0, '2026-07-21', 40, 22.00, 10, 12, 2, 38, 'active', '', 'in stock', '2025-07-21'),
+(188, 'Multivitamins Syrup', 'Vitamins & Supplements', 1000000000020, 'Kids multivitamin syrup', '0', 0, '2026-07-21', 25, 45.00, 10, 12, 2, 38, 'active', '', 'In Stock', '2025-07-21'),
+(189, 'Amoxicillin 500mg', 'Medicine (OTC, prescription)', 1000000000021, 'Antibiotic capsules', '1', 0, '2026-07-21', 90, 18.00, 12, 12, 2, 55, 'active', '', 'in stock', '2025-07-21'),
+(190, 'Paracetamol 500mg', 'Medicine (OTC, prescription)', 1000000000022, 'Pain reliever tablets', '1', 0, '2026-07-21', 120, 10.00, 13, 12, 2, 55, 'active', '', 'In Stock', '2025-07-21'),
+(191, 'Loperamide 2mg', 'Medicine (OTC, prescription)', 1000000000023, 'Anti-diarrheal tablets', '1', 0, '2026-07-21', 80, 8.00, 13, 12, 2, 55, 'active', '', 'In Stock', '2025-07-21'),
+(192, 'Cetirizine 10mg', 'Medicine (OTC, prescription)', 1000000000024, 'Anti-allergy tablet', '1', 0, '2026-07-21', 90, 12.00, 12, 12, 2, 55, 'active', '', 'In Stock', '2025-07-21'),
+(193, 'Mefenamic Acid 500mg', 'Medicine (OTC, prescription)', 1000000000025, 'Pain reliever', '1', 0, '2026-07-21', 70, 14.00, 13, 12, 2, 55, 'active', '', 'In Stock', '2025-07-21'),
+(194, 'Safeguard Soap 90g', 'Toiletries', 1000000000026, 'Germ protection bar soap', '0', 0, '2026-07-21', 100, 25.00, 14, 14, 2, 36, 'active', '', 'In Stock', '2025-07-21'),
+(195, 'Colgate Toothpaste 100ml', 'Toiletries', 1000000000027, 'Whitening toothpaste', '0', 0, '2026-07-21', 90, 35.00, 15, 14, 2, 36, 'active', '', 'In Stock', '2025-07-21'),
+(196, 'Pond’s Facial Wash 50g', 'Toiletries', 1000000000028, 'Brightening facial cleanser', '0', 0, '2026-07-21', 70, 49.00, 16, 14, 2, 36, 'active', '', 'In Stock', '2025-07-21'),
+(197, 'Palmolive Shampoo 170ml', 'Toiletries', 1000000000029, 'Hair fall defense shampoo', '0', 0, '2026-07-21', 85, 59.00, 17, 14, 2, 36, 'active', '', 'In Stock', '2025-07-21'),
+(198, 'Head & Shoulders 180ml', 'Toiletries', 1000000000030, 'Anti-dandruff shampoo', '0', 0, '2026-07-21', 75, 62.00, 18, 14, 2, 36, 'active', '', 'In Stock', '2025-07-21'),
+(199, 'Nivea Body Lotion 250ml', 'Skincare & Cosmetics', 1000000000031, 'Moisturizing body lotion', '0', 0, '2026-07-21', 60, 129.00, 19, 13, 2, 35, 'active', '', 'In Stock', '2025-07-21'),
+(200, 'Olay Total Effects Cream', 'Skincare & Cosmetics', 1000000000032, 'Anti-aging face cream', '0', 0, '2026-07-21', 50, 249.00, 20, 13, 2, 35, 'active', '', 'In Stock', '2025-07-21'),
+(201, 'Maybelline Lipstick', 'Skincare & Cosmetics', 1000000000033, 'Matte red lipstick', '0', 0, '2026-07-21', 40, 199.00, 21, 13, 2, 35, 'active', 'Red Matte', 'In Stock', '2025-07-21'),
+(202, 'Garnier Serum Mask', 'Skincare & Cosmetics', 1000000000034, 'Facial sheet mask', '0', 0, '2026-07-21', 70, 59.00, 22, 13, 2, 35, 'active', '', 'In Stock', '2025-07-21'),
+(203, 'Ever Bilena Compact Powder', 'Skincare & Cosmetics', 1000000000035, 'Face powder compact', '0', 0, '2026-07-21', 65, 89.00, 21, 13, 2, 35, 'active', 'Natural Beige', 'In Stock', '2025-07-21'),
+(204, 'C2 Apple', 'Beverages', 1000000000015, 'C2 Apple Green Tea 355ml', '0', 0, '2026-07-21', 30, 18.00, 9, 13, 4, 37, 'active', '', 'in stock', '2025-07-21'),
+(205, 'Amoxicillin 500mg', 'Medicine (OTC, prescription)', 1000000000021, 'Antibiotic capsules', '1', 0, '2026-07-21', 10, 18.00, 12, 12, 3, 55, 'active', '', 'low stock', '2025-07-21'),
+(206, 'Cheese Block', 'Dairy', 1000000000008, 'Magnolia Cheese block', '0', 0, '2026-07-21', 5, 55.00, 4, 14, 4, 36, 'active', '', 'low stock', '2025-07-21'),
+(207, 'Zesto Orange', 'Beverages', 1000000000013, 'Zesto Doypack Orange', '0', 0, '2026-07-21', 30, 9.00, 8, 13, 4, 37, 'active', '', 'in stock', '2025-07-21'),
+(208, 'Zinc Capsules', 'Vitamins & Supplements', 1000000000019, 'Zinc 10mg capsules', '0', 0, '2026-07-21', 10, 22.00, 10, 12, 3, 38, 'active', '', 'low stock', '2025-07-21');
 
 -- --------------------------------------------------------
 
@@ -583,8 +661,16 @@ CREATE TABLE `tbl_transfer_dtl` (
 --
 
 INSERT INTO `tbl_transfer_dtl` (`transfer_dtl_id`, `transfer_header_id`, `product_id`, `qty`) VALUES
-(1, 10, 94, 90),
-(2, 11, 95, 40);
+(19, 28, 183, 10),
+(20, 29, 189, 10),
+(21, 30, 183, 1),
+(22, 31, 176, 5),
+(23, 32, 183, 9),
+(24, 33, 181, 10),
+(25, 34, 181, 10),
+(26, 35, 181, 10),
+(27, 36, 187, 10),
+(28, 37, 183, 10);
 
 -- --------------------------------------------------------
 
@@ -607,7 +693,28 @@ CREATE TABLE `tbl_transfer_header` (
 
 INSERT INTO `tbl_transfer_header` (`transfer_header_id`, `date`, `source_location_id`, `destination_location_id`, `employee_id`, `status`) VALUES
 (10, '2025-07-16', 2, 3, 21, 'approved'),
-(11, '2025-07-17', 2, 3, 19, 'approved');
+(11, '2025-07-17', 2, 3, 19, 'approved'),
+(16, '2025-07-20', 2, 3, 21, 'approved'),
+(18, '2025-07-21', 2, 3, 20, ''),
+(19, '2025-07-21', 2, 4, 19, ''),
+(20, '2025-07-21', 2, 4, 21, ''),
+(21, '2025-07-21', 2, 4, 19, ''),
+(22, '2025-07-21', 2, 4, 20, ''),
+(23, '2025-07-21', 2, 4, 20, ''),
+(24, '2025-07-21', 2, 4, 19, ''),
+(25, '2025-07-21', 2, 4, 19, ''),
+(26, '2025-07-21', 2, 4, 20, ''),
+(27, '2025-07-21', 2, 3, 21, ''),
+(28, '2025-07-21', 2, 4, 20, ''),
+(29, '2025-07-21', 2, 3, 21, ''),
+(30, '2025-07-21', 2, 4, 20, ''),
+(31, '2025-07-21', 2, 4, 21, ''),
+(32, '2025-07-21', 2, 4, 19, ''),
+(33, '2025-07-21', 2, 4, 21, ''),
+(34, '2025-07-21', 2, 4, 21, ''),
+(35, '2025-07-21', 2, 4, 20, ''),
+(36, '2025-07-21', 2, 3, 20, ''),
+(37, '2025-07-21', 2, 4, 21, 'approved');
 
 -- --------------------------------------------------------
 
@@ -777,8 +884,6 @@ ALTER TABLE `tbl_pos_transaction`
 --
 ALTER TABLE `tbl_product`
   ADD PRIMARY KEY (`product_id`),
-  ADD UNIQUE KEY `barcode` (`barcode`),
-  ADD UNIQUE KEY `barcode_2` (`barcode`),
   ADD KEY `brand_id` (`brand_id`),
   ADD KEY `fk_product_batch` (`batch_id`),
   ADD KEY `fk_product_supplier` (`supplier_id`),
@@ -888,7 +993,7 @@ ALTER TABLE `tbl_adjustment_details`
 -- AUTO_INCREMENT for table `tbl_batch`
 --
 ALTER TABLE `tbl_batch`
-  MODIFY `batch_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
+  MODIFY `batch_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=56;
 
 --
 -- AUTO_INCREMENT for table `tbl_brand`
@@ -948,7 +1053,7 @@ ALTER TABLE `tbl_pos_transaction`
 -- AUTO_INCREMENT for table `tbl_product`
 --
 ALTER TABLE `tbl_product`
-  MODIFY `product_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=96;
+  MODIFY `product_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=209;
 
 --
 -- AUTO_INCREMENT for table `tbl_purchase_order_dtl`
@@ -1008,13 +1113,13 @@ ALTER TABLE `tbl_supplier`
 -- AUTO_INCREMENT for table `tbl_transfer_dtl`
 --
 ALTER TABLE `tbl_transfer_dtl`
-  MODIFY `transfer_dtl_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `transfer_dtl_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
 
 --
 -- AUTO_INCREMENT for table `tbl_transfer_header`
 --
 ALTER TABLE `tbl_transfer_header`
-  MODIFY `transfer_header_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `transfer_header_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
 
 --
 -- AUTO_INCREMENT for table `tbl_transfer_log`

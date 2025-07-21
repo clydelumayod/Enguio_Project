@@ -91,10 +91,9 @@ const PharmacyInventory = () => {
     
     setIsLoading(true);
     try {
-      const response = await handleApiCall("get_location_products", {
-        location_id: pharmacyLocationId,
-        search: searchTerm,
-        category: selectedCategory
+      // Try the new location-specific API first
+      const response = await handleApiCall("get_products_by_location_name", {
+        location_name: "Pharmacy"
       });
       
       if (response.success && Array.isArray(response.data)) {
@@ -102,9 +101,22 @@ const PharmacyInventory = () => {
         setInventory(response.data);
         setFilteredInventory(response.data);
       } else {
-        console.warn("⚠️ No products found for pharmacy");
-        setInventory([]);
-        setFilteredInventory([]);
+        // Fallback to the original API
+        const fallbackResponse = await handleApiCall("get_location_products", {
+          location_id: pharmacyLocationId,
+          search: searchTerm,
+          category: selectedCategory
+        });
+        
+        if (fallbackResponse.success && Array.isArray(fallbackResponse.data)) {
+          console.log("✅ Loaded pharmacy products (fallback):", fallbackResponse.data.length);
+          setInventory(fallbackResponse.data);
+          setFilteredInventory(fallbackResponse.data);
+        } else {
+          console.warn("⚠️ No products found for pharmacy");
+          setInventory([]);
+          setFilteredInventory([]);
+        }
       }
     } catch (error) {
       console.error("Error loading products:", error);
