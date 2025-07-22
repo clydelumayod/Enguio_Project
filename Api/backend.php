@@ -2334,17 +2334,21 @@ switch ($action) {
             $product_filter = isset($data['product']) && $data['product'] !== 'All' ? $data['product'] : null;
             $location_filter = isset($data['location']) && $data['location'] !== 'All' ? $data['location'] : null;
             
+            // Always filter for warehouse products (location_id = 2) unless specific location is requested
             $whereConditions = ["(p.status IS NULL OR p.status <> 'archived')"];
             $params = [];
+            
+            if ($location_filter && $location_filter !== 'Warehouse') {
+                $whereConditions[] = "l.location_name = ?";
+                $params[] = $location_filter;
+            } else {
+                // Default to warehouse products only
+                $whereConditions[] = "p.location_id = 2";
+            }
             
             if ($product_filter) {
                 $whereConditions[] = "p.category = ?";
                 $params[] = $product_filter;
-            }
-            
-            if ($location_filter) {
-                $whereConditions[] = "l.location_name = ?";
-                $params[] = $location_filter;
             }
             
             $whereClause = "WHERE " . implode(" AND ", $whereConditions);
@@ -2384,17 +2388,21 @@ switch ($action) {
             $product_filter = isset($data['product']) && $data['product'] !== 'All' ? $data['product'] : null;
             $location_filter = isset($data['location']) && $data['location'] !== 'All' ? $data['location'] : null;
             
+            // Always filter for warehouse products (location_id = 2) unless specific location is requested
             $whereConditions = ["(p.status IS NULL OR p.status <> 'archived')"];
             $params = [];
+            
+            if ($location_filter && $location_filter !== 'Warehouse') {
+                $whereConditions[] = "l.location_name = ?";
+                $params[] = $location_filter;
+            } else {
+                // Default to warehouse products only
+                $whereConditions[] = "p.location_id = 2";
+            }
             
             if ($product_filter) {
                 $whereConditions[] = "p.category = ?";
                 $params[] = $product_filter;
-            }
-            
-            if ($location_filter) {
-                $whereConditions[] = "l.location_name = ?";
-                $params[] = $location_filter;
             }
             
             $whereClause = "WHERE " . implode(" AND ", $whereConditions);
@@ -2429,17 +2437,21 @@ switch ($action) {
             $product_filter = isset($data['product']) && $data['product'] !== 'All' ? $data['product'] : null;
             $location_filter = isset($data['location']) && $data['location'] !== 'All' ? $data['location'] : null;
             
+            // Always filter for warehouse products (location_id = 2) unless specific location is requested
             $whereConditions = ["(p.status IS NULL OR p.status <> 'archived')"];
             $params = [];
+            
+            if ($location_filter && $location_filter !== 'Warehouse') {
+                $whereConditions[] = "l.location_name = ?";
+                $params[] = $location_filter;
+            } else {
+                // Default to warehouse products only
+                $whereConditions[] = "p.location_id = 2";
+            }
             
             if ($product_filter) {
                 $whereConditions[] = "p.category = ?";
                 $params[] = $product_filter;
-            }
-            
-            if ($location_filter) {
-                $whereConditions[] = "l.location_name = ?";
-                $params[] = $location_filter;
             }
             
             $whereClause = "WHERE " . implode(" AND ", $whereConditions);
@@ -2474,17 +2486,21 @@ switch ($action) {
             $product_filter = isset($data['product']) && $data['product'] !== 'All' ? $data['product'] : null;
             $location_filter = isset($data['location']) && $data['location'] !== 'All' ? $data['location'] : null;
             
+            // Always filter for warehouse products (location_id = 2) unless specific location is requested
             $whereConditions = ["(p.status IS NULL OR p.status <> 'archived')"];
             $params = [];
+            
+            if ($location_filter && $location_filter !== 'Warehouse') {
+                $whereConditions[] = "l.location_name = ?";
+                $params[] = $location_filter;
+            } else {
+                // Default to warehouse products only
+                $whereConditions[] = "p.location_id = 2";
+            }
             
             if ($product_filter) {
                 $whereConditions[] = "p.category = ?";
                 $params[] = $product_filter;
-            }
-            
-            if ($location_filter) {
-                $whereConditions[] = "l.location_name = ?";
-                $params[] = $location_filter;
             }
             
             $whereClause = "WHERE " . implode(" AND ", $whereConditions);
@@ -2517,17 +2533,21 @@ switch ($action) {
             $product_filter = isset($data['product']) && $data['product'] !== 'All' ? $data['product'] : null;
             $location_filter = isset($data['location']) && $data['location'] !== 'All' ? $data['location'] : null;
             
+            // Always filter for warehouse products (location_id = 2) unless specific location is requested
             $whereConditions = ["(p.status IS NULL OR p.status <> 'archived')"];
             $params = [];
+            
+            if ($location_filter && $location_filter !== 'Warehouse') {
+                $whereConditions[] = "l.location_name = ?";
+                $params[] = $location_filter;
+            } else {
+                // Default to warehouse products only
+                $whereConditions[] = "p.location_id = 2";
+            }
             
             if ($product_filter) {
                 $whereConditions[] = "p.category = ?";
                 $params[] = $product_filter;
-            }
-            
-            if ($location_filter) {
-                $whereConditions[] = "l.location_name = ?";
-                $params[] = $location_filter;
             }
             
             $whereClause = "WHERE " . implode(" AND ", $whereConditions);

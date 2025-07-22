@@ -1105,7 +1105,8 @@ function Warehouse() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-6 gap-6 mb-8">
+        {/* KPI Cards - Updated to match Pharmacy style */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-2 mb-4">
           {[
             { title: "Total Products", value: stats.totalProducts, icon: Package, color: "blue" },
             { title: "Total Suppliers", value: stats.totalSuppliers, icon: User, color: "green" },
@@ -1116,46 +1117,65 @@ function Warehouse() {
               icon: DollarSign,
               color: "purple",
             },
-            { title: "Low Stock Items", value: stats.lowStockItems, icon: Package, color: "red" },
-            { title: "Expiring Soon", value: stats.expiringSoon, icon: Package, color: "orange" },
           ].map((stat, index) => (
-            <div key={index} className="bg-gray-50 rounded-lg border border-gray-300 p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-700">{stat.title}</p>
-                  <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
-                </div>
-                <stat.icon className={`h-8 w-8 text-${stat.color}-600`} />
+            <div key={index} className="bg-white rounded-2xl shadow p-3 flex items-center min-w-0">
+              <stat.icon className={`h-5 w-5 text-${stat.color}-500`} />
+              <div className="ml-2">
+                <p className="text-xs font-medium text-gray-600">{stat.title}</p>
+                <p className="text-lg font-bold text-gray-900">{stat.value}</p>
               </div>
             </div>
           ))}
         </div>
    
-        {/* Search and Filter Bar */}
-        <div className="bg-gray-50 rounded-lg border border-gray-300 mb-6 p-4">
-          <div className="flex items-center justify-between space-x-4">
-            <div className="flex items-center space-x-4 flex-1">
-              <div className="relative flex-1 max-w-md">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+        {/* Search and Filter Bar - Updated to match Pharmacy style */}
+        <div className="bg-white rounded-2xl shadow p-3 mb-4">
+          <div className="flex flex-col md:flex-row gap-2">
+            <div className="flex-1">
+              <div className="relative">
+                <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-3 w-3 text-gray-400" />
                 <input
                   type="text"
                   placeholder={`Search ${activeTab}...`}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="pl-7 pr-2 py-1 w-full border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 text-sm"
+                  style={{ height: '32px' }}
                 />
               </div>
             </div>
+            {activeTab === "products" && (
+              <div className="w-full md:w-36">
+                <select
+                  value={filterOptions.category}
+                  onChange={(e) => {
+                    const selectedCategory = e.target.value;
+                    setFilterOptions((prev) => ({ ...prev, category: selectedCategory }));
+                    // Call your API or filter function here
+                    // Example: loadData("products", selectedCategory);
+                  }}
+                  className="w-full px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 text-sm"
+                  style={{ height: '32px' }}
+                >
+                  <option value="">All Categories</option>
+                  {categoriesData.map((category) => (
+                    <option key={category.category_id} value={category.category_name}>
+                      {category.category_name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
           </div>
         </div>
   
         {/* Tabs for Products and Suppliers */}
-        <div className="bg-gray-50 rounded-lg border border-gray-300 mb-6">
+        <div>
           <div className="border-b border-gray-300">
             <nav className="-mb-px flex">
               <button
                 onClick={() => setActiveTab("products")}
-                className={`py-2 px-4 border-b-2 font-medium text-sm ${
+                className={`py-1 px-2 border-b-2 font-medium text-xs ${
                   activeTab === "products"
                     ? "border-blue-500 text-blue-600"
                     : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
@@ -1165,7 +1185,7 @@ function Warehouse() {
               </button>
               <button
                 onClick={() => setActiveTab("suppliers")}
-                className={`py-2 px-4 border-b-2 font-medium text-sm ${
+                className={`py-1 px-2 border-b-2 font-medium text-xs ${
                   activeTab === "suppliers"
                     ? "border-blue-500 text-blue-600"
                     : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
@@ -1176,90 +1196,83 @@ function Warehouse() {
             </nav>
           </div>
   
-  <div className="p-6">
+  <div className="p-2">
     {activeTab === "products" && (
-      <div className="overflow-x-auto">
-        {console.log("🔍 Rendering products table with inventoryData:", inventoryData)}
-        {console.log("🔍 inventoryData.length:", inventoryData.length)}
-        <table className="w-full border-collapse border border-gray-300">
-          <thead>
-            <tr className="bg-blue-100">
-              <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold text-blue-900">Product Name</th>
-              <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold text-blue-900">Barcode</th>
-              <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold text-blue-900">Category</th>
-              <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold text-blue-900">Brand</th>
-              <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold text-blue-900">Quantity</th>
-              <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold text-blue-900">Unit Price</th>
-              <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold text-blue-900">Supplier</th>
-              <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold text-blue-900">Batch</th>
-              <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold text-blue-900">Expiration</th>
-              <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold text-blue-900">Date Added</th>
-              <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold text-blue-900">Type</th>
-              <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold text-blue-900">Status</th>
-              <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold text-blue-900">Stock Level</th>
-              <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold text-blue-900">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {inventoryData.length === 0 ? (
+      <div className="bg-white rounded-2xl shadow w-full max-w-full">
+        <div className="px-4 py-2 border-b border-gray-10">
+          <div className="flex justify-between items-center">
+            <h3 className="text-base font-semibold text-gray-900">Products</h3>
+            <div className="text-xs text-gray-500">
+              {inventoryData.length} products found
+            </div>
+          </div>
+        </div>
+        {/* Table scrollable area */}
+        <div className="overflow-y-auto w-full" style={{ maxHeight: '550px', minHeight: '220px' }}>
+          <table className="w-full table-fixed text-sm">
+            <thead className="bg-gray-50 border-b border-gray-200">
               <tr>
-                <td colSpan="14" className="border border-gray-300 px-3 py-2 text-center text-gray-500">
-                  No products found. {console.log("🔍 No products to display")}
-                </td>
+                <th className="px-3 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">PRODUCT NAME</th>
+                <th className="px-3 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">BARCODE</th>
+                <th className="px-3 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">CATEGORY</th>
+                <th className="px-3 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">BRAND</th>
+                <th className="px-3 py-3 text-center font-medium text-gray-500 uppercase tracking-wider">QTY</th>
+                <th className="px-3 py-3 text-center font-medium text-gray-500 uppercase tracking-wider">UNIT PRICE</th>
+                <th className="px-3 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">SUPPLIER</th>
+                <th className="px-3 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">BATCH</th>
+                <th className="px-3 py-3 text-center font-medium text-gray-500 uppercase tracking-wider">EXPIRY</th>
+                <th className="px-3 py-3 text-center font-medium text-gray-500 uppercase tracking-wider">ADDED</th>
+                <th className="px-3 py-3 text-center font-medium text-gray-500 uppercase tracking-wider">TYPE</th>
+                <th className="px-3 py-3 text-center font-medium text-gray-500 uppercase tracking-wider">STATUS</th>
+                <th className="px-3 py-3 text-center font-medium text-gray-500 uppercase tracking-wider">STOCK</th>
+                <th className="px-3 py-3 text-center font-medium text-gray-500 uppercase tracking-wider min-w-[80px]">ACTIONS</th>
               </tr>
-            ) : (
-              inventoryData.map((product) => {
-                console.log("🔍 Rendering product:", product);
-                return (
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {inventoryData.length === 0 ? (
+                <tr>
+                  <td colSpan="14" className="px-2 py-6 text-center">
+                    <div className="flex flex-col items-center space-y-2">
+                      <Package className="h-8 w-8 text-gray-300" />
+                      <div className="text-gray-500">
+                        <p className="text-base font-medium">No products found</p>
+                        <p className="text-xs">Products will appear here when added to warehouse</p>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              ) : (
+                inventoryData.map((product) => (
                   <tr key={product.product_id} className="hover:bg-gray-50">
-                    <td className="border border-gray-300 px-3 py-2 font-medium">{product.product_name}</td>
-                    <td className="border border-gray-300 px-3 py-2 font-mono text-sm">{product.barcode}</td>
-                    <td className="border border-gray-300 px-3 py-2">{product.category}</td>
-                    <td className="border border-gray-300 px-3 py-2">{product.brand || "N/A"}</td>
-                    <td className="border border-gray-300 px-3 py-2">{product.quantity}</td>
-                    <td className="border border-gray-300 px-3 py-2">₱{Number.parseFloat(product.unit_price || 0).toFixed(2)}</td>
-                    <td className="border border-gray-300 px-3 py-2">{product.supplier_name || "N/A"}</td>
-      
-                    {/* Batch */}
-                    <td className="border border-gray-300 px-3 py-2 text-sm text-center">
-                      {product.batch_reference || <span className="text-gray-400 italic">None</span>}
+                    <td className="px-3 py-3 font-medium text-gray-900 truncate max-w-[120px]">{product.product_name}</td>
+                    <td className="px-3 py-3 font-mono text-gray-900 truncate max-w-[80px]">{product.barcode}</td>
+                    <td className="px-3 py-3">
+                      <span className="inline-flex px-1 py-0.5 text-xs font-medium bg-gray-100 text-gray-800 rounded-full">{product.category}</span>
                     </td>
-      
-                    {/* Expiration */}
-                    <td className="border border-gray-300 px-3 py-2 text-sm text-center">
-                      {product.expiration ? new Date(product.expiration).toLocaleDateString() : <span className="text-gray-400 italic">None</span>}
-                    </td>
-
-                    {/* Date Added */}
-                    <td className="border border-gray-300 px-3 py-2 text-sm text-center">
-                      {product.date_added ? new Date(product.date_added).toLocaleDateString('en-US', {
-                        month: '2-digit',
-                        day: '2-digit',
-                        year: '2-digit'
-                      }) : <span className="text-gray-400 italic">N/A</span>}
-                    </td>
-      
-                    {/* Type - Bulk / Rx / Both / None */}
-                    <td className="border border-gray-300 px-3 py-2 text-center">
+                    <td className="px-3 py-3 text-gray-900 truncate max-w-[80px]">{product.brand || "N/A"}</td>
+                    <td className="px-3 py-3 text-center font-semibold">{product.quantity}</td>
+                    <td className="px-3 py-3 text-center text-gray-900">₱{Number.parseFloat(product.unit_price || 0).toFixed(2)}</td>
+                    <td className="px-3 py-3 text-gray-900 truncate max-w-[80px]">{product.supplier_name || "N/A"}</td>
+                    <td className="px-3 py-3 text-center truncate max-w-[80px]">{product.batch_reference || <span className="text-gray-400 italic">None</span>}</td>
+                    <td className="px-3 py-3 text-center">{product.expiration ? new Date(product.expiration).toLocaleDateString() : <span className="text-gray-400 italic">None</span>}</td>
+                    <td className="px-3 py-3 text-center">{product.date_added ? new Date(product.date_added).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: '2-digit' }) : <span className="text-gray-400 italic">N/A</span>}</td>
+                    <td className="px-3 py-3 text-center">
                       {(() => {
                         const bulk = Number(product.bulk);
                         const prescription = Number(product.prescription);
-      
                         if (bulk && prescription) {
-                          return <span className="inline-block px-2 py-0.5 text-xs font-medium bg-yellow-100 text-yellow-800 rounded-full">Bulk & Rx</span>;
+                          return <span className="inline-block px-1 py-0.5 text-xs font-medium bg-yellow-100 text-yellow-800 rounded-full">Bulk & Rx</span>;
                         } else if (bulk) {
-                          return <span className="inline-block px-2 py-0.5 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">Bulk</span>;
+                          return <span className="inline-block px-1 py-0.5 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">Bulk</span>;
                         } else if (prescription) {
-                          return <span className="inline-block px-2 py-0.5 text-xs font-medium bg-red-100 text-red-800 rounded-full">Rx</span>;
+                          return <span className="inline-block px-1 py-0.5 text-xs font-medium bg-red-100 text-red-800 rounded-full">Rx</span>;
                         } else {
-                          return <span className="inline-block px-2 py-0.5 text-xs font-medium bg-gray-100 text-gray-700 rounded-full">Regular</span>;
+                          return <span className="inline-block px-1 py-0.5 text-xs font-medium bg-gray-100 text-gray-700 rounded-full">Regular</span>;
                         }
                       })()}
                     </td>
-      
-                    {/* Status (Active or Archived) */}
-                    <td className="border border-gray-300 px-3 py-2 text-center">
-                      <span className={`inline-block px-2 py-0.5 text-xs font-medium rounded-full ${
+                    <td className="px-3 py-3 text-center">
+                      <span className={`inline-flex px-1 py-0.5 text-xs font-semibold rounded-full ${
                         product.status === "Available"
                           ? "bg-green-100 text-green-800"
                           : "bg-red-100 text-red-800"
@@ -1267,10 +1280,8 @@ function Warehouse() {
                         {product.status || "Available"}
                       </span>
                     </td>
-      
-                    {/* Stock Level */}
-                    <td className="border border-gray-300 px-3 py-2 text-center">
-                      <span className={`inline-block px-2 py-0.5 text-xs font-medium rounded-full ${
+                    <td className="px-3 py-3 text-center">
+                      <span className={`inline-flex px-1 py-0.5 text-xs font-semibold rounded-full ${
                         product.stock_status === 'out of stock'
                           ? 'bg-red-100 text-red-700'
                           : product.stock_status === 'low stock'
@@ -1280,84 +1291,89 @@ function Warehouse() {
                         {product.stock_status}
                       </span>
                     </td>
-      
-                    {/* Actions */}
-                    <td className="border border-gray-300 px-3 py-2 text-center">
-                      <div className="flex items-center justify-center space-x-2">
-                        <button onClick={() => openFifoModal(product)} className="text-green-500 hover:text-green-700" title="View FIFO Stock">
-                          <Package className="h-4 w-4" />
+                    <td className="px-3 py-3 text-center min-w-[80px]">
+                      <div className="flex justify-center gap-1 flex-nowrap">
+                        <button onClick={() => openFifoModal(product)} className="text-green-600 hover:text-green-900 p-0.5" title="View FIFO Stock">
+                          <Package className="h-3 w-3" />
                         </button>
-                        <button onClick={() => openEditProductModal(product)} className="text-blue-500 hover:text-blue-700" title="Edit Product">
-                          <Edit className="h-4 w-4" />
+                        <button onClick={() => openEditProductModal(product)} className="text-blue-600 hover:text-blue-900 p-0.5" title="Edit Product">
+                          <Edit className="h-3 w-3" />
                         </button>
-                        <button onClick={() => openDeleteModal(product)} className="text-orange-500 hover:text-orange-700" title="Archive Product">
-                          <Archive className="h-4 w-4" />
+                        <button onClick={() => openDeleteModal(product)} className="text-red-600 hover:text-red-900 p-0.5" title="Archive Product">
+                          <Archive className="h-3 w-3" />
                         </button>
                       </div>
                     </td>
                   </tr>
-                );
-              })
-            )}
-          </tbody>
-        </table>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     )}
   
             {activeTab === "suppliers" && (
-              <div className="overflow-x-auto">
-                <table className="w-full border-collapse border border-gray-300">
-                  <thead>
-                    <tr className="bg-blue-100">
-                      <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold text-blue-900">
-                        Supplier Name
-                      </th>
-                      <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold text-blue-900">
-                        Contact
-                      </th>
-                      <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold text-blue-900">
-                        Email
-                      </th>
-                      <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold text-blue-900">
-                        Contact Person
-                      </th>
-                      <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold text-blue-900">
-                        Payment Terms
-                      </th>
-                      <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold text-blue-900">
-                        Lead Time
-                      </th>
-                      <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold text-blue-900">
-                        Actions
-                      </th>
-                      
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {suppliersData.map((supplier) => (
-                      <tr key={supplier.supplier_id} className="hover:bg-gray-50">
-                        <td className="border border-gray-300 px-3 py-2 font-medium">{supplier.supplier_name}</td>
-                        <td className="border border-gray-300 px-3 py-2">{supplier.supplier_contact}</td>
-                        <td className="border border-gray-300 px-3 py-2">{supplier.supplier_email}</td>
-                        <td className="border border-gray-300 px-3 py-2">{supplier.contact_person || "-"}</td>
-                        <td className="border border-gray-300 px-3 py-2">{supplier.payment_terms || "-"}</td>
-                        <td className="border border-gray-300 px-3 py-2">
-                          {supplier.lead_time_days ? `${supplier.lead_time_days} days` : "-"}
-                        </td>
-                        <td className="border border-gray-300 px-3 py-2 text-center">
-                          <div className="flex items-center justify-center space-x-2">
-                            <button onClick={() => openEditModal(supplier)} className="text-blue-500 hover:text-blue-700">
-                              <Edit className="h-4 w-4" />
-                            </button>
-                            <button onClick={() => openDeleteModal(supplier)} className="text-orange-500 hover:text-orange-700" title="Archive Supplier">
-                              <Archive className="h-4 w-4" />
-                            </button>
-                          </div>
-                        </td>
+              <div className="bg-white rounded-3xl shadow-xl">
+                <div className="px-6 py-4 border-b border-gray-200">
+                  <div className="flex justify-between items-center">
+                    <h3 className="text-xl font-semibold text-gray-900">Suppliers</h3>
+                    <div className="text-sm text-gray-500">
+                      {suppliersData.length} suppliers found
+                    </div>
+                  </div>
+                </div>
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead className="bg-gray-50 border-b border-gray-200">
+                      <tr>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">SUPPLIER NAME</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">CONTACT</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">EMAIL</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">CONTACT PERSON</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">PAYMENT TERMS</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">LEAD TIME</th>
+                        <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">ACTIONS</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {suppliersData.length === 0 ? (
+                        <tr>
+                          <td colSpan="7" className="px-6 py-8 text-center">
+                            <div className="flex flex-col items-center space-y-3">
+                              <User className="h-12 w-12 text-gray-300" />
+                              <div className="text-gray-500">
+                                <p className="text-lg font-medium">No suppliers found</p>
+                                <p className="text-sm">Suppliers will appear here when added</p>
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                      ) : (
+                        suppliersData.map((supplier) => (
+                          <tr key={supplier.supplier_id} className="hover:bg-gray-50">
+                            <td className="px-6 py-4 text-sm font-medium text-gray-900">{supplier.supplier_name}</td>
+                            <td className="px-6 py-4 text-sm text-gray-900">{supplier.supplier_contact}</td>
+                            <td className="px-6 py-4 text-sm text-gray-900">{supplier.supplier_email}</td>
+                            <td className="px-6 py-4 text-sm text-gray-900">{supplier.contact_person || "-"}</td>
+                            <td className="px-6 py-4 text-sm text-gray-900">{supplier.payment_terms || "-"}</td>
+                            <td className="px-6 py-4 text-sm text-gray-900">{supplier.lead_time_days ? `${supplier.lead_time_days} days` : "-"}</td>
+                            <td className="px-6 py-4 text-center">
+                              <div className="flex justify-center gap-2">
+                                <button onClick={() => openEditModal(supplier)} className="text-blue-600 hover:text-blue-900 p-1">
+                                  <Edit className="h-4 w-4" />
+                                </button>
+                                <button onClick={() => openDeleteModal(supplier)} className="text-red-600 hover:text-red-900 p-1" title="Archive Supplier">
+                                  <Archive className="h-4 w-4" />
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             )}
           </div>
@@ -2316,6 +2332,15 @@ function Warehouse() {
 
 
         <ToastContainer />
+        {loading && (
+          <div className="flex justify-center items-center py-8">
+            <svg className="animate-spin h-8 w-8 text-blue-600" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+            </svg>
+            <span className="ml-2 text-blue-600">Loading...</span>
+          </div>
+        )}
       </div>
     )
   }

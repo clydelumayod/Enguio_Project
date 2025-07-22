@@ -645,7 +645,9 @@ function Dashboard() {
         <div className="grid grid-cols-8 gap-4 mb-8">
           <div className="bg-white p-4 rounded-lg shadow-sm">
             <p className="text-sm text-gray-600 mb-1">Total Products</p>
-            <p className="text-2xl font-bold text-gray-900">{formatNumber(warehouseData.totalProducts)}</p>
+            <p className="text-2xl font-bold text-gray-900">
+              {formatNumber(warehouseData.totalProducts)}
+            </p>
           </div>
           <div className="bg-white p-4 rounded-lg shadow-sm">
             <p className="text-sm text-gray-600 mb-1">Total Suppliers</p>
