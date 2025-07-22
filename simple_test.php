@@ -1,7 +1,7 @@
 <?php
 // Simple database connection test
 $host = 'localhost';
-$dbname = 'enguio';
+$dbname = 'enguio2';
 $username = 'root';
 $password = '';
 
