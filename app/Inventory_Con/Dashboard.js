@@ -117,56 +117,76 @@ function Dashboard() {
       });
 
       // Fetch supply by product for warehouse
-      const supplyProductResponse = await fetch(API_BASE_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          action: 'get_warehouse_supply_by_product',
-          product: selectedProduct,
-          location: selectedLocation
-        })
-      });
-      const supplyProductData = await supplyProductResponse.json();
-      setSupplyByProduct(Array.isArray(supplyProductData) ? supplyProductData : []);
+      try {
+        const supplyProductResponse = await fetch(API_BASE_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'get_warehouse_supply_by_product',
+            product: selectedProduct,
+            location: selectedLocation
+          })
+        });
+        const supplyProductData = await supplyProductResponse.json();
+        setSupplyByProduct(Array.isArray(supplyProductData) ? supplyProductData : []);
+      } catch (error) {
+        console.error('Error fetching supply by product:', error);
+        setSupplyByProduct([]);
+      }
 
       // Fetch supply by location for warehouse
-      const supplyLocationResponse = await fetch(API_BASE_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          action: 'get_warehouse_supply_by_location',
-          product: selectedProduct,
-          location: selectedLocation
-        })
-      });
-      const supplyLocationData = await supplyLocationResponse.json();
-      setSupplyByLocation(Array.isArray(supplyLocationData) ? supplyLocationData : []);
+      try {
+        const supplyLocationResponse = await fetch(API_BASE_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'get_warehouse_supply_by_location',
+            product: selectedProduct,
+            location: selectedLocation
+          })
+        });
+        const supplyLocationData = await supplyLocationResponse.json();
+        setSupplyByLocation(Array.isArray(supplyLocationData) ? supplyLocationData : []);
+      } catch (error) {
+        console.error('Error fetching supply by location:', error);
+        setSupplyByLocation([]);
+      }
 
       // Fetch warehouse stockout items
-      const stockoutResponse = await fetch(API_BASE_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          action: 'get_warehouse_stockout_items',
-          product: selectedProduct,
-          location: selectedLocation
-        })
-      });
-      const stockoutData = await stockoutResponse.json();
-      setStockoutItems(Array.isArray(stockoutData) ? stockoutData : []);
+      try {
+        const stockoutResponse = await fetch(API_BASE_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'get_warehouse_stockout_items',
+            product: selectedProduct,
+            location: selectedLocation
+          })
+        });
+        const stockoutData = await stockoutResponse.json();
+        setStockoutItems(Array.isArray(stockoutData) ? stockoutData : []);
+      } catch (error) {
+        console.error('Error fetching stockout items:', error);
+        setStockoutItems([]);
+      }
 
       // Fetch warehouse product KPIs
-      const productKPIsResponse = await fetch(API_BASE_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          action: 'get_warehouse_product_kpis',
-          product: selectedProduct,
-          location: selectedLocation
-        })
-      });
-      const productKPIsData = await productKPIsResponse.json();
-      setProductKPIs(Array.isArray(productKPIsData) ? productKPIsData : []);
+      try {
+        const productKPIsResponse = await fetch(API_BASE_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'get_warehouse_product_kpis',
+            product: selectedProduct,
+            location: selectedLocation
+          })
+        });
+        const productKPIsData = await productKPIsResponse.json();
+        setProductKPIs(Array.isArray(productKPIsData) ? productKPIsData : []);
+      } catch (error) {
+        console.error('Error fetching product KPIs:', error);
+        setProductKPIs([]);
+      }
 
     } catch (error) {
       console.error('Error fetching warehouse data:', error);
@@ -182,72 +202,97 @@ function Dashboard() {
       const API_BASE_URL = "http://localhost/Enguio_Project/Api/backend.php";
       
       // Fetch top 10 products by quantity
-      const topProductsResponse = await fetch(API_BASE_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          action: 'get_top_products_by_quantity',
-          product: selectedProduct,
-          location: selectedLocation
-        })
-      });
-      const topProductsData = await topProductsResponse.json();
-      setTopProductsByQuantity(Array.isArray(topProductsData) ? topProductsData : []);
+      try {
+        const topProductsResponse = await fetch(API_BASE_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'get_top_products_by_quantity',
+            product: selectedProduct,
+            location: selectedLocation
+          })
+        });
+        const topProductsData = await topProductsResponse.json();
+        setTopProductsByQuantity(Array.isArray(topProductsData) ? topProductsData : []);
+      } catch (error) {
+        console.error('Error fetching top products:', error);
+        setTopProductsByQuantity([]);
+      }
 
       // Fetch stock distribution by category
-      const categoryDistributionResponse = await fetch(API_BASE_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          action: 'get_stock_distribution_by_category',
-          product: selectedProduct,
-          location: selectedLocation
-        })
-      });
-      const categoryDistributionData = await categoryDistributionResponse.json();
-      setStockDistributionByCategory(Array.isArray(categoryDistributionData) ? categoryDistributionData : []);
+      try {
+        const categoryDistributionResponse = await fetch(API_BASE_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'get_stock_distribution_by_category',
+            product: selectedProduct,
+            location: selectedLocation
+          })
+        });
+        const categoryDistributionData = await categoryDistributionResponse.json();
+        setStockDistributionByCategory(Array.isArray(categoryDistributionData) ? categoryDistributionData : []);
+      } catch (error) {
+        console.error('Error fetching category distribution:', error);
+        setStockDistributionByCategory([]);
+      }
 
       // Fetch fast-moving items trend
-      const fastMovingResponse = await fetch(API_BASE_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          action: 'get_fast_moving_items_trend',
-          product: selectedProduct,
-          location: selectedLocation
-        })
-      });
-      const fastMovingData = await fastMovingResponse.json();
-      setFastMovingItemsTrend(Array.isArray(fastMovingData) ? fastMovingData : []);
+      try {
+        const fastMovingResponse = await fetch(API_BASE_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'get_fast_moving_items_trend',
+            product: selectedProduct,
+            location: selectedLocation
+          })
+        });
+        const fastMovingData = await fastMovingResponse.json();
+        setFastMovingItemsTrend(Array.isArray(fastMovingData) ? fastMovingData : []);
+      } catch (error) {
+        console.error('Error fetching fast moving items:', error);
+        setFastMovingItemsTrend([]);
+      }
 
       // Fetch critical stock alerts
-      const criticalStockResponse = await fetch(API_BASE_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          action: 'get_critical_stock_alerts',
-          product: selectedProduct,
-          location: selectedLocation
-        })
-      });
-      const criticalStockData = await criticalStockResponse.json();
-      setCriticalStockAlerts(Array.isArray(criticalStockData) ? criticalStockData : []);
+      try {
+        const criticalStockResponse = await fetch(API_BASE_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'get_critical_stock_alerts',
+            product: selectedProduct,
+            location: selectedLocation
+          })
+        });
+        const criticalStockData = await criticalStockResponse.json();
+        setCriticalStockAlerts(Array.isArray(criticalStockData) ? criticalStockData : []);
+      } catch (error) {
+        console.error('Error fetching critical stock alerts:', error);
+        setCriticalStockAlerts([]);
+      }
 
       // Fetch inventory by branch and category
-      const branchCategoryResponse = await fetch(API_BASE_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          action: 'get_inventory_by_branch_category',
-          product: selectedProduct,
-          location: selectedLocation
-        })
-      });
-      const branchCategoryData = await branchCategoryResponse.json();
-      setInventoryByBranchCategory(Array.isArray(branchCategoryData) ? branchCategoryData : []);
+      try {
+        const branchCategoryResponse = await fetch(API_BASE_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'get_inventory_by_branch_category',
+            product: selectedProduct,
+            location: selectedLocation
+          })
+        });
+        const branchCategoryData = await branchCategoryResponse.json();
+        setInventoryByBranchCategory(Array.isArray(branchCategoryData) ? branchCategoryData : []);
+      } catch (error) {
+        console.error('Error fetching branch category data:', error);
+        setInventoryByBranchCategory([]);
+      }
 
     } catch (error) {
-      console.error('Error fetching chart data:', error);
+      console.error('Error in fetchChartData:', error);
     }
   };
 
@@ -354,7 +399,7 @@ function Dashboard() {
     setReturnRateByProduct([]);
     setStockoutItems([]);
     setProductKPIs([]);
-  };
+  }; 
 
   const formatNumber = (num) => {
     if (num === undefined || num === null || isNaN(num)) {
@@ -705,45 +750,6 @@ function Dashboard() {
             <p className="text-2xl font-bold text-gray-900">{formatNumber(transferKPIs.totalTransfers)}</p>
             <p className="text-sm text-gray-600 mb-1">Active Transfers</p>
             <p className="text-xl font-bold text-blue-600">{formatNumber(transferKPIs.activeTransfers)}</p>
-          </div>
-        </div>
-
-        {/* Product Table Section */}
-        <div className="bg-white p-6 rounded-lg shadow-sm mb-8">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Warehouse Products</h3>
-          <div className="overflow-x-auto">
-            <table className="min-w-full text-sm">
-              <thead>
-                <tr className="border-b border-gray-200">
-                  <th className="text-left py-2">Product Name</th>
-                  <th className="text-right py-2">Quantity</th>
-                  <th className="text-right py-2">Unit Price</th>
-                  <th className="text-right py-2">Total Value</th>
-                  <th className="text-right py-2">Supplier</th>
-                  <th className="text-right py-2">Batch</th>
-                  <th className="text-right py-2">Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {Array.isArray(productKPIs) && productKPIs.length > 0 ? (
-                  productKPIs.map((item, index) => (
-                    <tr key={index} className="border-b border-gray-100">
-                      <td className="py-2 text-gray-900">{item.product || 'Unknown Product'}</td>
-                      <td className="py-2 text-right text-gray-600">{item.quantity || 0}</td>
-                      <td className="py-2 text-right text-gray-600">{formatCurrency(item.unitPrice || 0)}</td>
-                      <td className="py-2 text-right text-gray-600">{formatCurrency((item.quantity || 0) * (item.unitPrice || 0))}</td>
-                      <td className="py-2 text-right text-gray-600">{item.supplier || 'N/A'}</td>
-                      <td className="py-2 text-right text-gray-600">{item.batch || 'N/A'}</td>
-                      <td className="py-2 text-right text-gray-600">{item.status || 'Active'}</td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan={7} className="py-4 text-center text-gray-500">No products found.</td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
           </div>
         </div>
 

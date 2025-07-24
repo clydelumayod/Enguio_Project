@@ -1,7 +1,19 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Card, CardBody, CardHeader, Button, Input, Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Chip, Pagination, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure, Select, SelectItem, Progress } from "@nextui-org/react";
-import { FaDownload, FaPrint, FaChartBar, FaChartLine, FaChartPie, FaCalendar, FaFilter, FaEye, FaFileAlt } from "react-icons/fa";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { 
+  FaDownload, 
+  FaPrint, 
+  FaChartBar, 
+  FaChartLine, 
+  FaChartPie, 
+  FaCalendar, 
+  FaFilter, 
+  FaEye, 
+  FaFileAlt 
+} from "react-icons/fa";
+import { BarChart3, TrendingUp, PieChart, FileText, CheckCircle, Clock, AlertCircle } from "lucide-react";
 
 const Reports = () => {
   const [reports, setReports] = useState([]);
@@ -11,9 +23,9 @@ const Reports = () => {
   const [selectedDateRange, setSelectedDateRange] = useState("all");
   const [page, setPage] = useState(1);
   const [rowsPerPage] = useState(10);
-  const { isOpen, onOpen, onClose } = useDisclosure();
   const [selectedReport, setSelectedReport] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [showModal, setShowModal] = useState(false);
 
   // Sample data - replace with actual API calls
   const sampleData = [
@@ -99,11 +111,11 @@ const Reports = () => {
     totalValue: 1250000,
     monthlyGrowth: 8.5,
     topCategories: [
-      { name: "Pain Relief", percentage: 25, color: "success" },
-      { name: "Vitamins", percentage: 20, color: "primary" },
-      { name: "Antibiotics", percentage: 15, color: "warning" },
-      { name: "Gastrointestinal", percentage: 12, color: "secondary" },
-      { name: "Others", percentage: 28, color: "default" }
+      { name: "Pain Relief", percentage: 25, color: "bg-green-500" },
+      { name: "Vitamins", percentage: 20, color: "bg-blue-500" },
+      { name: "Antibiotics", percentage: 15, color: "bg-yellow-500" },
+      { name: "Gastrointestinal", percentage: 12, color: "bg-purple-500" },
+      { name: "Others", percentage: 28, color: "bg-gray-500" }
     ]
   };
 
@@ -158,32 +170,44 @@ const Reports = () => {
   const getStatusColor = (status) => {
     switch (status) {
       case "Completed":
-        return "success";
+        return "bg-green-100 text-green-800";
       case "In Progress":
-        return "warning";
+        return "bg-yellow-100 text-yellow-800";
       case "Failed":
-        return "danger";
+        return "bg-red-100 text-red-800";
       default:
-        return "default";
+        return "bg-gray-100 text-gray-800";
     }
   };
 
   const getTypeColor = (type) => {
     switch (type) {
       case "Summary Report":
-        return "primary";
+        return "bg-blue-100 text-blue-800";
       case "Alert Report":
-        return "warning";
+        return "bg-yellow-100 text-yellow-800";
       case "Analytics Report":
-        return "success";
+        return "bg-green-100 text-green-800";
       default:
-        return "default";
+        return "bg-gray-100 text-gray-800";
     }
   };
 
   const handleViewDetails = (report) => {
     setSelectedReport(report);
-    onOpen();
+    setShowModal(true);
+  };
+
+  const handleGenerateReport = () => {
+    toast.info('Report generation feature coming soon');
+  };
+
+  const handleDownload = (report) => {
+    toast.success(`Downloading ${report.title}`);
+  };
+
+  const handlePrint = (report) => {
+    toast.info(`Printing ${report.title}`);
   };
 
   const reportTypes = ["all", "Summary Report", "Alert Report", "Analytics Report"];
@@ -191,6 +215,15 @@ const Reports = () => {
 
   const pages = Math.ceil(filteredReports.length / rowsPerPage);
   const items = filteredReports.slice((page - 1) * rowsPerPage, page * rowsPerPage);
+
+  // Calculate statistics
+  const totalReports = filteredReports.length;
+  const completedReports = filteredReports.filter(r => r.status === 'Completed').length;
+  const inProgressReports = filteredReports.filter(r => r.status === 'In Progress').length;
+  const totalFileSize = filteredReports.reduce((sum, r) => {
+    const size = parseFloat(r.fileSize.replace(' MB', ''));
+    return sum + size;
+  }, 0);
 
   return (
     <div className="p-6 space-y-6">
@@ -201,311 +234,414 @@ const Reports = () => {
           <p className="text-gray-600">Generate and manage inventory reports and analytics</p>
         </div>
         <div className="flex gap-3">
-          <Button color="primary" startContent={<FaChartBar />}>
+          <button 
+            onClick={handleGenerateReport}
+            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+          >
+            <FaChartBar className="h-4 w-4" />
             Generate Report
-          </Button>
+          </button>
         </div>
       </div>
 
       {/* Analytics Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card>
-          <CardBody>
-            <div className="flex items-center gap-3">
-              <div className="p-3 bg-blue-100 rounded-lg">
-                <FaChartBar className="text-blue-600 text-xl" />
-              </div>
-              <div>
-                <p className="text-sm text-gray-500">Total Products</p>
-                <p className="text-2xl font-bold">{analyticsData.totalProducts.toLocaleString()}</p>
-              </div>
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="bg-white rounded-3xl shadow-xl p-6">
+          <div className="flex items-center">
+            <BarChart3 className="h-8 w-8 text-blue-500" />
+            <div className="ml-4">
+              <p className="text-sm font-medium text-gray-600">Total Products</p>
+              <p className="text-2xl font-bold text-gray-900">{analyticsData.totalProducts.toLocaleString()}</p>
             </div>
-          </CardBody>
-        </Card>
+          </div>
+        </div>
 
-        <Card>
-          <CardBody>
-            <div className="flex items-center gap-3">
-              <div className="p-3 bg-yellow-100 rounded-lg">
-                <FaChartLine className="text-yellow-600 text-xl" />
-              </div>
-              <div>
-                <p className="text-sm text-gray-500">Low Stock Items</p>
-                <p className="text-2xl font-bold text-yellow-600">{analyticsData.lowStockItems}</p>
-              </div>
+        <div className="bg-white rounded-3xl shadow-xl p-6">
+          <div className="flex items-center">
+            <AlertCircle className="h-8 w-8 text-yellow-500" />
+            <div className="ml-4">
+              <p className="text-sm font-medium text-gray-600">Low Stock Items</p>
+              <p className="text-2xl font-bold text-gray-900">{analyticsData.lowStockItems}</p>
             </div>
-          </CardBody>
-        </Card>
+          </div>
+        </div>
 
-        <Card>
-          <CardBody>
-            <div className="flex items-center gap-3">
-              <div className="p-3 bg-red-100 rounded-lg">
-                <FaChartPie className="text-red-600 text-xl" />
-              </div>
-              <div>
-                <p className="text-sm text-gray-500">Out of Stock</p>
-                <p className="text-2xl font-bold text-red-600">{analyticsData.outOfStockItems}</p>
-              </div>
+        <div className="bg-white rounded-3xl shadow-xl p-6">
+          <div className="flex items-center">
+            <PieChart className="h-8 w-8 text-red-500" />
+            <div className="ml-4">
+              <p className="text-sm font-medium text-gray-600">Out of Stock</p>
+              <p className="text-2xl font-bold text-gray-900">{analyticsData.outOfStockItems}</p>
             </div>
-          </CardBody>
-        </Card>
+          </div>
+        </div>
 
-        <Card>
-          <CardBody>
-            <div className="flex items-center gap-3">
-              <div className="p-3 bg-green-100 rounded-lg">
-                <FaFileAlt className="text-green-600 text-xl" />
-              </div>
-              <div>
-                <p className="text-sm text-gray-500">Total Value</p>
-                <p className="text-2xl font-bold text-green-600">₱{(analyticsData.totalValue / 1000000).toFixed(1)}M</p>
-              </div>
+        <div className="bg-white rounded-3xl shadow-xl p-6">
+          <div className="flex items-center">
+            <FileText className="h-8 w-8 text-green-500" />
+            <div className="ml-4">
+              <p className="text-sm font-medium text-gray-600">Total Value</p>
+              <p className="text-2xl font-bold text-gray-900">₱{(analyticsData.totalValue / 1000000).toFixed(1)}M</p>
             </div>
-          </CardBody>
-        </Card>
+          </div>
+        </div>
+      </div>
+
+      {/* Report Statistics */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="bg-white rounded-3xl shadow-xl p-6">
+          <div className="flex items-center">
+            <FileText className="h-8 w-8 text-blue-500" />
+            <div className="ml-4">
+              <p className="text-sm font-medium text-gray-600">Total Reports</p>
+              <p className="text-2xl font-bold text-gray-900">{totalReports}</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-3xl shadow-xl p-6">
+          <div className="flex items-center">
+            <CheckCircle className="h-8 w-8 text-green-500" />
+            <div className="ml-4">
+              <p className="text-sm font-medium text-gray-600">Completed</p>
+              <p className="text-2xl font-bold text-gray-900">{completedReports}</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-3xl shadow-xl p-6">
+          <div className="flex items-center">
+            <Clock className="h-8 w-8 text-yellow-500" />
+            <div className="ml-4">
+              <p className="text-sm font-medium text-gray-600">In Progress</p>
+              <p className="text-2xl font-bold text-gray-900">{inProgressReports}</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-3xl shadow-xl p-6">
+          <div className="flex items-center">
+            <TrendingUp className="h-8 w-8 text-purple-500" />
+            <div className="ml-4">
+              <p className="text-sm font-medium text-gray-600">Total Size</p>
+              <p className="text-2xl font-bold text-gray-900">{totalFileSize.toFixed(1)} MB</p>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Category Distribution */}
-      <Card>
-        <CardHeader>
-          <h3 className="text-xl font-semibold">Top Categories Distribution</h3>
-        </CardHeader>
-        <CardBody>
-          <div className="space-y-4">
-            {analyticsData.topCategories.map((category, index) => (
-              <div key={index} className="flex items-center gap-4">
-                <div className="w-32">
-                  <span className="text-sm font-medium">{category.name}</span>
-                </div>
-                <div className="flex-1">
-                  <Progress 
-                    value={category.percentage} 
-                    color={category.color}
-                    className="w-full"
-                  />
-                </div>
-                <div className="w-16 text-right">
-                  <span className="text-sm font-medium">{category.percentage}%</span>
+      <div className="bg-white rounded-3xl shadow-xl p-6">
+        <div className="flex items-center gap-3 mb-6">
+          <PieChart className="h-6 w-6 text-blue-500" />
+          <h3 className="text-xl font-semibold text-gray-900">Top Categories Distribution</h3>
+        </div>
+        <div className="space-y-4">
+          {analyticsData.topCategories.map((category, index) => (
+            <div key={index} className="flex items-center gap-4">
+              <div className="w-32">
+                <span className="text-sm font-medium text-gray-900">{category.name}</span>
+              </div>
+              <div className="flex-1">
+                <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div 
+                    className={`h-2 rounded-full ${category.color}`}
+                    style={{ width: `${category.percentage}%` }}
+                  ></div>
                 </div>
               </div>
-            ))}
-          </div>
-        </CardBody>
-      </Card>
+              <div className="w-16 text-right">
+                <span className="text-sm font-medium text-gray-900">{category.percentage}%</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
 
       {/* Filters and Search */}
-      <Card>
-        <CardBody>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div className="md:col-span-2">
-              <Input
+      <div className="bg-white rounded-3xl shadow-xl p-6">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="md:col-span-2">
+            <div className="relative">
+              <FaFilter className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <input
+                type="text"
                 placeholder="Search reports..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                startContent={<FaFilter className="text-gray-400" />}
-                className="w-full"
+                className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
-            <div>
-              <Select
-                placeholder="Report Type"
-                selectedKeys={[selectedType]}
-                onChange={(e) => setSelectedType(e.target.value)}
-                startContent={<FaFileAlt className="text-gray-400" />}
-              >
-                {reportTypes.map((type) => (
-                  <SelectItem key={type} value={type}>
-                    {type === "all" ? "All Types" : type}
-                  </SelectItem>
-                ))}
-              </Select>
-            </div>
-            <div>
-              <Select
-                placeholder="Date Range"
-                selectedKeys={[selectedDateRange]}
-                onChange={(e) => setSelectedDateRange(e.target.value)}
-                startContent={<FaCalendar className="text-gray-400" />}
-              >
-                {dateRanges.map((range) => (
-                  <SelectItem key={range} value={range}>
-                    {range === "all" ? "All Time" : 
-                     range === "today" ? "Today" :
-                     range === "week" ? "Last 7 Days" :
-                     range === "month" ? "Last 30 Days" : range}
-                  </SelectItem>
-                ))}
-              </Select>
-            </div>
           </div>
-        </CardBody>
-      </Card>
+          <div>
+            <select
+              value={selectedType}
+              onChange={(e) => setSelectedType(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              {reportTypes.map((type) => (
+                <option key={type} value={type}>
+                  {type === "all" ? "All Types" : type}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <select
+              value={selectedDateRange}
+              onChange={(e) => setSelectedDateRange(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              {dateRanges.map((range) => (
+                <option key={range} value={range}>
+                  {range === "all" ? "All Time" : 
+                   range === "today" ? "Today" :
+                   range === "week" ? "Last 7 Days" :
+                   range === "month" ? "Last 30 Days" : range}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+      </div>
 
       {/* Reports Table */}
-      <Card>
-        <CardHeader>
+      <div className="bg-white rounded-3xl shadow-xl">
+        <div className="px-6 py-4 border-b border-gray-200">
           <div className="flex justify-between items-center">
-            <h3 className="text-xl font-semibold">Generated Reports</h3>
+            <h3 className="text-xl font-semibold text-gray-900">Generated Reports</h3>
             <div className="text-sm text-gray-500">
               {filteredReports.length} reports found
             </div>
           </div>
-        </CardHeader>
-        <CardBody>
-          <Table aria-label="Reports table">
-            <TableHeader>
-              <TableColumn>REPORT TITLE</TableColumn>
-              <TableColumn>TYPE</TableColumn>
-              <TableColumn>GENERATED BY</TableColumn>
-              <TableColumn>DATE & TIME</TableColumn>
-              <TableColumn>STATUS</TableColumn>
-              <TableColumn>FILE INFO</TableColumn>
-              <TableColumn>ACTIONS</TableColumn>
-            </TableHeader>
-            <TableBody>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-gray-50 border-b border-gray-200">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  REPORT TITLE
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  TYPE
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  GENERATED BY
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  DATE & TIME
+                </th>
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  STATUS
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  FILE INFO
+                </th>
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  ACTIONS
+                </th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
               {items.map((item) => (
-                <TableRow key={item.id}>
-                  <TableCell>
+                <tr key={item.id} className="hover:bg-gray-50">
+                  <td className="px-6 py-4">
                     <div>
-                      <div className="font-semibold">{item.title}</div>
+                      <div className="text-sm font-medium text-gray-900">{item.title}</div>
                       <div className="text-sm text-gray-500 max-w-xs truncate">{item.description}</div>
                     </div>
-                  </TableCell>
-                  <TableCell>
-                    <Chip 
-                      color={getTypeColor(item.type)} 
-                      variant="flat"
-                      startContent={<FaFileAlt />}
-                    >
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className={`inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-full ${getTypeColor(item.type)}`}>
+                      <FaFileAlt className="h-3 w-3" />
                       {item.type}
-                    </Chip>
-                  </TableCell>
-                  <TableCell>{item.generatedBy}</TableCell>
-                  <TableCell>
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className="text-sm text-gray-900">{item.generatedBy}</span>
+                  </td>
+                  <td className="px-6 py-4">
                     <div>
-                      <div className="font-semibold">{item.date}</div>
+                      <div className="text-sm font-medium text-gray-900">{item.date}</div>
                       <div className="text-sm text-gray-500">{item.time}</div>
                     </div>
-                  </TableCell>
-                  <TableCell>
-                    <Chip color={getStatusColor(item.status)} variant="flat">
+                  </td>
+                  <td className="px-6 py-4 text-center">
+                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(item.status)}`}>
                       {item.status}
-                    </Chip>
-                  </TableCell>
-                  <TableCell>
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
                     <div>
-                      <div className="font-semibold">{item.format}</div>
+                      <div className="text-sm font-medium text-gray-900">{item.format}</div>
                       <div className="text-sm text-gray-500">{item.fileSize}</div>
                     </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex gap-2">
-                      <Button isIconOnly size="sm" variant="light" onPress={() => handleViewDetails(item)}>
-                        <FaEye className="text-blue-500" />
-                      </Button>
-                      <Button isIconOnly size="sm" variant="light">
-                        <FaDownload className="text-green-500" />
-                      </Button>
-                      <Button isIconOnly size="sm" variant="light">
-                        <FaPrint className="text-purple-500" />
-                      </Button>
+                  </td>
+                  <td className="px-6 py-4 text-center">
+                    <div className="flex justify-center gap-2">
+                      <button 
+                        onClick={() => handleViewDetails(item)}
+                        className="text-blue-600 hover:text-blue-900 p-1"
+                      >
+                        <FaEye className="h-4 w-4" />
+                      </button>
+                      <button 
+                        onClick={() => handleDownload(item)}
+                        className="text-green-600 hover:text-green-900 p-1"
+                      >
+                        <FaDownload className="h-4 w-4" />
+                      </button>
+                      <button 
+                        onClick={() => handlePrint(item)}
+                        className="text-purple-600 hover:text-purple-900 p-1"
+                      >
+                        <FaPrint className="h-4 w-4" />
+                      </button>
                     </div>
-                  </TableCell>
-                </TableRow>
+                  </td>
+                </tr>
               ))}
-            </TableBody>
-          </Table>
+            </tbody>
+          </table>
+        </div>
 
-          {/* Pagination */}
-          <div className="flex justify-center mt-4">
-            <Pagination
-              total={pages}
-              page={page}
-              onChange={setPage}
-              showControls
-              color="primary"
-            />
+        {/* Pagination */}
+        {pages > 1 && (
+          <div className="flex justify-center mt-4 pb-4">
+            <div className="flex items-center space-x-2">
+              <button
+                onClick={() => setPage(Math.max(1, page - 1))}
+                disabled={page === 1}
+                className="px-3 py-1 border border-gray-300 rounded disabled:opacity-50"
+              >
+                Previous
+              </button>
+              <span className="px-3 py-1 text-sm">
+                Page {page} of {pages}
+              </span>
+              <button
+                onClick={() => setPage(Math.min(pages, page + 1))}
+                disabled={page === pages}
+                className="px-3 py-1 border border-gray-300 rounded disabled:opacity-50"
+              >
+                Next
+              </button>
+            </div>
           </div>
-        </CardBody>
-      </Card>
+        )}
+      </div>
 
       {/* Report Details Modal */}
-      <Modal isOpen={isOpen} onClose={onClose} size="2xl">
-        <ModalContent>
-          <ModalHeader>Report Details</ModalHeader>
-          <ModalBody>
-            {selectedReport && (
-              <div className="space-y-6">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <h4 className="font-semibold text-gray-700">Report Information</h4>
-                    <div className="mt-2 space-y-2">
-                      <div>
-                        <span className="text-sm text-gray-500">Title:</span>
-                        <div className="font-medium">{selectedReport.title}</div>
+      {showModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-3xl shadow-xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div className="px-6 py-4 border-b border-gray-200">
+              <div className="flex justify-between items-center">
+                <h3 className="text-xl font-semibold text-gray-900">Report Details</h3>
+                <button 
+                  onClick={() => setShowModal(false)}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+            <div className="p-6">
+              {selectedReport && (
+                <div className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <h4 className="font-semibold text-gray-700 mb-3">Report Information</h4>
+                      <div className="space-y-3">
+                        <div>
+                          <span className="text-sm text-gray-500">Title:</span>
+                          <div className="font-medium text-gray-900">{selectedReport.title}</div>
+                        </div>
+                        <div>
+                          <span className="text-sm text-gray-500">Type:</span>
+                          <div className="font-medium text-gray-900">{selectedReport.type}</div>
+                        </div>
+                        <div>
+                          <span className="text-sm text-gray-500">Status:</span>
+                          <div className="font-medium text-gray-900">{selectedReport.status}</div>
+                        </div>
                       </div>
-                      <div>
-                        <span className="text-sm text-gray-500">Type:</span>
-                        <div className="font-medium">{selectedReport.type}</div>
-                      </div>
-                      <div>
-                        <span className="text-sm text-gray-500">Status:</span>
-                        <div className="font-medium">{selectedReport.status}</div>
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-gray-700 mb-3">File Details</h4>
+                      <div className="space-y-3">
+                        <div>
+                          <span className="text-sm text-gray-500">Format:</span>
+                          <div className="font-medium text-gray-900">{selectedReport.format}</div>
+                        </div>
+                        <div>
+                          <span className="text-sm text-gray-500">File Size:</span>
+                          <div className="font-medium text-gray-900">{selectedReport.fileSize}</div>
+                        </div>
+                        <div>
+                          <span className="text-sm text-gray-500">Generated By:</span>
+                          <div className="font-medium text-gray-900">{selectedReport.generatedBy}</div>
+                        </div>
                       </div>
                     </div>
                   </div>
+
                   <div>
-                    <h4 className="font-semibold text-gray-700">File Details</h4>
-                    <div className="mt-2 space-y-2">
-                      <div>
-                        <span className="text-sm text-gray-500">Format:</span>
-                        <div className="font-medium">{selectedReport.format}</div>
-                      </div>
-                      <div>
-                        <span className="text-sm text-gray-500">File Size:</span>
-                        <div className="font-medium">{selectedReport.fileSize}</div>
-                      </div>
-                      <div>
-                        <span className="text-sm text-gray-500">Generated By:</span>
-                        <div className="font-medium">{selectedReport.generatedBy}</div>
-                      </div>
+                    <h4 className="font-semibold text-gray-700 mb-3">Description</h4>
+                    <div className="p-3 bg-gray-50 rounded-lg">
+                      <p className="text-gray-700">{selectedReport.description}</p>
                     </div>
                   </div>
-                </div>
 
-                <div>
-                  <h4 className="font-semibold text-gray-700">Description</h4>
-                  <div className="mt-2 p-3 bg-gray-50 rounded-lg">
-                    <p className="text-gray-700">{selectedReport.description}</p>
-                  </div>
-                </div>
-
-                <div>
-                  <h4 className="font-semibold text-gray-700">Generated On</h4>
-                  <div className="mt-2">
+                  <div>
+                    <h4 className="font-semibold text-gray-700 mb-3">Generated On</h4>
                     <div className="flex items-center gap-2">
                       <FaCalendar className="text-gray-400" />
-                      <span className="font-medium">{selectedReport.date} at {selectedReport.time}</span>
+                      <span className="font-medium text-gray-900">{selectedReport.date} at {selectedReport.time}</span>
                     </div>
                   </div>
                 </div>
-              </div>
-            )}
-          </ModalBody>
-          <ModalFooter>
-            <Button color="primary" variant="light" startContent={<FaDownload />}>
-              Download
-            </Button>
-            <Button color="secondary" variant="light" startContent={<FaPrint />}>
-              Print
-            </Button>
-            <Button color="primary" onPress={onClose}>
-              Close
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+              )}
+            </div>
+            <div className="px-6 py-4 border-t border-gray-200 flex justify-end gap-3">
+              <button 
+                onClick={() => handleDownload(selectedReport)}
+                className="flex items-center gap-2 px-4 py-2 text-blue-600 hover:text-blue-900"
+              >
+                <FaDownload className="h-4 w-4" />
+                Download
+              </button>
+              <button 
+                onClick={() => handlePrint(selectedReport)}
+                className="flex items-center gap-2 px-4 py-2 text-purple-600 hover:text-purple-900"
+              >
+                <FaPrint className="h-4 w-4" />
+                Print
+              </button>
+              <button 
+                onClick={() => setShowModal(false)}
+                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
     </div>
   );
 };

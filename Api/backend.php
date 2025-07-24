@@ -10,16 +10,30 @@ header("Access-Control-Allow-Methods: POST, GET, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type");
 header("Content-Type: application/json");
 
-// Show PHP errors for debugging (optional - remove in production)
-ini_set('display_errors', 1);
+// Disable error display to prevent HTML in JSON response
+ini_set('display_errors', 0);
 error_reporting(E_ALL);
 
 // Log errors to a file for debugging
 ini_set('log_errors', 1);
 ini_set('error_log', 'php_errors.log');
 
-// Include DB connection
-include 'index.php';
+// Database connection using PDO
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "enguio2";
+
+try {
+    $conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
+    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+} catch (Exception $e) {
+    echo json_encode([
+        "success" => false,
+        "message" => "Database connection error: " . $e->getMessage()
+    ]);
+    exit;
+}
 
 // Clear any output that might have been generated
 ob_clean();
@@ -54,7 +68,8 @@ if (!isset($data['action'])) {
 $action = $data['action'];
 error_log("Processing action: " . $action);
 
-switch ($action) {
+try {
+    switch ($action) {
     case 'add_employee':
         try {
             // Extract and sanitize input data
@@ -2334,17 +2349,18 @@ switch ($action) {
             $product_filter = isset($data['product']) && $data['product'] !== 'All' ? $data['product'] : null;
             $location_filter = isset($data['location']) && $data['location'] !== 'All' ? $data['location'] : null;
             
-            // Always filter for warehouse products (location_id = 2) unless specific location is requested
+            // Build WHERE conditions
             $whereConditions = ["(p.status IS NULL OR p.status <> 'archived')"];
             $params = [];
             
             if ($location_filter && $location_filter !== 'Warehouse') {
                 $whereConditions[] = "l.location_name = ?";
                 $params[] = $location_filter;
-            } else {
-                // Default to warehouse products only
+            } else if ($location_filter === 'Warehouse') {
+                // Only filter by warehouse if specifically requested
                 $whereConditions[] = "p.location_id = 2";
             }
+            // If no location filter or 'All' is selected, don't filter by location
             
             if ($product_filter) {
                 $whereConditions[] = "p.category = ?";
@@ -2353,7 +2369,7 @@ switch ($action) {
             
             $whereClause = "WHERE " . implode(" AND ", $whereConditions);
             
-            // Get warehouse-specific KPIs
+            // Get warehouse-specific KPIs using PDO
             $stmt = $conn->prepare("
                 SELECT 
                     COUNT(DISTINCT p.product_id) as totalProducts,
@@ -2368,7 +2384,8 @@ switch ($action) {
                 LEFT JOIN tbl_location l ON p.location_id = l.location_id
                 LEFT JOIN tbl_supplier s ON p.supplier_id = s.supplier_id
                 LEFT JOIN tbl_batch b ON p.batch_id = b.batch_id
-                LEFT JOIN tbl_transfer t ON p.product_id = t.product_id
+                LEFT JOIN tbl_transfer_dtl td ON p.product_id = td.product_id
+                LEFT JOIN tbl_transfer_header t ON td.transfer_header_id = t.transfer_header_id
                 $whereClause
             ");
             $stmt->execute($params);
@@ -2388,7 +2405,7 @@ switch ($action) {
             $product_filter = isset($data['product']) && $data['product'] !== 'All' ? $data['product'] : null;
             $location_filter = isset($data['location']) && $data['location'] !== 'All' ? $data['location'] : null;
             
-            // Always filter for warehouse products (location_id = 2) unless specific location is requested
+            // Build WHERE conditions
             $whereConditions = ["(p.status IS NULL OR p.status <> 'archived')"];
             $params = [];
             
@@ -2916,24 +2933,21 @@ switch ($action) {
                 exit;
             }
         
-            $stmt = $conn->prepare("UPDATE tbl_supplier SET deleted_at = NOW() WHERE supplier_id = :supplier_id");
-            $stmt->bindParam(":supplier_id", $supplier_id, PDO::PARAM_INT);
-        
+            $stmt = $conn->prepare("UPDATE tbl_supplier SET deleted_at = NOW() WHERE supplier_id = ?");
+            
             try {
-                if ($stmt->execute()) {
+                if ($stmt->execute([$supplier_id])) {
                     echo json_encode(["success" => true, "message" => "Supplier archived"]);
                 } else {
                     echo json_encode([
                         "success" => false,
-                        "message" => "Failed to archive supplier",
-                        "error" => $stmt->errorInfo()
+                        "message" => "Failed to archive supplier"
                     ]);
                 }
             } catch (Exception $e) {
                 echo json_encode([
                     "success" => false,
-                    "message" => "An error occurred: " . $e->getMessage(),
-                    "error" => $stmt->errorInfo()
+                    "message" => "An error occurred: " . $e->getMessage()
                 ]);
             }
             break;
@@ -2959,13 +2973,18 @@ switch ($action) {
             }
         
             try {
-                $stmt = $conn->prepare("UPDATE tbl_supplier SET deleted_at = NULL WHERE supplier_id = :supplier_id");
-                $stmt->execute([":supplier_id" => $supplier_id]);
-        
-                echo json_encode([
-                    "success" => true,
-                    "message" => "Supplier restored"
-                ]);
+                $stmt = $conn->prepare("UPDATE tbl_supplier SET deleted_at = NULL WHERE supplier_id = ?");
+                if ($stmt->execute([$supplier_id])) {
+                    echo json_encode([
+                        "success" => true,
+                        "message" => "Supplier restored"
+                    ]);
+                } else {
+                    echo json_encode([
+                        "success" => false,
+                        "message" => "Error restoring supplier"
+                    ]);
+                }
             } catch (Exception $e) {
                 echo json_encode([
                     "success" => false,
@@ -2981,10 +3000,16 @@ switch ($action) {
                 $suppliers = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 echo json_encode(["success" => true, "suppliers" => $suppliers]);
             } catch (Exception $e) {
-                echo json_encode(["success" => false, "message" => "Error fetching archived suppliers"]);
+                echo json_encode(["success" => false, "message" => "Error fetching archived suppliers: " . $e->getMessage()]);
             }
             break;
          
+    }
+} catch (Exception $e) {
+    echo json_encode([
+        "success" => false,
+        "message" => "Server error: " . $e->getMessage()
+    ]);
 }
 
 // Flush the output buffer to ensure clean JSON response

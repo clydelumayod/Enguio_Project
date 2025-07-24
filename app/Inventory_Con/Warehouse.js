@@ -1198,45 +1198,44 @@ function Warehouse() {
   
   <div className="p-2">
     {activeTab === "products" && (
-      <div className="bg-white rounded-2xl shadow w-full max-w-full">
-        <div className="px-4 py-2 border-b border-gray-10">
+      <div className="bg-white rounded-3xl shadow-xl">
+        <div className="px-6 py-4 border-b border-gray-200">
           <div className="flex justify-between items-center">
-            <h3 className="text-base font-semibold text-gray-900">Products</h3>
-            <div className="text-xs text-gray-500">
+            <h3 className="text-xl font-semibold text-gray-900">Products</h3>
+            <div className="text-sm text-gray-500">
               {inventoryData.length} products found
             </div>
           </div>
         </div>
-        {/* Table scrollable area */}
-        <div className="overflow-y-auto w-full" style={{ maxHeight: '550px', minHeight: '220px' }}>
-          <table className="w-full table-fixed text-sm">
+        <div className="overflow-x-auto">
+          <table className="w-full">
             <thead className="bg-gray-50 border-b border-gray-200">
               <tr>
-                <th className="px-3 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">PRODUCT NAME</th>
-                <th className="px-3 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">BARCODE</th>
-                <th className="px-3 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">CATEGORY</th>
-                <th className="px-3 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">BRAND</th>
-                <th className="px-3 py-3 text-center font-medium text-gray-500 uppercase tracking-wider">QTY</th>
-                <th className="px-3 py-3 text-center font-medium text-gray-500 uppercase tracking-wider">UNIT PRICE</th>
-                <th className="px-3 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">SUPPLIER</th>
-                <th className="px-3 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">BATCH</th>
-                <th className="px-3 py-3 text-center font-medium text-gray-500 uppercase tracking-wider">EXPIRY</th>
-                <th className="px-3 py-3 text-center font-medium text-gray-500 uppercase tracking-wider">ADDED</th>
-                <th className="px-3 py-3 text-center font-medium text-gray-500 uppercase tracking-wider">TYPE</th>
-                <th className="px-3 py-3 text-center font-medium text-gray-500 uppercase tracking-wider">STATUS</th>
-                <th className="px-3 py-3 text-center font-medium text-gray-500 uppercase tracking-wider">STOCK</th>
-                <th className="px-3 py-3 text-center font-medium text-gray-500 uppercase tracking-wider min-w-[80px]">ACTIONS</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">PRODUCT NAME</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">BARCODE</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">CATEGORY</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">BRAND</th>
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">STOCK</th>
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">PRICE</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">SUPPLIER</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">BATCH</th>
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">EXPIRY</th>
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">ADDED</th>
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">TYPE</th>
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">STATUS</th>
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">STOCK STATUS</th>
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">ACTIONS</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {inventoryData.length === 0 ? (
                 <tr>
-                  <td colSpan="14" className="px-2 py-6 text-center">
-                    <div className="flex flex-col items-center space-y-2">
-                      <Package className="h-8 w-8 text-gray-300" />
+                  <td colSpan="14" className="px-6 py-8 text-center">
+                    <div className="flex flex-col items-center space-y-3">
+                      <Package className="h-12 w-12 text-gray-300" />
                       <div className="text-gray-500">
-                        <p className="text-base font-medium">No products found</p>
-                        <p className="text-xs">Products will appear here when added to warehouse</p>
+                        <p className="text-lg font-medium">No products found</p>
+                        <p className="text-sm">Products will appear here when added to warehouse</p>
                       </div>
                     </div>
                   </td>
@@ -1244,35 +1243,60 @@ function Warehouse() {
               ) : (
                 inventoryData.map((product) => (
                   <tr key={product.product_id} className="hover:bg-gray-50">
-                    <td className="px-3 py-3 font-medium text-gray-900 truncate max-w-[120px]">{product.product_name}</td>
-                    <td className="px-3 py-3 font-mono text-gray-900 truncate max-w-[80px]">{product.barcode}</td>
-                    <td className="px-3 py-3">
-                      <span className="inline-flex px-1 py-0.5 text-xs font-medium bg-gray-100 text-gray-800 rounded-full">{product.category}</span>
+                    <td className="px-6 py-4">
+                      <div className="text-sm font-medium text-gray-900">
+                        {product.product_name}
+                      </div>
                     </td>
-                    <td className="px-3 py-3 text-gray-900 truncate max-w-[80px]">{product.brand || "N/A"}</td>
-                    <td className="px-3 py-3 text-center font-semibold">{product.quantity}</td>
-                    <td className="px-3 py-3 text-center text-gray-900">₱{Number.parseFloat(product.unit_price || 0).toFixed(2)}</td>
-                    <td className="px-3 py-3 text-gray-900 truncate max-w-[80px]">{product.supplier_name || "N/A"}</td>
-                    <td className="px-3 py-3 text-center truncate max-w-[80px]">{product.batch_reference || <span className="text-gray-400 italic">None</span>}</td>
-                    <td className="px-3 py-3 text-center">{product.expiration ? new Date(product.expiration).toLocaleDateString() : <span className="text-gray-400 italic">None</span>}</td>
-                    <td className="px-3 py-3 text-center">{product.date_added ? new Date(product.date_added).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: '2-digit' }) : <span className="text-gray-400 italic">N/A</span>}</td>
-                    <td className="px-3 py-3 text-center">
+                    <td className="px-6 py-4 text-sm font-mono text-gray-900">
+                      {product.barcode}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-900">
+                      <span className="inline-flex px-2 py-1 text-xs font-medium bg-gray-100 text-gray-800 rounded-full">
+                        {product.category}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-900">
+                      {product.brand || 'N/A'}
+                    </td>
+                    <td className="px-6 py-4 text-center">
+                      <div>
+                        <div className="font-semibold">{product.quantity || 0}</div>
+                        <div className="text-sm text-gray-500">units</div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-center text-sm text-gray-900">
+                      ₱{Number.parseFloat(product.unit_price || 0).toFixed(2)}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-900">
+                      {product.supplier_name || "N/A"}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-900">
+                      {product.batch_reference || <span className="text-gray-400 italic">None</span>}
+                    </td>
+                    <td className="px-6 py-4 text-center text-sm text-gray-900">
+                      {product.expiration ? new Date(product.expiration).toLocaleDateString() : <span className="text-gray-400 italic">None</span>}
+                    </td>
+                    <td className="px-6 py-4 text-center text-sm text-gray-900">
+                      {product.date_added ? new Date(product.date_added).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: '2-digit' }) : <span className="text-gray-400 italic">N/A</span>}
+                    </td>
+                    <td className="px-6 py-4 text-center">
                       {(() => {
                         const bulk = Number(product.bulk);
                         const prescription = Number(product.prescription);
                         if (bulk && prescription) {
-                          return <span className="inline-block px-1 py-0.5 text-xs font-medium bg-yellow-100 text-yellow-800 rounded-full">Bulk & Rx</span>;
+                          return <span className="inline-flex px-2 py-1 text-xs font-medium bg-yellow-100 text-yellow-800 rounded-full">Bulk & Rx</span>;
                         } else if (bulk) {
-                          return <span className="inline-block px-1 py-0.5 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">Bulk</span>;
+                          return <span className="inline-flex px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">Bulk</span>;
                         } else if (prescription) {
-                          return <span className="inline-block px-1 py-0.5 text-xs font-medium bg-red-100 text-red-800 rounded-full">Rx</span>;
+                          return <span className="inline-flex px-2 py-1 text-xs font-medium bg-red-100 text-red-800 rounded-full">Rx</span>;
                         } else {
-                          return <span className="inline-block px-1 py-0.5 text-xs font-medium bg-gray-100 text-gray-700 rounded-full">Regular</span>;
+                          return <span className="inline-flex px-2 py-1 text-xs font-medium bg-gray-100 text-gray-700 rounded-full">Regular</span>;
                         }
                       })()}
                     </td>
-                    <td className="px-3 py-3 text-center">
-                      <span className={`inline-flex px-1 py-0.5 text-xs font-semibold rounded-full ${
+                    <td className="px-6 py-4 text-center">
+                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
                         product.status === "Available"
                           ? "bg-green-100 text-green-800"
                           : "bg-red-100 text-red-800"
@@ -1280,27 +1304,27 @@ function Warehouse() {
                         {product.status || "Available"}
                       </span>
                     </td>
-                    <td className="px-3 py-3 text-center">
-                      <span className={`inline-flex px-1 py-0.5 text-xs font-semibold rounded-full ${
+                    <td className="px-6 py-4 text-center">
+                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
                         product.stock_status === 'out of stock'
-                          ? 'bg-red-100 text-red-700'
+                          ? 'bg-red-100 text-red-800'
                           : product.stock_status === 'low stock'
-                          ? 'bg-yellow-100 text-yellow-700'
-                          : 'bg-green-100 text-green-700'
+                          ? 'bg-yellow-100 text-yellow-800'
+                          : 'bg-green-100 text-green-800'
                       }`}>
                         {product.stock_status}
                       </span>
                     </td>
-                    <td className="px-3 py-3 text-center min-w-[80px]">
-                      <div className="flex justify-center gap-1 flex-nowrap">
-                        <button onClick={() => openFifoModal(product)} className="text-green-600 hover:text-green-900 p-0.5" title="View FIFO Stock">
-                          <Package className="h-3 w-3" />
+                    <td className="px-6 py-4 text-center">
+                      <div className="flex justify-center gap-2">
+                        <button onClick={() => openFifoModal(product)} className="text-green-600 hover:text-green-900 p-1" title="View FIFO Stock">
+                          <Package className="h-4 w-4" />
                         </button>
-                        <button onClick={() => openEditProductModal(product)} className="text-blue-600 hover:text-blue-900 p-0.5" title="Edit Product">
-                          <Edit className="h-3 w-3" />
+                        <button onClick={() => openEditProductModal(product)} className="text-blue-600 hover:text-blue-900 p-1" title="Edit Product">
+                          <Edit className="h-4 w-4" />
                         </button>
-                        <button onClick={() => openDeleteModal(product)} className="text-red-600 hover:text-red-900 p-0.5" title="Archive Product">
-                          <Archive className="h-3 w-3" />
+                        <button onClick={() => openDeleteModal(product)} className="text-red-600 hover:text-red-900 p-1" title="Archive Product">
+                          <Archive className="h-4 w-4" />
                         </button>
                       </div>
                     </td>
@@ -1381,8 +1405,8 @@ function Warehouse() {
   
         {/* SUPPLIER MODAL - ALL FIELDS KEPT */}
         {showSupplierModal && (
-          <div className="fixed inset-0 bg-gray-100 bg-opacity-80 flex items-center justify-center z-50">
-            <div className="rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto border-2 border-gray-400">
+          <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50">
+            <div className="bg-white/90 backdrop-blur-md rounded-xl shadow-2xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto border border-gray-200/50">
               <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
                 <h3 className="text-lg font-semibold text-gray-900">Add New Supplier</h3>
                 <button onClick={closeSupplierModal} className="text-gray-400 hover:text-gray-600">
@@ -1549,8 +1573,8 @@ function Warehouse() {
   
         {/* Edit Supplier Modal */}
         {showEditModal && (
-          <div className="fixed inset-0 bg-gray-100 bg-opacity-80 flex items-center justify-center z-50">
-            <div className="bg-transparent backdrop-blur-sm rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto border-2 border-gray-400">
+          <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50">
+            <div className="bg-white/90 backdrop-blur-md rounded-xl shadow-2xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto border border-gray-200/50">
               <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
                 <h3 className="text-lg font-semibold text-gray-900">Edit Supplier</h3>
                 <button onClick={closeEditModal} className="text-gray-400 hover:text-gray-600">
@@ -1667,8 +1691,8 @@ function Warehouse() {
 
         {/* Edit Product Modal */}
         {showEditProductModal && (
-          <div className="fixed inset-0 bg-gray-100 bg-opacity-80 flex items-center justify-center z-50">
-            <div className="bg-transparent backdrop-blur-sm rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto border-2 border-gray-400">
+          <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50">
+            <div className="bg-white/90 backdrop-blur-md rounded-xl shadow-2xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto border border-gray-200/50">
               <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
                 <h3 className="text-lg font-semibold text-gray-900">Edit Product</h3>
                 <button onClick={closeEditProductModal} className="text-gray-400 hover:text-gray-600">
@@ -1845,8 +1869,8 @@ function Warehouse() {
   
   {/* Delete Confirmation Modal */}
   {showDeleteModal && (
-    <div className="fixed inset-0 bg-gray-100 bg-opacity-80 flex items-center justify-center z-50">
-      <div className="bg-transparent backdrop-blur-sm rounded-lg shadow-xl p-6 border-2 border-gray-400 w-96">
+    <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50">
+      <div className="bg-white/90 backdrop-blur-md rounded-xl shadow-2xl p-6 border border-gray-200/50 w-96">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">Confirm Archive</h3>
         <p className="text-gray-700 mb-4">Are you sure you want to archive this item?</p>
         <div className="flex justify-end space-x-4">
@@ -1871,8 +1895,8 @@ function Warehouse() {
   
   {/* Update Product Stock Modal */}
   {showUpdateStockModal && existingProduct && (
-    <div className="fixed inset-0 bg-gray-100 bg-opacity-80 flex items-center justify-center z-50">
-      <div className="bg-transparent backdrop-blur-sm rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto border-2 border-gray-400">
+    <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50">
+      <div className="bg-white/90 backdrop-blur-md rounded-xl shadow-2xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto border border-gray-200/50">
         <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
           <h3 className="text-lg font-semibold text-gray-900">Update Product Stock</h3>
           <button onClick={closeUpdateStockModal} className="text-gray-400 hover:text-gray-600">
@@ -1987,8 +2011,8 @@ function Warehouse() {
   )}
 
             {showNewProductModal && (
-        <div className="fixed inset-0 bg-gray-100 bg-opacity-80 flex items-center justify-center z-50">
-          <div className="bg-transparent backdrop-blur-sm rounded-lg shadow-2xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto border-2 border-gray-400">
+        <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white/90 backdrop-blur-md rounded-xl shadow-2xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto border border-gray-200/50">
         <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
           <h3 className="text-lg font-semibold text-gray-900">Add New Product</h3>
           <button onClick={closeNewProductModal} className="text-gray-400 hover:text-gray-600">
@@ -2227,8 +2251,8 @@ function Warehouse() {
   
         {/* FIFO Stock Modal */}
         {showFifoModal && selectedProductForFifo && (
-          <div className="fixed inset-0 bg-gray-100 bg-opacity-80 flex items-center justify-center z-50">
-            <div className="bg-transparent backdrop-blur-sm rounded-lg shadow-xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto border-2 border-gray-400">
+          <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50">
+            <div className="bg-white/90 backdrop-blur-md rounded-xl shadow-2xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto border border-gray-200/50">
               <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
                 <h3 className="text-lg font-semibold text-gray-900">
                   FIFO Stock Details - {selectedProductForFifo.product_name}

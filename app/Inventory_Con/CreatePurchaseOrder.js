@@ -1,7 +1,33 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { 
+  FaPlus, 
+  FaTrash, 
+  FaEye, 
+  FaCheck, 
+  FaTimes, 
+  FaTruck, 
+  FaBox, 
+  FaFileAlt,
+  FaCalendar,
+  FaUser,
+  FaBuilding
+} from "react-icons/fa";
+import { 
+  ShoppingCart, 
+  FileText, 
+  Package, 
+  CheckCircle, 
+  Clock, 
+  AlertCircle,
+  DollarSign,
+  Calendar,
+  User,
+  Building
+} from "lucide-react";
 
 // Define API base URLs at the top of the file
 const API_BASE_SIMPLE = "http://localhost/Enguio_Project/purchase_order_api_simple.php";
@@ -470,43 +496,49 @@ function CreatePurchaseOrder() {
   }
 
   return (
-    <div className="p-8 space-y-8">
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900">PURCHASE ORDER MANAGEMENT</h1>
-        <p className="text-gray-600 mt-2">Create, manage, and receive purchase orders</p>
+    <div className="p-6 space-y-6">
+      {/* Header */}
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-800">Purchase Order Management</h1>
+          <p className="text-gray-600">Create, manage, and receive purchase orders</p>
+        </div>
       </div>
 
       {/* Tab Navigation */}
-      <div className="border-b border-gray-200">
-        <nav className="-mb-px flex space-x-8">
+      <div className="bg-white rounded-3xl shadow-xl p-6">
+        <nav className="flex space-x-8">
           <button
             onClick={() => setActiveTab('create')}
-            className={`py-2 px-1 border-b-2 font-medium text-sm ${
+            className={`flex items-center gap-2 py-2 px-4 rounded-lg font-medium text-sm transition-colors ${
               activeTab === 'create'
-                ? 'border-green-500 text-green-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                ? 'bg-blue-100 text-blue-700'
+                : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'
             }`}
           >
+            <ShoppingCart className="h-4 w-4" />
             Create Purchase Order
           </button>
           <button
             onClick={() => setActiveTab('list')}
-            className={`py-2 px-1 border-b-2 font-medium text-sm ${
+            className={`flex items-center gap-2 py-2 px-4 rounded-lg font-medium text-sm transition-colors ${
               activeTab === 'list'
-                ? 'border-green-500 text-green-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                ? 'bg-blue-100 text-blue-700'
+                : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'
             }`}
           >
+            <FileText className="h-4 w-4" />
             Purchase Orders
           </button>
           <button
             onClick={() => setActiveTab('receive')}
-            className={`py-2 px-1 border-b-2 font-medium text-sm ${
+            className={`flex items-center gap-2 py-2 px-4 rounded-lg font-medium text-sm transition-colors ${
               activeTab === 'receive'
-                ? 'border-green-500 text-green-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                ? 'bg-blue-100 text-blue-700'
+                : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'
             }`}
           >
+            <Package className="h-4 w-4" />
             Receive Items
           </button>
         </nav>
@@ -516,8 +548,11 @@ function CreatePurchaseOrder() {
       {activeTab === 'create' && (
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Basic Information */}
-          <div className="bg-white shadow-sm p-6 rounded-lg">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">ORDER INFORMATION</h3>
+          <div className="bg-white rounded-3xl shadow-xl p-6">
+            <div className="flex items-center gap-3 mb-6">
+              <FileText className="h-6 w-6 text-blue-500" />
+              <h3 className="text-xl font-semibold text-gray-900">Order Information</h3>
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -582,15 +617,19 @@ function CreatePurchaseOrder() {
           </div>
 
           {/* Products Section */}
-          <div className="bg-white shadow-sm p-6 rounded-lg">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">PRODUCTS</h3>
+          <div className="bg-white rounded-3xl shadow-xl p-6">
+            <div className="flex justify-between items-center mb-6">
+              <div className="flex items-center gap-3">
+                <Package className="h-6 w-6 text-green-500" />
+                <h3 className="text-xl font-semibold text-gray-900">Products</h3>
+              </div>
               <button
                 type="button"
                 onClick={addProduct}
-                className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
+                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                + Add Product
+                <FaPlus className="h-4 w-4" />
+                Add Product
               </button>
             </div>
 
@@ -601,7 +640,7 @@ function CreatePurchaseOrder() {
             ) : (
               <div className="space-y-4">
                 {selectedProducts.map((product, index) => (
-                  <div key={product.id} className="border border-gray-200 rounded-lg p-4">
+                  <div key={product.id} className="border border-gray-200 rounded-xl p-6 bg-gray-50">
                     <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -664,8 +703,9 @@ function CreatePurchaseOrder() {
                         <button
                           type="button"
                           onClick={() => removeProduct(index)}
-                          className="px-3 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500"
+                          className="flex items-center gap-2 px-3 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500"
                         >
+                          <FaTrash className="h-4 w-4" />
                           Remove
                         </button>
                       </div>
@@ -678,15 +718,18 @@ function CreatePurchaseOrder() {
 
           {/* Order Summary */}
           {selectedProducts.length > 0 && (
-            <div className="bg-white shadow-sm p-6 rounded-lg">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">ORDER SUMMARY</h3>
+            <div className="bg-white rounded-3xl shadow-xl p-6">
+              <div className="flex items-center gap-3 mb-6">
+                <DollarSign className="h-6 w-6 text-green-500" />
+                <h3 className="text-xl font-semibold text-gray-900">Order Summary</h3>
+              </div>
               <div className="flex justify-between items-center">
-                <div>
+                <div className="space-y-2">
                   <p className="text-sm text-gray-600">Total Items: {selectedProducts.length}</p>
                   <p className="text-sm text-gray-600">Total Quantity: {selectedProducts.reduce((sum, p) => sum + (p.quantity || 0), 0)}</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-2xl font-bold text-gray-900">
+                  <p className="text-2xl font-bold text-blue-600">
                     Total: ₱{calculateTotal().toFixed(2)}
                   </p>
                 </div>
@@ -707,15 +750,17 @@ function CreatePurchaseOrder() {
                 });
                 setSelectedProducts([]);
               }}
-              className="px-6 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500"
+              className="flex items-center gap-2 px-6 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500"
             >
+              <FaTimes className="h-4 w-4" />
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
+              <FaCheck className="h-4 w-4" />
               {loading ? "Creating..." : "Create Purchase Order"}
             </button>
           </div>
@@ -726,17 +771,21 @@ function CreatePurchaseOrder() {
       {activeTab === 'list' && (
         <div className="space-y-6">
           <div className="flex justify-between items-center">
-            <h2 className="text-2xl font-bold text-gray-900">PURCHASE ORDERS</h2>
+            <div className="flex items-center gap-3">
+              <FileText className="h-8 w-8 text-blue-500" />
+              <h2 className="text-2xl font-bold text-gray-900">Purchase Orders</h2>
+            </div>
             <button
               onClick={fetchPurchaseOrders}
-              className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
+              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
+              <FaEye className="h-4 w-4" />
               Refresh
             </button>
           </div>
 
           {/* Purchase Orders Table */}
-          <div className="bg-white shadow-sm rounded-lg overflow-hidden">
+          <div className="bg-white rounded-3xl shadow-xl overflow-hidden">
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
@@ -805,17 +854,21 @@ function CreatePurchaseOrder() {
       {activeTab === 'receive' && (
         <div className="space-y-6">
           <div className="flex justify-between items-center">
-            <h2 className="text-2xl font-bold text-gray-900">RECEIVE ITEMS</h2>
+            <div className="flex items-center gap-3">
+              <Package className="h-8 w-8 text-green-500" />
+              <h2 className="text-2xl font-bold text-gray-900">Receive Items</h2>
+            </div>
             <button
               onClick={fetchReceivingList}
-              className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
+              className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
             >
+              <FaEye className="h-4 w-4" />
               Refresh
             </button>
           </div>
 
           {/* Receiving List Table */}
-          <div className="bg-white shadow-sm rounded-lg overflow-hidden">
+          <div className="bg-white rounded-3xl shadow-xl overflow-hidden">
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
@@ -885,11 +938,11 @@ function CreatePurchaseOrder() {
 
       {/* Purchase Order Details Modal */}
       {showDetails && selectedPO && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-          <div className="relative top-10 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-2/3 shadow-lg rounded-md bg-transparent backdrop-blur-sm border-2 border-gray-400">
-            <div className="mt-3">
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-medium text-gray-900">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-3xl shadow-xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div className="px-6 py-4 border-b border-gray-200">
+              <div className="flex justify-between items-center">
+                <h3 className="text-xl font-semibold text-gray-900">
                   Purchase Order Details - {selectedPO.header.po_number}
                 </h3>
                 <button
@@ -901,6 +954,8 @@ function CreatePurchaseOrder() {
                   </svg>
                 </button>
               </div>
+            </div>
+            <div className="p-6">
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                 <div>
@@ -950,14 +1005,14 @@ function CreatePurchaseOrder() {
                 </div>
               </div>
 
-              <div className="flex justify-end">
-                <button
-                  onClick={() => setShowDetails(false)}
-                  className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400"
-                >
-                  Close
-                </button>
-              </div>
+            </div>
+            <div className="px-6 py-4 border-t border-gray-200 flex justify-end">
+              <button
+                onClick={() => setShowDetails(false)}
+                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+              >
+                Close
+              </button>
             </div>
           </div>
         </div>
@@ -965,11 +1020,11 @@ function CreatePurchaseOrder() {
 
       {/* Receive Items Modal */}
       {showReceiveForm && selectedPO && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-          <div className="relative top-10 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-2/3 shadow-lg rounded-md bg-transparent backdrop-blur-sm border-2 border-gray-400">
-            <div className="mt-3">
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-medium text-gray-900">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-3xl shadow-xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div className="px-6 py-4 border-b border-gray-200">
+              <div className="flex justify-between items-center">
+                <h3 className="text-xl font-semibold text-gray-900">
                   Receive Items - {selectedPO.header.po_number}
                 </h3>
                 <button
@@ -981,8 +1036,10 @@ function CreatePurchaseOrder() {
                   </svg>
                 </button>
               </div>
+            </div>
+            <div className="p-6">
 
-              <form onSubmit={handleSubmitReceive} className="space-y-4">
+              <form id="receiveForm" onSubmit={handleSubmitReceive} className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -1065,26 +1122,41 @@ function CreatePurchaseOrder() {
                   </div>
                 </div>
 
-                <div className="flex justify-end space-x-3 pt-4">
-                  <button
-                    type="button"
-                    onClick={() => setShowReceiveForm(false)}
-                    className="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
-                  >
-                    Receive Items
-                  </button>
-                </div>
               </form>
+            </div>
+            <div className="px-6 py-4 border-t border-gray-200 flex justify-end space-x-3">
+              <button
+                type="button"
+                onClick={() => setShowReceiveForm(false)}
+                className="flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50"
+              >
+                <FaTimes className="h-4 w-4" />
+                Cancel
+              </button>
+              <button
+                type="submit"
+                form="receiveForm"
+                className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
+              >
+                <FaCheck className="h-4 w-4" />
+                Receive Items
+              </button>
             </div>
           </div>
         </div>
       )}
+
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
     </div>
   );
 }

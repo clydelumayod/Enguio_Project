@@ -1,7 +1,9 @@
 "use client";
 import React, { useState } from "react";
-import { Button, Input, Switch, Select, SelectItem, Divider, Chip } from "@nextui-org/react";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { FaSave, FaCog, FaBell, FaShieldAlt, FaUser, FaDatabase, FaPalette, FaGlobe, FaKey, FaEye, FaEyeSlash } from "react-icons/fa";
+import { Settings as SettingsIcon, Bell, Shield, Database, Palette, Key } from "lucide-react";
 
 const Settings = () => {
   const [settings, setSettings] = useState({
@@ -40,6 +42,7 @@ const Settings = () => {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [saveStatus, setSaveStatus] = useState("");
+
   const languages = [
     { key: "en", label: "English" },
     { key: "tl", label: "Tagalog" },
@@ -65,77 +68,86 @@ const Settings = () => {
     { key: "dark", label: "Dark" },
     { key: "auto", label: "Auto" }
   ];
+
   const handleSettingChange = (key, value) => {
     setSettings(prev => ({ ...prev, [key]: value }));
   };
+
   const handlePasswordChange = (key, value) => {
     setPasswords(prev => ({ ...prev, [key]: value }));
   };
+
   const togglePasswordVisibility = (field) => {
     setShowPasswords(prev => ({ ...prev, [field]: !prev[field] }));
   };
+
   const handleSaveSettings = async () => {
     setIsLoading(true);
     setSaveStatus("saving");
     setTimeout(() => {
       setIsLoading(false);
       setSaveStatus("saved");
+      toast.success('Settings saved successfully!');
       setTimeout(() => setSaveStatus(""), 3000);
     }, 1000);
   };
+
   const handleChangePassword = async () => {
     if (passwords.newPassword !== passwords.confirmPassword) {
-      alert("New passwords do not match!");
+      toast.error("New passwords do not match!");
       return;
     }
     if (passwords.newPassword.length < 8) {
-      alert("Password must be at least 8 characters long!");
+      toast.error("Password must be at least 8 characters long!");
       return;
     }
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
       setPasswords({ currentPassword: "", newPassword: "", confirmPassword: "" });
-      alert("Password changed successfully!");
+      toast.success("Password changed successfully!");
     }, 1000);
   };
+
   const getSaveStatusColor = () => {
     switch (saveStatus) {
-      case "saving": return "warning";
-      case "saved": return "success";
-      default: return "default";
+      case "saving": return "bg-yellow-100 text-yellow-800";
+      case "saved": return "bg-green-100 text-green-800";
+      default: return "bg-gray-100 text-gray-800";
     }
   };
+
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="p-6 space-y-6">
       {/* Header */}
-      <div className="mb-8 flex justify-between items-center">
+      <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Settings</h1>
+          <h1 className="text-3xl font-bold text-gray-800">Settings</h1>
           <p className="text-gray-600">Manage system settings and preferences</p>
         </div>
         <div className="flex gap-3">
           {saveStatus && (
-            <Chip color={getSaveStatusColor()} variant="flat">
+            <span className={`inline-flex px-3 py-1 text-sm font-medium rounded-full ${getSaveStatusColor()}`}>
               {saveStatus === "saving" ? "Saving..." : "Settings saved!"}
-            </Chip>
+            </span>
           )}
-          <Button 
-            color="primary" 
-            startContent={<FaSave />}
-            onPress={handleSaveSettings}
-            isLoading={isLoading}
+          <button 
+            onClick={handleSaveSettings}
+            disabled={isLoading}
+            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
           >
+            <FaSave className="h-4 w-4" />
             Save Settings
-          </Button>
+          </button>
         </div>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* General Settings */}
-        <div className="bg-white rounded-lg shadow-md border border-gray-200 p-6 mb-6">
-          <div className="flex items-center gap-3 mb-4">
-            <FaCog className="text-blue-500" />
-            <h3 className="text-xl font-bold text-gray-900">General Settings</h3>
+        <div className="bg-white rounded-3xl shadow-xl p-6">
+          <div className="flex items-center gap-3 mb-6">
+            <SettingsIcon className="h-6 w-6 text-blue-500" />
+            <h3 className="text-xl font-semibold text-gray-900">General Settings</h3>
           </div>
           <div className="space-y-4">
             <div>
@@ -198,56 +210,83 @@ const Settings = () => {
             </div>
           </div>
         </div>
+
         {/* Notification Settings */}
-        <div className="bg-white rounded-lg shadow-md border border-gray-200 p-6 mb-6">
-          <div className="flex items-center gap-3 mb-4">
-            <FaBell className="text-yellow-500" />
-            <h3 className="text-xl font-bold text-gray-900">Notification Settings</h3>
+        <div className="bg-white rounded-3xl shadow-xl p-6">
+          <div className="flex items-center gap-3 mb-6">
+            <Bell className="h-6 w-6 text-yellow-500" />
+            <h3 className="text-xl font-semibold text-gray-900">Notification Settings</h3>
           </div>
           <div className="space-y-4">
-            <div className="flex items-center gap-2">
-              <Switch
-                isSelected={settings.emailNotifications}
-                onValueChange={(value) => handleSettingChange("emailNotifications", value)}
-              />
-              <span>Email Notifications</span>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-gray-700">Email Notifications</span>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={settings.emailNotifications}
+                  onChange={(e) => handleSettingChange("emailNotifications", e.target.checked)}
+                  className="sr-only peer"
+                />
+                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+              </label>
             </div>
-            <div className="flex items-center gap-2">
-              <Switch
-                isSelected={settings.smsNotifications}
-                onValueChange={(value) => handleSettingChange("smsNotifications", value)}
-              />
-              <span>SMS Notifications</span>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-gray-700">SMS Notifications</span>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={settings.smsNotifications}
+                  onChange={(e) => handleSettingChange("smsNotifications", e.target.checked)}
+                  className="sr-only peer"
+                />
+                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+              </label>
             </div>
-            <Divider />
-            <div className="flex items-center gap-2">
-              <Switch
-                isSelected={settings.lowStockAlerts}
-                onValueChange={(value) => handleSettingChange("lowStockAlerts", value)}
-              />
-              <span>Low Stock Alerts</span>
+            <hr className="my-4" />
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-gray-700">Low Stock Alerts</span>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={settings.lowStockAlerts}
+                  onChange={(e) => handleSettingChange("lowStockAlerts", e.target.checked)}
+                  className="sr-only peer"
+                />
+                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+              </label>
             </div>
-            <div className="flex items-center gap-2">
-              <Switch
-                isSelected={settings.expiryAlerts}
-                onValueChange={(value) => handleSettingChange("expiryAlerts", value)}
-              />
-              <span>Expiry Date Alerts</span>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-gray-700">Expiry Date Alerts</span>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={settings.expiryAlerts}
+                  onChange={(e) => handleSettingChange("expiryAlerts", e.target.checked)}
+                  className="sr-only peer"
+                />
+                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+              </label>
             </div>
-            <div className="flex items-center gap-2">
-              <Switch
-                isSelected={settings.movementAlerts}
-                onValueChange={(value) => handleSettingChange("movementAlerts", value)}
-              />
-              <span>Movement Alerts</span>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-gray-700">Movement Alerts</span>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={settings.movementAlerts}
+                  onChange={(e) => handleSettingChange("movementAlerts", e.target.checked)}
+                  className="sr-only peer"
+                />
+                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+              </label>
             </div>
           </div>
         </div>
+
         {/* Security Settings */}
-        <div className="bg-white rounded-lg shadow-md border border-gray-200 p-6 mb-6">
-          <div className="flex items-center gap-3 mb-4">
-            <FaShieldAlt className="text-red-500" />
-            <h3 className="text-xl font-bold text-gray-900">Security Settings</h3>
+        <div className="bg-white rounded-3xl shadow-xl p-6">
+          <div className="flex items-center gap-3 mb-6">
+            <Shield className="h-6 w-6 text-red-500" />
+            <h3 className="text-xl font-semibold text-gray-900">Security Settings</h3>
           </div>
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
@@ -270,27 +309,38 @@ const Settings = () => {
                 />
               </div>
             </div>
-            <div className="flex items-center gap-2">
-              <Switch
-                isSelected={settings.requirePasswordChange}
-                onValueChange={(value) => handleSettingChange("requirePasswordChange", value)}
-              />
-              <span>Require Password Change Every 90 Days</span>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-gray-700">Require Password Change Every 90 Days</span>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={settings.requirePasswordChange}
+                  onChange={(e) => handleSettingChange("requirePasswordChange", e.target.checked)}
+                  className="sr-only peer"
+                />
+                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+              </label>
             </div>
-            <div className="flex items-center gap-2">
-              <Switch
-                isSelected={settings.twoFactorAuth}
-                onValueChange={(value) => handleSettingChange("twoFactorAuth", value)}
-              />
-              <span>Enable Two-Factor Authentication</span>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-gray-700">Enable Two-Factor Authentication</span>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={settings.twoFactorAuth}
+                  onChange={(e) => handleSettingChange("twoFactorAuth", e.target.checked)}
+                  className="sr-only peer"
+                />
+                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+              </label>
             </div>
           </div>
         </div>
+
         {/* Inventory Settings */}
-        <div className="bg-white rounded-lg shadow-md border border-gray-200 p-6 mb-6">
-          <div className="flex items-center gap-3 mb-4">
-            <FaDatabase className="text-green-500" />
-            <h3 className="text-xl font-bold text-gray-900">Inventory Settings</h3>
+        <div className="bg-white rounded-3xl shadow-xl p-6">
+          <div className="flex items-center gap-3 mb-6">
+            <Database className="h-6 w-6 text-green-500" />
+            <h3 className="text-xl font-semibold text-gray-900">Inventory Settings</h3>
           </div>
           <div className="space-y-4">
             <div>
@@ -311,27 +361,38 @@ const Settings = () => {
                 onChange={(e) => handleSettingChange("expiryWarningDays", parseInt(e.target.value))}
               />
             </div>
-            <div className="flex items-center gap-2">
-              <Switch
-                isSelected={settings.autoReorder}
-                onValueChange={(value) => handleSettingChange("autoReorder", value)}
-              />
-              <span>Enable Auto Reorder</span>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-gray-700">Enable Auto Reorder</span>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={settings.autoReorder}
+                  onChange={(e) => handleSettingChange("autoReorder", e.target.checked)}
+                  className="sr-only peer"
+                />
+                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+              </label>
             </div>
-            <div className="flex items-center gap-2">
-              <Switch
-                isSelected={settings.barcodeScanning}
-                onValueChange={(value) => handleSettingChange("barcodeScanning", value)}
-              />
-              <span>Enable Barcode Scanning</span>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-gray-700">Enable Barcode Scanning</span>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={settings.barcodeScanning}
+                  onChange={(e) => handleSettingChange("barcodeScanning", e.target.checked)}
+                  className="sr-only peer"
+                />
+                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+              </label>
             </div>
           </div>
         </div>
+
         {/* Display Settings */}
-        <div className="bg-white rounded-lg shadow-md border border-gray-200 p-6 mb-6">
-          <div className="flex items-center gap-3 mb-4">
-            <FaPalette className="text-purple-500" />
-            <h3 className="text-xl font-bold text-gray-900">Display Settings</h3>
+        <div className="bg-white rounded-3xl shadow-xl p-6">
+          <div className="flex items-center gap-3 mb-6">
+            <Palette className="h-6 w-6 text-purple-500" />
+            <h3 className="text-xl font-semibold text-gray-900">Display Settings</h3>
           </div>
           <div className="space-y-4">
             <div>
@@ -355,27 +416,38 @@ const Settings = () => {
                 onChange={(e) => handleSettingChange("itemsPerPage", parseInt(e.target.value))}
               />
             </div>
-            <div className="flex items-center gap-2">
-              <Switch
-                isSelected={settings.compactMode}
-                onValueChange={(value) => handleSettingChange("compactMode", value)}
-              />
-              <span>Compact Mode</span>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-gray-700">Compact Mode</span>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={settings.compactMode}
+                  onChange={(e) => handleSettingChange("compactMode", e.target.checked)}
+                  className="sr-only peer"
+                />
+                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+              </label>
             </div>
-            <div className="flex items-center gap-2">
-              <Switch
-                isSelected={settings.showImages}
-                onValueChange={(value) => handleSettingChange("showImages", value)}
-              />
-              <span>Show Product Images</span>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-gray-700">Show Product Images</span>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={settings.showImages}
+                  onChange={(e) => handleSettingChange("showImages", e.target.checked)}
+                  className="sr-only peer"
+                />
+                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+              </label>
             </div>
           </div>
         </div>
+
         {/* Change Password */}
-        <div className="bg-white rounded-lg shadow-md border border-gray-200 p-6 mb-6">
-          <div className="flex items-center gap-3 mb-4">
-            <FaKey className="text-blue-500" />
-            <h3 className="text-xl font-bold text-gray-900">Change Password</h3>
+        <div className="bg-white rounded-3xl shadow-xl p-6">
+          <div className="flex items-center gap-3 mb-6">
+            <Key className="h-6 w-6 text-blue-500" />
+            <h3 className="text-xl font-semibold text-gray-900">Change Password</h3>
           </div>
           <div className="space-y-4">
             <div>
@@ -389,10 +461,10 @@ const Settings = () => {
                 />
                 <button
                   type="button"
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
                   onClick={() => togglePasswordVisibility("current")}
                 >
-                  {showPasswords.current ? <FaEyeSlash /> : <FaEye />}
+                  {showPasswords.current ? <FaEyeSlash className="h-4 w-4" /> : <FaEye className="h-4 w-4" />}
                 </button>
               </div>
             </div>
@@ -407,10 +479,10 @@ const Settings = () => {
                 />
                 <button
                   type="button"
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
                   onClick={() => togglePasswordVisibility("new")}
                 >
-                  {showPasswords.new ? <FaEyeSlash /> : <FaEye />}
+                  {showPasswords.new ? <FaEyeSlash className="h-4 w-4" /> : <FaEye className="h-4 w-4" />}
                 </button>
               </div>
             </div>
@@ -425,24 +497,35 @@ const Settings = () => {
                 />
                 <button
                   type="button"
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
                   onClick={() => togglePasswordVisibility("confirm")}
                 >
-                  {showPasswords.confirm ? <FaEyeSlash /> : <FaEye />}
+                  {showPasswords.confirm ? <FaEyeSlash className="h-4 w-4" /> : <FaEye className="h-4 w-4" />}
                 </button>
               </div>
             </div>
-            <Button
-              color="primary"
-              onPress={handleChangePassword}
-              isLoading={isLoading}
-              className="w-full mt-2"
+            <button
+              onClick={handleChangePassword}
+              disabled={isLoading}
+              className="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
             >
-              Change Password
-            </Button>
+              {isLoading ? 'Changing Password...' : 'Change Password'}
+            </button>
           </div>
         </div>
       </div>
+
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
     </div>
   );
 };

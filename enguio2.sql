@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 21, 2025 at 10:27 AM
+-- Generation Time: Jul 24, 2025 at 04:58 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -77,7 +77,8 @@ INSERT INTO `tbl_batch` (`batch_id`, `date`, `time`, `batch`, `batch_reference`,
 (36, '0000-00-00', '2025-07-17 15:40:41', 'BR-20250717-233925', NULL, 14, 2, '2025-07-17', '23:40:41', 'admin', '24', NULL),
 (37, '0000-00-00', '2025-07-19 14:20:41', 'BR-20250719-221948', NULL, 13, 2, '2025-07-19', '22:20:41', 'admin', '24', NULL),
 (38, '0000-00-00', '2025-07-19 15:14:16', 'BR-20250719-231211', NULL, 12, 2, '2025-07-19', '23:14:16', 'admin', '011101', NULL),
-(55, '0000-00-00', '2025-07-20 08:37:30', 'BR-20250720-163405', NULL, 12, 2, '2025-07-20', '16:37:30', 'admin', '24', NULL);
+(55, '0000-00-00', '2025-07-20 08:37:30', 'BR-20250720-163405', NULL, 12, 2, '2025-07-20', '16:37:30', 'admin', '24', NULL),
+(56, '0000-00-00', '2025-07-21 15:20:28', 'BR-20250721-231923', NULL, 13, 2, '2025-07-21', '23:20:28', 'admin', '24', NULL);
 
 -- --------------------------------------------------------
 
@@ -427,10 +428,10 @@ CREATE TABLE `tbl_product` (
 --
 
 INSERT INTO `tbl_product` (`product_id`, `product_name`, `category`, `barcode`, `description`, `prescription`, `bulk`, `expiration`, `quantity`, `unit_price`, `brand_id`, `supplier_id`, `location_id`, `batch_id`, `status`, `Variation`, `stock_status`, `date_added`) VALUES
-(169, 'Corned Beef', 'Processed Foods', 1000000000001, 'Canned beef product', '0', 0, '2026-07-21', 50, 60.00, 1, 13, 2, 35, 'active', '', 'In Stock', '2025-07-21'),
-(170, 'Hotdog Jumbo', 'Processed Foods', 1000000000002, 'Hotdog by Purefoods', '0', 0, '2026-07-21', 80, 45.00, 1, 13, 2, 35, 'active', '', 'In Stock', '2025-07-21'),
+(169, 'Corned Beef', 'Processed Foods', 1000000000001, 'Canned beef product', '0', 0, '2026-07-21', 50, 60.00, 1, 13, 2, 35, '', '', 'In Stock', '2025-07-21'),
+(170, 'Hotdog Jumbo', 'Processed Foods', 1000000000002, 'Hotdog by Purefoods', '0', 0, '2026-07-21', 50, 45.00, 1, 13, 2, 35, '', '', 'in stock', '2025-07-21'),
 (171, 'Luncheon Meat', 'Processed Foods', 1000000000003, 'Canned pork meat', '0', 0, '2026-07-21', 60, 52.00, 2, 13, 2, 35, 'active', '', 'In Stock', '2025-07-21'),
-(172, 'Tuna Flakes', 'Processed Foods', 1000000000004, 'Century Tuna Flakes in Oil', '0', 0, '2026-07-21', 100, 38.00, 3, 13, 2, 35, 'active', '', 'In Stock', '2025-07-21'),
+(172, 'Tuna Flakes', 'Processed Foods', 1000000000004, 'Century Tuna Flakes in Oil', '0', 0, '2026-07-21', 99, 38.00, 3, 13, 2, 35, '', '', 'in stock', '2025-07-21'),
 (173, 'Meat Loaf', 'Processed Foods', 1000000000005, 'Easy-open canned meat loaf', '0', 0, '2026-07-21', 90, 50.00, 2, 13, 2, 35, 'active', '', 'In Stock', '2025-07-21'),
 (174, 'Fresh Milk', 'Dairy', 1000000000006, 'Pasteurized milk 1L', '0', 0, '2026-07-21', 40, 80.00, 4, 14, 2, 36, 'active', '', 'In Stock', '2025-07-21'),
 (175, 'Condensed Milk', 'Dairy', 1000000000007, 'Sweetened condensed milk', '0', 0, '2026-07-21', 60, 42.00, 5, 14, 2, 36, 'active', '', 'In Stock', '2025-07-21'),
@@ -445,9 +446,9 @@ INSERT INTO `tbl_product` (`product_id`, `product_name`, `category`, `barcode`, 
 (184, 'Vitamin C 500mg', 'Vitamins & Supplements', 1000000000016, 'Immune booster tablets', '0', 0, '2026-07-21', 60, 12.00, 10, 12, 2, 38, 'active', '', 'In Stock', '2025-07-21'),
 (185, 'Ferrous Sulfate', 'Vitamins & Supplements', 1000000000017, 'Iron supplement 60s', '0', 0, '2026-07-21', 45, 28.00, 11, 12, 2, 38, 'active', '', 'In Stock', '2025-07-21'),
 (186, 'Calcium + D3', 'Vitamins & Supplements', 1000000000018, 'Bone health supplement', '0', 0, '2026-07-21', 30, 35.00, 11, 12, 2, 38, 'active', '', 'In Stock', '2025-07-21'),
-(187, 'Zinc Capsules', 'Vitamins & Supplements', 1000000000019, 'Zinc 10mg capsules', '0', 0, '2026-07-21', 40, 22.00, 10, 12, 2, 38, 'active', '', 'in stock', '2025-07-21'),
+(187, 'Zinc Capsules', 'Vitamins & Supplements', 1000000000019, 'Zinc 10mg capsules', '0', 0, '2026-07-21', 38, 22.00, 10, 12, 2, 38, 'active', '', 'in stock', '2025-07-21'),
 (188, 'Multivitamins Syrup', 'Vitamins & Supplements', 1000000000020, 'Kids multivitamin syrup', '0', 0, '2026-07-21', 25, 45.00, 10, 12, 2, 38, 'active', '', 'In Stock', '2025-07-21'),
-(189, 'Amoxicillin 500mg', 'Medicine (OTC, prescription)', 1000000000021, 'Antibiotic capsules', '1', 0, '2026-07-21', 90, 18.00, 12, 12, 2, 55, 'active', '', 'in stock', '2025-07-21'),
+(189, 'Amoxicillin 500mg', 'Medicine (OTC, prescription)', 1000000000021, 'Antibiotic capsules', '1', 0, '2026-07-21', 40, 18.00, 12, 12, 2, 55, 'active', '', 'out of stock', '2025-07-21'),
 (190, 'Paracetamol 500mg', 'Medicine (OTC, prescription)', 1000000000022, 'Pain reliever tablets', '1', 0, '2026-07-21', 120, 10.00, 13, 12, 2, 55, 'active', '', 'In Stock', '2025-07-21'),
 (191, 'Loperamide 2mg', 'Medicine (OTC, prescription)', 1000000000023, 'Anti-diarrheal tablets', '1', 0, '2026-07-21', 80, 8.00, 13, 12, 2, 55, 'active', '', 'In Stock', '2025-07-21'),
 (192, 'Cetirizine 10mg', 'Medicine (OTC, prescription)', 1000000000024, 'Anti-allergy tablet', '1', 0, '2026-07-21', 90, 12.00, 12, 12, 2, 55, 'active', '', 'In Stock', '2025-07-21'),
@@ -463,10 +464,16 @@ INSERT INTO `tbl_product` (`product_id`, `product_name`, `category`, `barcode`, 
 (202, 'Garnier Serum Mask', 'Skincare & Cosmetics', 1000000000034, 'Facial sheet mask', '0', 0, '2026-07-21', 70, 59.00, 22, 13, 2, 35, 'active', '', 'In Stock', '2025-07-21'),
 (203, 'Ever Bilena Compact Powder', 'Skincare & Cosmetics', 1000000000035, 'Face powder compact', '0', 0, '2026-07-21', 65, 89.00, 21, 13, 2, 35, 'active', 'Natural Beige', 'In Stock', '2025-07-21'),
 (204, 'C2 Apple', 'Beverages', 1000000000015, 'C2 Apple Green Tea 355ml', '0', 0, '2026-07-21', 30, 18.00, 9, 13, 4, 37, 'active', '', 'in stock', '2025-07-21'),
-(205, 'Amoxicillin 500mg', 'Medicine (OTC, prescription)', 1000000000021, 'Antibiotic capsules', '1', 0, '2026-07-21', 10, 18.00, 12, 12, 3, 55, 'active', '', 'low stock', '2025-07-21'),
+(205, 'Amoxicillin 500mg', 'Medicine (OTC, prescription)', 1000000000021, 'Antibiotic capsules', '1', 0, '2026-07-21', 50, 18.00, 12, 12, 3, 55, 'active', '', 'in stock', '2025-07-21'),
 (206, 'Cheese Block', 'Dairy', 1000000000008, 'Magnolia Cheese block', '0', 0, '2026-07-21', 5, 55.00, 4, 14, 4, 36, 'active', '', 'low stock', '2025-07-21'),
 (207, 'Zesto Orange', 'Beverages', 1000000000013, 'Zesto Doypack Orange', '0', 0, '2026-07-21', 30, 9.00, 8, 13, 4, 37, 'active', '', 'in stock', '2025-07-21'),
-(208, 'Zinc Capsules', 'Vitamins & Supplements', 1000000000019, 'Zinc 10mg capsules', '0', 0, '2026-07-21', 10, 22.00, 10, 12, 3, 38, 'active', '', 'low stock', '2025-07-21');
+(208, 'Zinc Capsules', 'Vitamins & Supplements', 1000000000019, 'Zinc 10mg capsules', '0', 0, '2026-07-21', 10, 22.00, 10, 12, 3, 38, '', '', 'low stock', '2025-07-21'),
+(209, 'Zinc Capsules', 'Vitamins & Supplements', 1000000000019, 'Zinc 10mg capsules', '0', 0, '2026-07-21', 2, 22.00, 10, 12, 4, 38, 'active', '', 'low stock', '2025-07-21'),
+(210, 'Tuna Flakes', 'Processed Foods', 1000000000004, 'Century Tuna Flakes in Oil', '0', 0, '2026-07-21', 1, 38.00, 3, 13, 4, 35, 'active', '', 'low stock', '2025-07-21'),
+(211, 'malboro', 'Beverages', 5000289934596, 'dawdaw', '0', 1, '2025-08-19', 100, 5.00, 7, 13, 2, 56, 'active', '', 'in stock', '2025-07-21'),
+(212, 'Amoxicillin 500mg', 'Medicine (OTC, prescription)', 1000000000021, 'Antibiotic capsules', '1', 0, '2026-07-21', 10, 18.00, 12, 12, 4, 55, 'active', '', 'low stock', '2025-07-24'),
+(213, 'Hotdog Jumbo', 'Processed Foods', 1000000000002, 'Hotdog by Purefoods', '0', 0, '2026-07-21', 0, 45.00, 1, 13, 3, 35, '', '', 'out of stock', '2025-07-24'),
+(214, 'Hotdog Jumbo', 'Processed Foods', 1000000000002, 'Hotdog by Purefoods', '0', 0, '2026-07-21', 30, 45.00, 1, 13, 4, 35, '', '', 'in stock', '2025-07-24');
 
 -- --------------------------------------------------------
 
@@ -490,11 +497,14 @@ CREATE TABLE `tbl_purchase_order_dtl` (
 
 CREATE TABLE `tbl_purchase_order_header` (
   `purchase_header_id` int(11) NOT NULL,
+  `po_number` varchar(50) DEFAULT NULL,
   `date` date NOT NULL,
+  `expected_delivery_date` date DEFAULT NULL,
   `time` time NOT NULL,
   `supplier_id` int(11) NOT NULL,
   `total_amount` decimal(10,2) NOT NULL,
-  `status` enum('pending','approved','rejected') NOT NULL
+  `created_by` int(11) DEFAULT NULL,
+  `status` enum('pending','indelivery','delivered','return') NOT NULL DEFAULT 'pending'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -670,7 +680,13 @@ INSERT INTO `tbl_transfer_dtl` (`transfer_dtl_id`, `transfer_header_id`, `produc
 (25, 34, 181, 10),
 (26, 35, 181, 10),
 (27, 36, 187, 10),
-(28, 37, 183, 10);
+(28, 37, 183, 10),
+(29, 38, 187, 2),
+(30, 39, 172, 1),
+(31, 40, 189, 50),
+(32, 41, 205, 10),
+(33, 42, 170, 30),
+(34, 43, 213, 30);
 
 -- --------------------------------------------------------
 
@@ -714,7 +730,13 @@ INSERT INTO `tbl_transfer_header` (`transfer_header_id`, `date`, `source_locatio
 (34, '2025-07-21', 2, 4, 21, ''),
 (35, '2025-07-21', 2, 4, 20, ''),
 (36, '2025-07-21', 2, 3, 20, ''),
-(37, '2025-07-21', 2, 4, 21, 'approved');
+(37, '2025-07-21', 2, 4, 21, 'approved'),
+(38, '2025-07-21', 2, 4, 21, 'approved'),
+(39, '2025-07-21', 2, 4, 19, 'approved'),
+(40, '2025-07-21', 2, 3, 21, 'approved'),
+(41, '2025-07-24', 3, 4, 21, 'approved'),
+(42, '2025-07-24', 2, 3, 20, 'approved'),
+(43, '2025-07-24', 3, 4, 20, 'approved');
 
 -- --------------------------------------------------------
 
@@ -993,7 +1015,7 @@ ALTER TABLE `tbl_adjustment_details`
 -- AUTO_INCREMENT for table `tbl_batch`
 --
 ALTER TABLE `tbl_batch`
-  MODIFY `batch_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=56;
+  MODIFY `batch_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=57;
 
 --
 -- AUTO_INCREMENT for table `tbl_brand`
@@ -1053,7 +1075,7 @@ ALTER TABLE `tbl_pos_transaction`
 -- AUTO_INCREMENT for table `tbl_product`
 --
 ALTER TABLE `tbl_product`
-  MODIFY `product_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=209;
+  MODIFY `product_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=215;
 
 --
 -- AUTO_INCREMENT for table `tbl_purchase_order_dtl`
@@ -1113,13 +1135,13 @@ ALTER TABLE `tbl_supplier`
 -- AUTO_INCREMENT for table `tbl_transfer_dtl`
 --
 ALTER TABLE `tbl_transfer_dtl`
-  MODIFY `transfer_dtl_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
+  MODIFY `transfer_dtl_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
 
 --
 -- AUTO_INCREMENT for table `tbl_transfer_header`
 --
 ALTER TABLE `tbl_transfer_header`
-  MODIFY `transfer_header_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
+  MODIFY `transfer_header_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=44;
 
 --
 -- AUTO_INCREMENT for table `tbl_transfer_log`
