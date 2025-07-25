@@ -1,5 +1,5 @@
 <?php
-include 'Api/index.php';
+include 'Api/conn.php';
 echo "PHP Version: " . phpversion() . "\n";
 echo "PDO Extension: " . (extension_loaded('pdo') ? 'Loaded' : 'Not Loaded') . "\n";
 echo "PDO MySQL Extension: " . (extension_loaded('pdo_mysql') ? 'Loaded' : 'Not Loaded') . "\n";

@@ -6201,3 +6201,307 @@
 [15-Jul-2025 05:40:34 Europe/Berlin] Processing action: get_location_products
 [15-Jul-2025 06:26:45 Europe/Berlin] Raw input: 
 [15-Jul-2025 06:26:45 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:18:13 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:18:13 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:18:13 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:18:13 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:18:13 Europe/Berlin] Raw input: {"action":"get_products"}
+[22-Jul-2025 07:18:13 Europe/Berlin] Processing action: get_products
+[22-Jul-2025 07:18:13 Europe/Berlin] Raw input: {"action":"get_products"}
+[22-Jul-2025 07:18:13 Europe/Berlin] Processing action: get_products
+[22-Jul-2025 07:18:23 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:18:23 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:18:23 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:18:23 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:18:23 Europe/Berlin] Raw input: {"action":"get_suppliers"}
+[22-Jul-2025 07:18:23 Europe/Berlin] Processing action: get_suppliers
+[22-Jul-2025 07:18:23 Europe/Berlin] Raw input: {"action":"get_suppliers"}
+[22-Jul-2025 07:18:23 Europe/Berlin] Processing action: get_suppliers
+[22-Jul-2025 07:18:27 Europe/Berlin] Raw input: {"action":"displayBrand"}
+[22-Jul-2025 07:18:27 Europe/Berlin] Processing action: displayBrand
+[22-Jul-2025 07:18:27 Europe/Berlin] Raw input: {"action":"displayBrand"}
+[22-Jul-2025 07:18:27 Europe/Berlin] Processing action: displayBrand
+[22-Jul-2025 07:18:33 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:18:33 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:18:33 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:18:33 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:18:33 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:18:33 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:18:33 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:18:33 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:18:34 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:18:34 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:18:35 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:18:35 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:18:36 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:18:36 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:18:37 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:18:37 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:18:38 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:18:38 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:18:39 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:18:39 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:18:39 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:18:39 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:18:40 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:18:40 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:18:41 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:18:41 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:18:42 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:18:42 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:18:43 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:18:43 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:18:44 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:18:44 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:18:45 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:18:45 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:18:45 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:18:45 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:18:46 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:18:46 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:18:47 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:18:47 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:18:48 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:18:48 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:18:49 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:18:49 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:18:50 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:18:50 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:18:55 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:18:55 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:18:55 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:18:55 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:18:55 Europe/Berlin] Raw input: {"action":"displayBrand"}
+[22-Jul-2025 07:18:55 Europe/Berlin] Processing action: displayBrand
+[22-Jul-2025 07:18:55 Europe/Berlin] Raw input: {"action":"displayBrand"}
+[22-Jul-2025 07:18:55 Europe/Berlin] Processing action: displayBrand
+[22-Jul-2025 07:18:56 Europe/Berlin] Raw input: {"action":"get_suppliers"}
+[22-Jul-2025 07:18:56 Europe/Berlin] Processing action: get_suppliers
+[22-Jul-2025 07:18:56 Europe/Berlin] Raw input: {"action":"get_suppliers"}
+[22-Jul-2025 07:18:56 Europe/Berlin] Processing action: get_suppliers
+[22-Jul-2025 07:18:58 Europe/Berlin] Raw input: {"action":"get_products"}
+[22-Jul-2025 07:18:58 Europe/Berlin] Processing action: get_products
+[22-Jul-2025 07:18:58 Europe/Berlin] Raw input: {"action":"get_products"}
+[22-Jul-2025 07:18:58 Europe/Berlin] Processing action: get_products
+[22-Jul-2025 07:18:59 Europe/Berlin] Raw input: {"action":"displayBrand"}
+[22-Jul-2025 07:18:59 Europe/Berlin] Processing action: displayBrand
+[22-Jul-2025 07:18:59 Europe/Berlin] Raw input: {"action":"displayBrand"}
+[22-Jul-2025 07:18:59 Europe/Berlin] Processing action: displayBrand
+[22-Jul-2025 07:45:43 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:45:43 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:45:43 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:45:43 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:45:43 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:45:43 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:45:43 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:45:43 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:45:44 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:45:44 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:45:45 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:45:45 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:45:46 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:45:46 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:45:47 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:45:47 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:45:48 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:45:48 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:45:49 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:45:49 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:45:49 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:45:49 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:45:50 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:45:50 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:45:51 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:45:51 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:45:52 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:45:52 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:45:53 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:45:53 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:45:54 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:45:54 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:45:55 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:45:55 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:45:55 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:45:55 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:45:56 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:45:56 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:45:57 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:45:57 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:45:58 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:45:58 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:45:59 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:45:59 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:46:01 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:46:01 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:46:01 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:46:01 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:46:02 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:46:02 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:46:03 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:46:03 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:46:03 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:46:03 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:46:04 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:46:04 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:46:05 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:46:05 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:46:06 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:46:06 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:46:07 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:46:07 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:46:07 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:46:07 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:46:08 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:46:08 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:46:09 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:46:09 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:46:10 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:46:10 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:46:11 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:46:11 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:46:12 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:46:12 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:46:13 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:46:13 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:46:13 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:46:13 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:46:14 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:46:14 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:46:15 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:46:15 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:46:16 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:46:16 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:46:17 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:46:17 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:46:18 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:46:18 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:46:19 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:46:19 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:46:19 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:46:19 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:46:20 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:46:20 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:46:21 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:46:21 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:46:22 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:46:22 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:46:23 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:46:23 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:46:24 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:46:24 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:46:25 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:46:25 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:46:25 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:46:25 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:46:26 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:46:26 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:46:27 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:46:27 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:46:28 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:46:28 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:46:29 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:46:29 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:46:30 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:46:30 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:46:31 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:46:31 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:46:31 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:46:31 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:46:32 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:46:32 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:46:33 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:46:33 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:46:34 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:46:34 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:46:35 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:46:35 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:46:35 Europe/Berlin] Raw input: {"action":"update_employee_status","id":21,"status":"Inactive"}
+[22-Jul-2025 07:46:35 Europe/Berlin] Processing action: update_employee_status
+[22-Jul-2025 07:46:36 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:46:36 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:46:37 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:46:37 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:46:37 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:46:37 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:46:38 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:46:38 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:46:39 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:46:39 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:46:40 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:46:40 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:46:41 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:46:41 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:46:42 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:46:42 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:46:43 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:46:43 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:46:43 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:46:43 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:46:44 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:46:44 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:46:45 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:46:45 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:46:46 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:46:46 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:46:47 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:46:47 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:46:48 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:46:48 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:46:49 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:46:49 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:46:49 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:46:49 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:46:50 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:46:50 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:46:51 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:46:51 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:46:52 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:46:52 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:46:53 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:46:53 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:46:54 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:46:54 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:46:55 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:46:55 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:46:55 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:46:55 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:46:56 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:46:56 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:46:57 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:46:57 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:46:58 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:46:58 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:46:59 Europe/Berlin] Raw input: {"action":"display_employee"}
+[22-Jul-2025 07:46:59 Europe/Berlin] Processing action: display_employee
+[22-Jul-2025 07:46:59 Europe/Berlin] Raw input: {"action":"get_products"}
+[22-Jul-2025 07:46:59 Europe/Berlin] Processing action: get_products
+[22-Jul-2025 07:46:59 Europe/Berlin] Raw input: {"action":"get_products"}
+[22-Jul-2025 07:46:59 Europe/Berlin] Processing action: get_products
+[22-Jul-2025 07:47:50 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:47:50 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:47:50 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:47:50 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:47:50 Europe/Berlin] Raw input: {"action":"get_suppliers"}
+[22-Jul-2025 07:47:50 Europe/Berlin] Processing action: get_suppliers
+[22-Jul-2025 07:47:50 Europe/Berlin] Raw input: {"action":"get_suppliers"}
+[22-Jul-2025 07:47:50 Europe/Berlin] Processing action: get_suppliers
+[22-Jul-2025 07:48:09 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:48:09 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:48:09 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:48:09 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:48:09 Europe/Berlin] Raw input: {"action":"displayBrand"}
+[22-Jul-2025 07:48:09 Europe/Berlin] Processing action: displayBrand
+[22-Jul-2025 07:48:09 Europe/Berlin] Raw input: {"action":"displayBrand"}
+[22-Jul-2025 07:48:09 Europe/Berlin] Processing action: displayBrand
+[22-Jul-2025 07:48:11 Europe/Berlin] Raw input: {"action":"get_suppliers"}
+[22-Jul-2025 07:48:11 Europe/Berlin] Raw input: {"action":"get_suppliers"}
+[22-Jul-2025 07:48:11 Europe/Berlin] Processing action: get_suppliers
+[22-Jul-2025 07:48:11 Europe/Berlin] Processing action: get_suppliers
+[22-Jul-2025 07:48:34 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:48:34 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:48:34 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:48:34 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:48:34 Europe/Berlin] Raw input: {"action":"displayBrand"}
+[22-Jul-2025 07:48:34 Europe/Berlin] Processing action: displayBrand
+[22-Jul-2025 07:48:34 Europe/Berlin] Raw input: {"action":"displayBrand"}
+[22-Jul-2025 07:48:34 Europe/Berlin] Processing action: displayBrand

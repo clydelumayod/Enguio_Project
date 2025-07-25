@@ -6183,3 +6183,581 @@ Stack trace:
 [22-Jul-2025 05:09:48 Europe/Berlin] Processing action: get_batches
 [22-Jul-2025 05:09:48 Europe/Berlin] Raw input: {"action":"get_products"}
 [22-Jul-2025 05:09:48 Europe/Berlin] Processing action: get_products
+[22-Jul-2025 05:17:48 Europe/Berlin] Raw input: 
+[22-Jul-2025 05:17:48 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 05:17:48 Europe/Berlin] Raw input: 
+[22-Jul-2025 05:17:48 Europe/Berlin] Raw input: 
+[22-Jul-2025 05:17:48 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 05:17:48 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 05:17:48 Europe/Berlin] Raw input: 
+[22-Jul-2025 05:17:48 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 05:17:48 Europe/Berlin] Raw input: 
+[22-Jul-2025 05:17:48 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 05:17:48 Europe/Berlin] Raw input: 
+[22-Jul-2025 05:17:48 Europe/Berlin] Raw input: 
+[22-Jul-2025 05:17:48 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 05:17:48 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 05:17:48 Europe/Berlin] Raw input: 
+[22-Jul-2025 05:17:48 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 05:17:48 Europe/Berlin] Raw input: {"action":"get_products"}
+[22-Jul-2025 05:17:48 Europe/Berlin] Raw input: {"action":"get_suppliers"}
+[22-Jul-2025 05:17:48 Europe/Berlin] Processing action: get_products
+[22-Jul-2025 05:17:48 Europe/Berlin] Raw input: {"action":"get_batches"}
+[22-Jul-2025 05:17:48 Europe/Berlin] Processing action: get_suppliers
+[22-Jul-2025 05:17:48 Europe/Berlin] Processing action: get_batches
+[22-Jul-2025 05:17:48 Europe/Berlin] Raw input: {"action":"get_brands"}
+[22-Jul-2025 05:17:48 Europe/Berlin] Processing action: get_brands
+[22-Jul-2025 05:17:48 Europe/Berlin] Raw input: {"action":"get_products"}
+[22-Jul-2025 05:17:48 Europe/Berlin] Processing action: get_products
+[22-Jul-2025 05:17:48 Europe/Berlin] Raw input: {"action":"get_brands"}
+[22-Jul-2025 05:17:48 Europe/Berlin] Processing action: get_brands
+[22-Jul-2025 05:17:48 Europe/Berlin] Raw input: {"action":"get_suppliers"}
+[22-Jul-2025 05:17:48 Europe/Berlin] Processing action: get_suppliers
+[22-Jul-2025 05:17:48 Europe/Berlin] Raw input: {"action":"get_batches"}
+[22-Jul-2025 05:17:48 Europe/Berlin] Processing action: get_batches
+[22-Jul-2025 07:08:42 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:08:42 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:08:42 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:08:42 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:08:42 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:08:42 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:08:42 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:08:42 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:08:42 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:08:42 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:08:42 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:08:42 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:08:42 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:08:42 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:08:42 Europe/Berlin] Raw input: {"action":"get_brands"}
+[22-Jul-2025 07:08:42 Europe/Berlin] Processing action: get_brands
+[22-Jul-2025 07:08:42 Europe/Berlin] Raw input: {"action":"get_batches"}
+[22-Jul-2025 07:08:42 Europe/Berlin] Processing action: get_batches
+[22-Jul-2025 07:08:42 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:08:42 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:08:42 Europe/Berlin] Raw input: {"action":"get_products"}
+[22-Jul-2025 07:08:42 Europe/Berlin] Processing action: get_products
+[22-Jul-2025 07:08:42 Europe/Berlin] Raw input: {"action":"get_suppliers"}
+[22-Jul-2025 07:08:42 Europe/Berlin] Processing action: get_suppliers
+[22-Jul-2025 07:08:42 Europe/Berlin] Raw input: {"action":"get_suppliers"}
+[22-Jul-2025 07:08:42 Europe/Berlin] Processing action: get_suppliers
+[22-Jul-2025 07:08:42 Europe/Berlin] Raw input: {"action":"get_batches"}
+[22-Jul-2025 07:08:42 Europe/Berlin] Processing action: get_batches
+[22-Jul-2025 07:08:42 Europe/Berlin] Raw input: {"action":"get_products"}
+[22-Jul-2025 07:08:42 Europe/Berlin] Processing action: get_products
+[22-Jul-2025 07:08:42 Europe/Berlin] Raw input: {"action":"get_brands"}
+[22-Jul-2025 07:08:42 Europe/Berlin] Processing action: get_brands
+[22-Jul-2025 07:08:51 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:08:51 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:08:51 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:08:51 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:08:51 Europe/Berlin] Raw input: {"action":"get_locations"}
+[22-Jul-2025 07:08:51 Europe/Berlin] Processing action: get_locations
+[22-Jul-2025 07:08:51 Europe/Berlin] Raw input: {"action":"get_locations"}
+[22-Jul-2025 07:08:51 Europe/Berlin] Processing action: get_locations
+[22-Jul-2025 07:08:51 Europe/Berlin] Raw input: {"action":"get_locations"}
+[22-Jul-2025 07:08:51 Europe/Berlin] Processing action: get_locations
+[22-Jul-2025 07:08:51 Europe/Berlin] Raw input: {"action":"get_location_products","location_id":4,"search":"","category":"all"}
+[22-Jul-2025 07:08:51 Europe/Berlin] Processing action: get_location_products
+[22-Jul-2025 07:08:51 Europe/Berlin] Raw input: {"action":"get_location_products","location_id":4,"search":"","category":"all"}
+[22-Jul-2025 07:08:51 Europe/Berlin] Processing action: get_location_products
+[22-Jul-2025 07:08:55 Europe/Berlin] Raw input: {"action":"get_locations"}
+[22-Jul-2025 07:08:55 Europe/Berlin] Raw input: {"action":"get_locations"}
+[22-Jul-2025 07:08:55 Europe/Berlin] Processing action: get_locations
+[22-Jul-2025 07:08:55 Europe/Berlin] Processing action: get_locations
+[22-Jul-2025 07:08:55 Europe/Berlin] Raw input: {"action":"get_locations"}
+[22-Jul-2025 07:08:55 Europe/Berlin] Processing action: get_locations
+[22-Jul-2025 07:08:55 Europe/Berlin] Raw input: {"action":"get_location_products","location_id":3,"search":"","category":"all"}
+[22-Jul-2025 07:08:55 Europe/Berlin] Processing action: get_location_products
+[22-Jul-2025 07:08:55 Europe/Berlin] Raw input: {"action":"get_location_products","location_id":3,"search":"","category":"all"}
+[22-Jul-2025 07:08:55 Europe/Berlin] Processing action: get_location_products
+[22-Jul-2025 07:10:21 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:10:21 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:10:21 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:10:21 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:10:21 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:10:21 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:10:21 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:10:21 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:10:21 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:10:21 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:10:21 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:10:21 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:10:21 Europe/Berlin] Raw input: {"action":"get_transfers_with_details"}
+[22-Jul-2025 07:10:21 Europe/Berlin] Processing action: get_transfers_with_details
+[22-Jul-2025 07:10:21 Europe/Berlin] Raw input: {"action":"get_locations"}
+[22-Jul-2025 07:10:21 Europe/Berlin] Processing action: get_locations
+[22-Jul-2025 07:10:21 Europe/Berlin] Raw input: {"action":"get_inventory_staff"}
+[22-Jul-2025 07:10:21 Europe/Berlin] Processing action: get_inventory_staff
+[22-Jul-2025 07:10:21 Europe/Berlin] Raw input: {"action":"get_transfers_with_details"}
+[22-Jul-2025 07:10:21 Europe/Berlin] Processing action: get_transfers_with_details
+[22-Jul-2025 07:10:21 Europe/Berlin] Raw input: {"action":"get_products"}
+[22-Jul-2025 07:10:21 Europe/Berlin] Processing action: get_products
+[22-Jul-2025 07:10:21 Europe/Berlin] Raw input: {"action":"get_products"}
+[22-Jul-2025 07:10:21 Europe/Berlin] Processing action: get_products
+[22-Jul-2025 07:10:21 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:10:21 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:10:21 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:10:21 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:10:21 Europe/Berlin] Raw input: {"action":"get_locations"}
+[22-Jul-2025 07:10:21 Europe/Berlin] Processing action: get_locations
+[22-Jul-2025 07:10:21 Europe/Berlin] Raw input: {"action":"get_inventory_staff"}
+[22-Jul-2025 07:10:21 Europe/Berlin] Processing action: get_inventory_staff
+[22-Jul-2025 07:10:22 Europe/Berlin] Raw input: {"action":"get_suppliers"}
+[22-Jul-2025 07:10:22 Europe/Berlin] Raw input: {"action":"get_products"}
+[22-Jul-2025 07:10:22 Europe/Berlin] Raw input: {"action":"get_batches"}
+[22-Jul-2025 07:10:22 Europe/Berlin] Processing action: get_batches
+[22-Jul-2025 07:10:22 Europe/Berlin] Processing action: get_suppliers
+[22-Jul-2025 07:10:22 Europe/Berlin] Raw input: {"action":"get_suppliers"}
+[22-Jul-2025 07:10:22 Europe/Berlin] Processing action: get_suppliers
+[22-Jul-2025 07:10:22 Europe/Berlin] Raw input: {"action":"get_products"}
+[22-Jul-2025 07:10:22 Europe/Berlin] Processing action: get_products
+[22-Jul-2025 07:10:22 Europe/Berlin] Raw input: {"action":"get_batches"}
+[22-Jul-2025 07:10:22 Europe/Berlin] Processing action: get_batches
+[22-Jul-2025 07:10:22 Europe/Berlin] Raw input: {"action":"get_brands"}
+[22-Jul-2025 07:10:22 Europe/Berlin] Processing action: get_brands
+[22-Jul-2025 07:10:22 Europe/Berlin] Raw input: {"action":"get_brands"}
+[22-Jul-2025 07:10:22 Europe/Berlin] Processing action: get_brands
+[22-Jul-2025 07:10:22 Europe/Berlin] Processing action: get_products
+[22-Jul-2025 07:10:47 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:10:47 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:10:47 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:10:47 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:10:47 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:10:47 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:10:47 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:10:47 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:10:47 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:10:47 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:10:47 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:10:47 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:10:48 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:10:48 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:10:48 Europe/Berlin] Raw input: {"action":"get_transfers_with_details"}
+[22-Jul-2025 07:10:48 Europe/Berlin] Processing action: get_transfers_with_details
+[22-Jul-2025 07:10:48 Europe/Berlin] Raw input: {"action":"get_products"}
+[22-Jul-2025 07:10:48 Europe/Berlin] Processing action: get_products
+[22-Jul-2025 07:10:48 Europe/Berlin] Raw input: {"action":"get_locations"}
+[22-Jul-2025 07:10:48 Europe/Berlin] Processing action: get_locations
+[22-Jul-2025 07:10:48 Europe/Berlin] Raw input: {"action":"get_locations"}
+[22-Jul-2025 07:10:48 Europe/Berlin] Processing action: get_locations
+[22-Jul-2025 07:10:48 Europe/Berlin] Raw input: {"action":"get_inventory_staff"}
+[22-Jul-2025 07:10:48 Europe/Berlin] Raw input: {"action":"get_products"}
+[22-Jul-2025 07:10:48 Europe/Berlin] Raw input: {"action":"get_transfers_with_details"}
+[22-Jul-2025 07:10:48 Europe/Berlin] Processing action: get_products
+[22-Jul-2025 07:10:48 Europe/Berlin] Processing action: get_transfers_with_details
+[22-Jul-2025 07:10:48 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:10:48 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:10:48 Europe/Berlin] Raw input: {"action":"get_inventory_staff"}
+[22-Jul-2025 07:10:48 Europe/Berlin] Processing action: get_inventory_staff
+[22-Jul-2025 07:10:48 Europe/Berlin] Processing action: get_inventory_staff
+[22-Jul-2025 07:11:18 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:11:18 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:11:18 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:11:18 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:11:18 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:11:18 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:11:18 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:11:18 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:11:18 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:11:18 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:11:18 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:11:18 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:11:18 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:11:18 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:11:18 Europe/Berlin] Raw input: {"action":"get_batches"}
+[22-Jul-2025 07:11:18 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:11:18 Europe/Berlin] Processing action: get_batches
+[22-Jul-2025 07:11:18 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:11:18 Europe/Berlin] Raw input: {"action":"get_products"}
+[22-Jul-2025 07:11:18 Europe/Berlin] Raw input: {"action":"get_suppliers"}
+[22-Jul-2025 07:11:18 Europe/Berlin] Processing action: get_suppliers
+[22-Jul-2025 07:11:18 Europe/Berlin] Raw input: {"action":"get_suppliers"}
+[22-Jul-2025 07:11:18 Europe/Berlin] Processing action: get_suppliers
+[22-Jul-2025 07:11:18 Europe/Berlin] Raw input: {"action":"get_products"}
+[22-Jul-2025 07:11:18 Europe/Berlin] Processing action: get_products
+[22-Jul-2025 07:11:18 Europe/Berlin] Processing action: get_products
+[22-Jul-2025 07:11:18 Europe/Berlin] Raw input: {"action":"get_batches"}
+[22-Jul-2025 07:11:18 Europe/Berlin] Processing action: get_batches
+[22-Jul-2025 07:11:18 Europe/Berlin] Raw input: {"action":"get_brands"}
+[22-Jul-2025 07:11:18 Europe/Berlin] Processing action: get_brands
+[22-Jul-2025 07:11:18 Europe/Berlin] Raw input: {"action":"get_brands"}
+[22-Jul-2025 07:11:18 Europe/Berlin] Processing action: get_brands
+[22-Jul-2025 07:11:29 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:11:29 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:11:29 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:11:29 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:11:29 Europe/Berlin] Raw input: {"action":"get_locations"}
+[22-Jul-2025 07:11:29 Europe/Berlin] Processing action: get_locations
+[22-Jul-2025 07:11:30 Europe/Berlin] Raw input: {"action":"get_locations"}
+[22-Jul-2025 07:11:30 Europe/Berlin] Processing action: get_locations
+[22-Jul-2025 07:11:30 Europe/Berlin] Raw input: {"action":"get_location_products","location_id":4,"search":"","category":"all"}
+[22-Jul-2025 07:11:30 Europe/Berlin] Processing action: get_location_products
+[22-Jul-2025 07:11:30 Europe/Berlin] Raw input: {"action":"get_locations"}
+[22-Jul-2025 07:11:30 Europe/Berlin] Processing action: get_locations
+[22-Jul-2025 07:11:30 Europe/Berlin] Raw input: {"action":"get_location_products","location_id":4,"search":"","category":"all"}
+[22-Jul-2025 07:11:30 Europe/Berlin] Processing action: get_location_products
+[22-Jul-2025 07:11:41 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:11:41 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:11:41 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:11:41 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:11:41 Europe/Berlin] Raw input: {"action":"get_locations"}
+[22-Jul-2025 07:11:41 Europe/Berlin] Processing action: get_locations
+[22-Jul-2025 07:11:41 Europe/Berlin] Raw input: {"action":"get_locations"}
+[22-Jul-2025 07:11:41 Europe/Berlin] Processing action: get_locations
+[22-Jul-2025 07:11:41 Europe/Berlin] Raw input: {"action":"get_locations"}
+[22-Jul-2025 07:11:41 Europe/Berlin] Processing action: get_locations
+[22-Jul-2025 07:11:41 Europe/Berlin] Raw input: {"action":"get_location_products","location_id":3,"search":"","category":"all"}
+[22-Jul-2025 07:11:41 Europe/Berlin] Processing action: get_location_products
+[22-Jul-2025 07:11:41 Europe/Berlin] Raw input: {"action":"get_location_products","location_id":3,"search":"","category":"all"}
+[22-Jul-2025 07:11:41 Europe/Berlin] Processing action: get_location_products
+[22-Jul-2025 07:12:13 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:12:13 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:12:13 Europe/Berlin] Raw input: {"action":"get_movement_history","search":"","movement_type":"all","location":"all","date_range":"all"}
+[22-Jul-2025 07:12:13 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:12:13 Europe/Berlin] Processing action: get_movement_history
+[22-Jul-2025 07:12:13 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:12:13 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:12:13 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:12:13 Europe/Berlin] Raw input: {"action":"get_movement_history","search":"","movement_type":"all","location":"all","date_range":"all"}
+[22-Jul-2025 07:12:13 Europe/Berlin] Processing action: get_movement_history
+[22-Jul-2025 07:12:13 Europe/Berlin] Raw input: {"action":"get_locations_for_filter"}
+[22-Jul-2025 07:12:13 Europe/Berlin] Processing action: get_locations_for_filter
+[22-Jul-2025 07:12:13 Europe/Berlin] Raw input: {"action":"get_locations_for_filter"}
+[22-Jul-2025 07:12:13 Europe/Berlin] Processing action: get_locations_for_filter
+[22-Jul-2025 07:12:13 Europe/Berlin] Raw input: {"action":"get_movement_history","search":"","movement_type":"all","location":"all","date_range":"all"}
+[22-Jul-2025 07:12:13 Europe/Berlin] Processing action: get_movement_history
+[22-Jul-2025 07:21:52 Europe/Berlin] PHP Warning:  include(Api/index.php): Failed to open stream: No such file or directory in C:\xampp\htdocs\Enguio_Project\backend.php on line 22
+[22-Jul-2025 07:21:52 Europe/Berlin] PHP Warning:  include(Api/index.php): Failed to open stream: No such file or directory in C:\xampp\htdocs\Enguio_Project\backend.php on line 22
+[22-Jul-2025 07:21:52 Europe/Berlin] PHP Warning:  include(): Failed opening 'Api/index.php' for inclusion (include_path='C:\xampp\php\PEAR') in C:\xampp\htdocs\Enguio_Project\backend.php on line 22
+[22-Jul-2025 07:21:52 Europe/Berlin] PHP Warning:  include(Api/index.php): Failed to open stream: No such file or directory in C:\xampp\htdocs\Enguio_Project\backend.php on line 22
+[22-Jul-2025 07:21:52 Europe/Berlin] PHP Warning:  include(Api/index.php): Failed to open stream: No such file or directory in C:\xampp\htdocs\Enguio_Project\backend.php on line 22
+[22-Jul-2025 07:21:52 Europe/Berlin] PHP Warning:  include(): Failed opening 'Api/index.php' for inclusion (include_path='C:\xampp\php\PEAR') in C:\xampp\htdocs\Enguio_Project\backend.php on line 22
+[22-Jul-2025 07:21:52 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:21:52 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:21:52 Europe/Berlin] PHP Warning:  include(): Failed opening 'Api/index.php' for inclusion (include_path='C:\xampp\php\PEAR') in C:\xampp\htdocs\Enguio_Project\backend.php on line 22
+[22-Jul-2025 07:21:52 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:21:52 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:21:52 Europe/Berlin] PHP Warning:  include(Api/index.php): Failed to open stream: No such file or directory in C:\xampp\htdocs\Enguio_Project\backend.php on line 22
+[22-Jul-2025 07:21:52 Europe/Berlin] PHP Warning:  include(): Failed opening 'Api/index.php' for inclusion (include_path='C:\xampp\php\PEAR') in C:\xampp\htdocs\Enguio_Project\backend.php on line 22
+[22-Jul-2025 07:21:52 Europe/Berlin] PHP Warning:  include(Api/index.php): Failed to open stream: No such file or directory in C:\xampp\htdocs\Enguio_Project\backend.php on line 22
+[22-Jul-2025 07:21:52 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:21:52 Europe/Berlin] PHP Warning:  include(Api/index.php): Failed to open stream: No such file or directory in C:\xampp\htdocs\Enguio_Project\backend.php on line 22
+[22-Jul-2025 07:21:52 Europe/Berlin] PHP Warning:  include(): Failed opening 'Api/index.php' for inclusion (include_path='C:\xampp\php\PEAR') in C:\xampp\htdocs\Enguio_Project\backend.php on line 22
+[22-Jul-2025 07:21:52 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:21:52 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:21:52 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:21:52 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:21:52 Europe/Berlin] PHP Warning:  include(Api/index.php): Failed to open stream: No such file or directory in C:\xampp\htdocs\Enguio_Project\backend.php on line 22
+[22-Jul-2025 07:21:52 Europe/Berlin] PHP Warning:  include(): Failed opening 'Api/index.php' for inclusion (include_path='C:\xampp\php\PEAR') in C:\xampp\htdocs\Enguio_Project\backend.php on line 22
+[22-Jul-2025 07:21:52 Europe/Berlin] PHP Warning:  include(): Failed opening 'Api/index.php' for inclusion (include_path='C:\xampp\php\PEAR') in C:\xampp\htdocs\Enguio_Project\backend.php on line 22
+[22-Jul-2025 07:21:52 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:21:52 Europe/Berlin] PHP Warning:  include(Api/index.php): Failed to open stream: No such file or directory in C:\xampp\htdocs\Enguio_Project\backend.php on line 22
+[22-Jul-2025 07:21:52 Europe/Berlin] PHP Warning:  include(): Failed opening 'Api/index.php' for inclusion (include_path='C:\xampp\php\PEAR') in C:\xampp\htdocs\Enguio_Project\backend.php on line 22
+[22-Jul-2025 07:21:52 Europe/Berlin] Raw input: {"action":"get_locations"}
+[22-Jul-2025 07:21:52 Europe/Berlin] Processing action: get_locations
+[22-Jul-2025 07:21:52 Europe/Berlin] PHP Warning:  Undefined variable $conn in C:\xampp\htdocs\Enguio_Project\backend.php on line 587
+[22-Jul-2025 07:21:52 Europe/Berlin] PHP Warning:  include(): Failed opening 'Api/index.php' for inclusion (include_path='C:\xampp\php\PEAR') in C:\xampp\htdocs\Enguio_Project\backend.php on line 22
+[22-Jul-2025 07:21:52 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:21:52 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:21:52 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:21:52 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:21:52 Europe/Berlin] PHP Fatal error:  Uncaught Error: Call to a member function prepare() on null in C:\xampp\htdocs\Enguio_Project\backend.php:587
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\Enguio_Project\backend.php on line 587
+[22-Jul-2025 07:21:52 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:21:52 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:21:52 Europe/Berlin] PHP Warning:  include(Api/index.php): Failed to open stream: No such file or directory in C:\xampp\htdocs\Enguio_Project\backend.php on line 22
+[22-Jul-2025 07:21:52 Europe/Berlin] PHP Warning:  include(): Failed opening 'Api/index.php' for inclusion (include_path='C:\xampp\php\PEAR') in C:\xampp\htdocs\Enguio_Project\backend.php on line 22
+[22-Jul-2025 07:21:52 Europe/Berlin] PHP Warning:  include(Api/index.php): Failed to open stream: No such file or directory in C:\xampp\htdocs\Enguio_Project\backend.php on line 22
+[22-Jul-2025 07:21:52 Europe/Berlin] PHP Warning:  include(): Failed opening 'Api/index.php' for inclusion (include_path='C:\xampp\php\PEAR') in C:\xampp\htdocs\Enguio_Project\backend.php on line 22
+[22-Jul-2025 07:21:52 Europe/Berlin] Raw input: {"action":"get_locations"}
+[22-Jul-2025 07:21:52 Europe/Berlin] Processing action: get_locations
+[22-Jul-2025 07:21:52 Europe/Berlin] Raw input: {"action":"get_transfers_with_details"}
+[22-Jul-2025 07:21:52 Europe/Berlin] PHP Warning:  Undefined variable $conn in C:\xampp\htdocs\Enguio_Project\backend.php on line 587
+[22-Jul-2025 07:21:52 Europe/Berlin] Processing action: get_transfers_with_details
+[22-Jul-2025 07:21:52 Europe/Berlin] PHP Fatal error:  Uncaught Error: Call to a member function prepare() on null in C:\xampp\htdocs\Enguio_Project\backend.php:587
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\Enguio_Project\backend.php on line 587
+[22-Jul-2025 07:21:52 Europe/Berlin] PHP Warning:  Undefined variable $conn in C:\xampp\htdocs\Enguio_Project\backend.php on line 630
+[22-Jul-2025 07:21:52 Europe/Berlin] PHP Fatal error:  Uncaught Error: Call to a member function prepare() on null in C:\xampp\htdocs\Enguio_Project\backend.php:630
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\Enguio_Project\backend.php on line 630
+[22-Jul-2025 07:21:52 Europe/Berlin] PHP Warning:  include(Api/index.php): Failed to open stream: No such file or directory in C:\xampp\htdocs\Enguio_Project\backend.php on line 22
+[22-Jul-2025 07:21:52 Europe/Berlin] PHP Warning:  include(): Failed opening 'Api/index.php' for inclusion (include_path='C:\xampp\php\PEAR') in C:\xampp\htdocs\Enguio_Project\backend.php on line 22
+[22-Jul-2025 07:21:52 Europe/Berlin] Raw input: {"action":"get_transfers_with_details"}
+[22-Jul-2025 07:21:52 Europe/Berlin] Processing action: get_transfers_with_details
+[22-Jul-2025 07:21:52 Europe/Berlin] PHP Warning:  include(Api/index.php): Failed to open stream: No such file or directory in C:\xampp\htdocs\Enguio_Project\backend.php on line 22
+[22-Jul-2025 07:21:52 Europe/Berlin] PHP Warning:  Undefined variable $conn in C:\xampp\htdocs\Enguio_Project\backend.php on line 630
+[22-Jul-2025 07:21:52 Europe/Berlin] PHP Warning:  include(): Failed opening 'Api/index.php' for inclusion (include_path='C:\xampp\php\PEAR') in C:\xampp\htdocs\Enguio_Project\backend.php on line 22
+[22-Jul-2025 07:21:52 Europe/Berlin] Raw input: {"action":"get_products"}
+[22-Jul-2025 07:21:52 Europe/Berlin] Processing action: get_products
+[22-Jul-2025 07:21:52 Europe/Berlin] PHP Fatal error:  Uncaught Error: Call to a member function prepare() on null in C:\xampp\htdocs\Enguio_Project\backend.php:630
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\Enguio_Project\backend.php on line 630
+[22-Jul-2025 07:21:52 Europe/Berlin] PHP Warning:  Undefined variable $conn in C:\xampp\htdocs\Enguio_Project\backend.php on line 507
+[22-Jul-2025 07:21:52 Europe/Berlin] PHP Fatal error:  Uncaught Error: Call to a member function prepare() on null in C:\xampp\htdocs\Enguio_Project\backend.php:507
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\Enguio_Project\backend.php on line 507
+[22-Jul-2025 07:21:52 Europe/Berlin] PHP Warning:  include(Api/index.php): Failed to open stream: No such file or directory in C:\xampp\htdocs\Enguio_Project\backend.php on line 22
+[22-Jul-2025 07:21:52 Europe/Berlin] PHP Warning:  include(): Failed opening 'Api/index.php' for inclusion (include_path='C:\xampp\php\PEAR') in C:\xampp\htdocs\Enguio_Project\backend.php on line 22
+[22-Jul-2025 07:21:52 Europe/Berlin] Raw input: {"action":"get_inventory_staff"}
+[22-Jul-2025 07:21:52 Europe/Berlin] Processing action: get_inventory_staff
+[22-Jul-2025 07:21:52 Europe/Berlin] PHP Warning:  Undefined variable $conn in C:\xampp\htdocs\Enguio_Project\backend.php on line 606
+[22-Jul-2025 07:21:52 Europe/Berlin] PHP Fatal error:  Uncaught Error: Call to a member function prepare() on null in C:\xampp\htdocs\Enguio_Project\backend.php:606
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\Enguio_Project\backend.php on line 606
+[22-Jul-2025 07:21:52 Europe/Berlin] PHP Warning:  include(Api/index.php): Failed to open stream: No such file or directory in C:\xampp\htdocs\Enguio_Project\backend.php on line 22
+[22-Jul-2025 07:21:52 Europe/Berlin] PHP Warning:  include(): Failed opening 'Api/index.php' for inclusion (include_path='C:\xampp\php\PEAR') in C:\xampp\htdocs\Enguio_Project\backend.php on line 22
+[22-Jul-2025 07:21:52 Europe/Berlin] Raw input: {"action":"get_inventory_staff"}
+[22-Jul-2025 07:21:52 Europe/Berlin] Processing action: get_inventory_staff
+[22-Jul-2025 07:21:52 Europe/Berlin] PHP Warning:  Undefined variable $conn in C:\xampp\htdocs\Enguio_Project\backend.php on line 606
+[22-Jul-2025 07:21:52 Europe/Berlin] PHP Fatal error:  Uncaught Error: Call to a member function prepare() on null in C:\xampp\htdocs\Enguio_Project\backend.php:606
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\Enguio_Project\backend.php on line 606
+[22-Jul-2025 07:21:52 Europe/Berlin] PHP Warning:  include(Api/index.php): Failed to open stream: No such file or directory in C:\xampp\htdocs\Enguio_Project\backend.php on line 22
+[22-Jul-2025 07:21:52 Europe/Berlin] PHP Warning:  include(): Failed opening 'Api/index.php' for inclusion (include_path='C:\xampp\php\PEAR') in C:\xampp\htdocs\Enguio_Project\backend.php on line 22
+[22-Jul-2025 07:21:52 Europe/Berlin] Raw input: {"action":"get_products"}
+[22-Jul-2025 07:21:52 Europe/Berlin] Processing action: get_products
+[22-Jul-2025 07:21:52 Europe/Berlin] PHP Warning:  Undefined variable $conn in C:\xampp\htdocs\Enguio_Project\backend.php on line 507
+[22-Jul-2025 07:21:52 Europe/Berlin] PHP Fatal error:  Uncaught Error: Call to a member function prepare() on null in C:\xampp\htdocs\Enguio_Project\backend.php:507
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\Enguio_Project\backend.php on line 507
+[22-Jul-2025 07:24:14 Europe/Berlin] PHP Warning:  include(Api/index.php): Failed to open stream: No such file or directory in C:\xampp\htdocs\Enguio_Project\backend.php on line 22
+[22-Jul-2025 07:24:14 Europe/Berlin] PHP Warning:  include(): Failed opening 'Api/index.php' for inclusion (include_path='C:\xampp\php\PEAR') in C:\xampp\htdocs\Enguio_Project\backend.php on line 22
+[22-Jul-2025 07:24:14 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:24:14 Europe/Berlin] PHP Warning:  include(Api/index.php): Failed to open stream: No such file or directory in C:\xampp\htdocs\Enguio_Project\backend.php on line 22
+[22-Jul-2025 07:24:14 Europe/Berlin] PHP Warning:  include(): Failed opening 'Api/index.php' for inclusion (include_path='C:\xampp\php\PEAR') in C:\xampp\htdocs\Enguio_Project\backend.php on line 22
+[22-Jul-2025 07:24:14 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:24:14 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:24:14 Europe/Berlin] PHP Warning:  include(Api/index.php): Failed to open stream: No such file or directory in C:\xampp\htdocs\Enguio_Project\backend.php on line 22
+[22-Jul-2025 07:24:14 Europe/Berlin] PHP Warning:  include(): Failed opening 'Api/index.php' for inclusion (include_path='C:\xampp\php\PEAR') in C:\xampp\htdocs\Enguio_Project\backend.php on line 22
+[22-Jul-2025 07:24:14 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:24:14 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:24:14 Europe/Berlin] PHP Warning:  include(Api/index.php): Failed to open stream: No such file or directory in C:\xampp\htdocs\Enguio_Project\backend.php on line 22
+[22-Jul-2025 07:24:14 Europe/Berlin] PHP Warning:  include(): Failed opening 'Api/index.php' for inclusion (include_path='C:\xampp\php\PEAR') in C:\xampp\htdocs\Enguio_Project\backend.php on line 22
+[22-Jul-2025 07:24:14 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:24:14 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:24:14 Europe/Berlin] PHP Warning:  include(Api/index.php): Failed to open stream: No such file or directory in C:\xampp\htdocs\Enguio_Project\backend.php on line 22
+[22-Jul-2025 07:24:14 Europe/Berlin] PHP Warning:  include(): Failed opening 'Api/index.php' for inclusion (include_path='C:\xampp\php\PEAR') in C:\xampp\htdocs\Enguio_Project\backend.php on line 22
+[22-Jul-2025 07:24:14 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:24:14 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:24:14 Europe/Berlin] PHP Warning:  include(Api/index.php): Failed to open stream: No such file or directory in C:\xampp\htdocs\Enguio_Project\backend.php on line 22
+[22-Jul-2025 07:24:14 Europe/Berlin] PHP Warning:  include(): Failed opening 'Api/index.php' for inclusion (include_path='C:\xampp\php\PEAR') in C:\xampp\htdocs\Enguio_Project\backend.php on line 22
+[22-Jul-2025 07:24:14 Europe/Berlin] Raw input: {"action":"get_products"}
+[22-Jul-2025 07:24:14 Europe/Berlin] PHP Warning:  include(Api/index.php): Failed to open stream: No such file or directory in C:\xampp\htdocs\Enguio_Project\backend.php on line 22
+[22-Jul-2025 07:24:14 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:24:14 Europe/Berlin] PHP Warning:  include(Api/index.php): Failed to open stream: No such file or directory in C:\xampp\htdocs\Enguio_Project\backend.php on line 22
+[22-Jul-2025 07:24:14 Europe/Berlin] PHP Warning:  include(): Failed opening 'Api/index.php' for inclusion (include_path='C:\xampp\php\PEAR') in C:\xampp\htdocs\Enguio_Project\backend.php on line 22
+[22-Jul-2025 07:24:14 Europe/Berlin] PHP Warning:  include(): Failed opening 'Api/index.php' for inclusion (include_path='C:\xampp\php\PEAR') in C:\xampp\htdocs\Enguio_Project\backend.php on line 22
+[22-Jul-2025 07:24:14 Europe/Berlin] Raw input: {"action":"get_brands"}
+[22-Jul-2025 07:24:14 Europe/Berlin] Processing action: get_brands
+[22-Jul-2025 07:24:14 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:24:14 Europe/Berlin] PHP Warning:  Undefined variable $conn in C:\xampp\htdocs\Enguio_Project\backend.php on line 568
+[22-Jul-2025 07:24:14 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:24:14 Europe/Berlin] PHP Fatal error:  Uncaught Error: Call to a member function prepare() on null in C:\xampp\htdocs\Enguio_Project\backend.php:568
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\Enguio_Project\backend.php on line 568
+[22-Jul-2025 07:24:14 Europe/Berlin] PHP Warning:  include(Api/index.php): Failed to open stream: No such file or directory in C:\xampp\htdocs\Enguio_Project\backend.php on line 22
+[22-Jul-2025 07:24:14 Europe/Berlin] PHP Warning:  include(Api/index.php): Failed to open stream: No such file or directory in C:\xampp\htdocs\Enguio_Project\backend.php on line 22
+[22-Jul-2025 07:24:14 Europe/Berlin] Processing action: get_products
+[22-Jul-2025 07:24:14 Europe/Berlin] PHP Warning:  include(Api/index.php): Failed to open stream: No such file or directory in C:\xampp\htdocs\Enguio_Project\backend.php on line 22
+[22-Jul-2025 07:24:14 Europe/Berlin] PHP Warning:  include(Api/index.php): Failed to open stream: No such file or directory in C:\xampp\htdocs\Enguio_Project\backend.php on line 22
+[22-Jul-2025 07:24:14 Europe/Berlin] PHP Warning:  include(Api/index.php): Failed to open stream: No such file or directory in C:\xampp\htdocs\Enguio_Project\backend.php on line 22
+[22-Jul-2025 07:24:14 Europe/Berlin] PHP Warning:  include(): Failed opening 'Api/index.php' for inclusion (include_path='C:\xampp\php\PEAR') in C:\xampp\htdocs\Enguio_Project\backend.php on line 22
+[22-Jul-2025 07:24:14 Europe/Berlin] PHP Warning:  include(): Failed opening 'Api/index.php' for inclusion (include_path='C:\xampp\php\PEAR') in C:\xampp\htdocs\Enguio_Project\backend.php on line 22
+[22-Jul-2025 07:24:14 Europe/Berlin] PHP Warning:  include(): Failed opening 'Api/index.php' for inclusion (include_path='C:\xampp\php\PEAR') in C:\xampp\htdocs\Enguio_Project\backend.php on line 22
+[22-Jul-2025 07:24:14 Europe/Berlin] Raw input: {"action":"get_brands"}
+[22-Jul-2025 07:24:14 Europe/Berlin] PHP Warning:  Undefined variable $conn in C:\xampp\htdocs\Enguio_Project\backend.php on line 507
+[22-Jul-2025 07:24:14 Europe/Berlin] Raw input: {"action":"get_batches"}
+[22-Jul-2025 07:24:14 Europe/Berlin] Processing action: get_brands
+[22-Jul-2025 07:24:14 Europe/Berlin] Processing action: get_batches
+[22-Jul-2025 07:24:14 Europe/Berlin] PHP Fatal error:  Uncaught Error: Call to a member function prepare() on null in C:\xampp\htdocs\Enguio_Project\backend.php:507
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\Enguio_Project\backend.php on line 507
+[22-Jul-2025 07:24:14 Europe/Berlin] PHP Warning:  include(): Failed opening 'Api/index.php' for inclusion (include_path='C:\xampp\php\PEAR') in C:\xampp\htdocs\Enguio_Project\backend.php on line 22
+[22-Jul-2025 07:24:14 Europe/Berlin] PHP Warning:  Undefined variable $conn in C:\xampp\htdocs\Enguio_Project\backend.php on line 568
+[22-Jul-2025 07:24:14 Europe/Berlin] PHP Warning:  Undefined variable $conn in C:\xampp\htdocs\Enguio_Project\backend.php on line 1154
+[22-Jul-2025 07:24:14 Europe/Berlin] PHP Warning:  include(Api/index.php): Failed to open stream: No such file or directory in C:\xampp\htdocs\Enguio_Project\backend.php on line 22
+[22-Jul-2025 07:24:14 Europe/Berlin] PHP Warning:  include(): Failed opening 'Api/index.php' for inclusion (include_path='C:\xampp\php\PEAR') in C:\xampp\htdocs\Enguio_Project\backend.php on line 22
+[22-Jul-2025 07:24:14 Europe/Berlin] Raw input: {"action":"get_suppliers"}
+[22-Jul-2025 07:24:14 Europe/Berlin] Processing action: get_suppliers
+[22-Jul-2025 07:24:14 Europe/Berlin] PHP Warning:  Undefined variable $conn in C:\xampp\htdocs\Enguio_Project\backend.php on line 545
+[22-Jul-2025 07:24:14 Europe/Berlin] PHP Fatal error:  Uncaught Error: Call to a member function prepare() on null in C:\xampp\htdocs\Enguio_Project\backend.php:545
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\Enguio_Project\backend.php on line 545
+[22-Jul-2025 07:24:14 Europe/Berlin] PHP Warning:  include(): Failed opening 'Api/index.php' for inclusion (include_path='C:\xampp\php\PEAR') in C:\xampp\htdocs\Enguio_Project\backend.php on line 22
+[22-Jul-2025 07:24:14 Europe/Berlin] Raw input: {"action":"get_suppliers"}
+[22-Jul-2025 07:24:14 Europe/Berlin] Processing action: get_suppliers
+[22-Jul-2025 07:24:14 Europe/Berlin] PHP Warning:  Undefined variable $conn in C:\xampp\htdocs\Enguio_Project\backend.php on line 545
+[22-Jul-2025 07:24:14 Europe/Berlin] PHP Fatal error:  Uncaught Error: Call to a member function prepare() on null in C:\xampp\htdocs\Enguio_Project\backend.php:545
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\Enguio_Project\backend.php on line 545
+[22-Jul-2025 07:24:15 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:24:15 Europe/Berlin] PHP Fatal error:  Uncaught Error: Call to a member function prepare() on null in C:\xampp\htdocs\Enguio_Project\backend.php:1154
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\Enguio_Project\backend.php on line 1154
+[22-Jul-2025 07:24:15 Europe/Berlin] PHP Fatal error:  Uncaught Error: Call to a member function prepare() on null in C:\xampp\htdocs\Enguio_Project\backend.php:568
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\Enguio_Project\backend.php on line 568
+[22-Jul-2025 07:24:15 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:24:15 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:24:15 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:24:15 Europe/Berlin] PHP Warning:  include(Api/index.php): Failed to open stream: No such file or directory in C:\xampp\htdocs\Enguio_Project\backend.php on line 22
+[22-Jul-2025 07:24:15 Europe/Berlin] PHP Warning:  include(): Failed opening 'Api/index.php' for inclusion (include_path='C:\xampp\php\PEAR') in C:\xampp\htdocs\Enguio_Project\backend.php on line 22
+[22-Jul-2025 07:24:15 Europe/Berlin] Raw input: {"action":"get_batches"}
+[22-Jul-2025 07:24:15 Europe/Berlin] Processing action: get_batches
+[22-Jul-2025 07:24:15 Europe/Berlin] PHP Warning:  Undefined variable $conn in C:\xampp\htdocs\Enguio_Project\backend.php on line 1154
+[22-Jul-2025 07:24:15 Europe/Berlin] PHP Fatal error:  Uncaught Error: Call to a member function prepare() on null in C:\xampp\htdocs\Enguio_Project\backend.php:1154
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\Enguio_Project\backend.php on line 1154
+[22-Jul-2025 07:24:15 Europe/Berlin] PHP Warning:  include(Api/index.php): Failed to open stream: No such file or directory in C:\xampp\htdocs\Enguio_Project\backend.php on line 22
+[22-Jul-2025 07:24:15 Europe/Berlin] PHP Warning:  include(): Failed opening 'Api/index.php' for inclusion (include_path='C:\xampp\php\PEAR') in C:\xampp\htdocs\Enguio_Project\backend.php on line 22
+[22-Jul-2025 07:24:15 Europe/Berlin] Raw input: {"action":"get_products"}
+[22-Jul-2025 07:24:15 Europe/Berlin] Processing action: get_products
+[22-Jul-2025 07:24:15 Europe/Berlin] PHP Warning:  Undefined variable $conn in C:\xampp\htdocs\Enguio_Project\backend.php on line 507
+[22-Jul-2025 07:24:15 Europe/Berlin] PHP Fatal error:  Uncaught Error: Call to a member function prepare() on null in C:\xampp\htdocs\Enguio_Project\backend.php:507
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\Enguio_Project\backend.php on line 507
+[22-Jul-2025 07:26:34 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:26:34 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:26:34 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:26:34 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:26:34 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:26:34 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:26:34 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:26:34 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:26:34 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:26:34 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:26:34 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:26:34 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:26:34 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:26:34 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:26:34 Europe/Berlin] Raw input: 
+[22-Jul-2025 07:26:34 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 07:26:34 Europe/Berlin] Raw input: {"action":"get_suppliers"}
+[22-Jul-2025 07:26:34 Europe/Berlin] Processing action: get_suppliers
+[22-Jul-2025 07:26:34 Europe/Berlin] Raw input: {"action":"get_products"}
+[22-Jul-2025 07:26:34 Europe/Berlin] Processing action: get_products
+[22-Jul-2025 07:26:34 Europe/Berlin] Raw input: {"action":"get_batches"}
+[22-Jul-2025 07:26:34 Europe/Berlin] Processing action: get_batches
+[22-Jul-2025 07:26:34 Europe/Berlin] Raw input: {"action":"get_brands"}
+[22-Jul-2025 07:26:34 Europe/Berlin] Processing action: get_brands
+[22-Jul-2025 07:26:34 Europe/Berlin] Raw input: {"action":"get_suppliers"}
+[22-Jul-2025 07:26:34 Europe/Berlin] Processing action: get_suppliers
+[22-Jul-2025 07:26:34 Europe/Berlin] Raw input: {"action":"get_brands"}
+[22-Jul-2025 07:26:34 Europe/Berlin] Processing action: get_brands
+[22-Jul-2025 07:26:34 Europe/Berlin] Raw input: {"action":"get_batches"}
+[22-Jul-2025 07:26:34 Europe/Berlin] Processing action: get_batches
+[22-Jul-2025 07:26:34 Europe/Berlin] Raw input: {"action":"get_products"}
+[22-Jul-2025 07:26:34 Europe/Berlin] Processing action: get_products
+[22-Jul-2025 08:48:05 Europe/Berlin] Raw input: 
+[22-Jul-2025 08:48:05 Europe/Berlin] Raw input: 
+[22-Jul-2025 08:48:05 Europe/Berlin] Raw input: 
+[22-Jul-2025 08:48:05 Europe/Berlin] Raw input: 
+[22-Jul-2025 08:48:05 Europe/Berlin] Raw input: 
+[22-Jul-2025 08:48:05 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 08:48:05 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 08:48:05 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 08:48:05 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 08:48:05 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 08:48:05 Europe/Berlin] Raw input: 
+[22-Jul-2025 08:48:05 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 08:48:05 Europe/Berlin] Raw input: 
+[22-Jul-2025 08:48:05 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 08:48:05 Europe/Berlin] Raw input: {"action":"get_locations"}
+[22-Jul-2025 08:48:05 Europe/Berlin] Processing action: get_locations
+[22-Jul-2025 08:48:05 Europe/Berlin] Raw input: {"action":"get_products"}
+[22-Jul-2025 08:48:05 Europe/Berlin] Processing action: get_products
+[22-Jul-2025 08:48:05 Europe/Berlin] Raw input: {"action":"get_transfers_with_details"}
+[22-Jul-2025 08:48:05 Europe/Berlin] Processing action: get_transfers_with_details
+[22-Jul-2025 08:48:05 Europe/Berlin] Raw input: 
+[22-Jul-2025 08:48:05 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 08:48:05 Europe/Berlin] Raw input: {"action":"get_inventory_staff"}
+[22-Jul-2025 08:48:05 Europe/Berlin] Raw input: {"action":"get_transfers_with_details"}
+[22-Jul-2025 08:48:05 Europe/Berlin] Processing action: get_inventory_staff
+[22-Jul-2025 08:48:05 Europe/Berlin] Processing action: get_transfers_with_details
+[22-Jul-2025 08:48:05 Europe/Berlin] Raw input: {"action":"get_products"}
+[22-Jul-2025 08:48:05 Europe/Berlin] Processing action: get_products
+[22-Jul-2025 08:48:05 Europe/Berlin] Raw input: {"action":"get_inventory_staff"}
+[22-Jul-2025 08:48:05 Europe/Berlin] Raw input: {"action":"get_locations"}
+[22-Jul-2025 08:48:05 Europe/Berlin] Processing action: get_inventory_staff
+[22-Jul-2025 08:48:05 Europe/Berlin] Processing action: get_locations
+[22-Jul-2025 08:48:08 Europe/Berlin] Raw input: {"action":"get_suppliers"}
+[22-Jul-2025 08:48:08 Europe/Berlin] Processing action: get_suppliers
+[22-Jul-2025 08:48:08 Europe/Berlin] Raw input: {"action":"get_products"}
+[22-Jul-2025 08:48:08 Europe/Berlin] Processing action: get_products
+[22-Jul-2025 08:48:08 Europe/Berlin] Raw input: {"action":"get_batches"}
+[22-Jul-2025 08:48:08 Europe/Berlin] Processing action: get_batches
+[22-Jul-2025 08:48:08 Europe/Berlin] Raw input: {"action":"get_brands"}
+[22-Jul-2025 08:48:08 Europe/Berlin] Processing action: get_brands
+[22-Jul-2025 08:48:08 Europe/Berlin] Raw input: {"action":"get_suppliers"}
+[22-Jul-2025 08:48:08 Europe/Berlin] Processing action: get_suppliers
+[22-Jul-2025 08:48:08 Europe/Berlin] Raw input: {"action":"get_products"}
+[22-Jul-2025 08:48:08 Europe/Berlin] Processing action: get_products
+[22-Jul-2025 08:48:08 Europe/Berlin] Raw input: {"action":"get_batches"}
+[22-Jul-2025 08:48:08 Europe/Berlin] Processing action: get_batches
+[22-Jul-2025 08:48:08 Europe/Berlin] Raw input: {"action":"get_brands"}
+[22-Jul-2025 08:48:08 Europe/Berlin] Processing action: get_brands
+[22-Jul-2025 08:51:56 Europe/Berlin] Raw input: 
+[22-Jul-2025 08:51:56 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 08:51:57 Europe/Berlin] Raw input: 
+[22-Jul-2025 08:51:57 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 08:51:57 Europe/Berlin] Raw input: {"action":"get_locations"}
+[22-Jul-2025 08:51:57 Europe/Berlin] Processing action: get_locations
+[22-Jul-2025 08:51:57 Europe/Berlin] Raw input: {"action":"get_locations"}
+[22-Jul-2025 08:51:57 Europe/Berlin] Processing action: get_locations
+[22-Jul-2025 08:51:57 Europe/Berlin] Raw input: {"action":"get_locations"}
+[22-Jul-2025 08:51:57 Europe/Berlin] Processing action: get_locations
+[22-Jul-2025 08:51:57 Europe/Berlin] Raw input: {"action":"get_location_products","location_id":4,"search":"","category":"all"}
+[22-Jul-2025 08:51:57 Europe/Berlin] Processing action: get_location_products
+[22-Jul-2025 08:51:57 Europe/Berlin] Raw input: {"action":"get_location_products","location_id":4,"search":"","category":"all"}
+[22-Jul-2025 08:51:57 Europe/Berlin] Processing action: get_location_products
+[22-Jul-2025 08:52:03 Europe/Berlin] Raw input: 
+[22-Jul-2025 08:52:03 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 08:52:04 Europe/Berlin] Raw input: 
+[22-Jul-2025 08:52:04 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 08:52:04 Europe/Berlin] Raw input: 
+[22-Jul-2025 08:52:04 Europe/Berlin] Raw input: 
+[22-Jul-2025 08:52:04 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 08:52:04 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 08:52:04 Europe/Berlin] Raw input: 
+[22-Jul-2025 08:52:04 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 08:52:04 Europe/Berlin] Raw input: 
+[22-Jul-2025 08:52:04 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 08:52:04 Europe/Berlin] Raw input: {"action":"get_transfers_with_details"}
+[22-Jul-2025 08:52:04 Europe/Berlin] Processing action: get_transfers_with_details
+[22-Jul-2025 08:52:04 Europe/Berlin] Raw input: {"action":"get_products"}
+[22-Jul-2025 08:52:04 Europe/Berlin] Processing action: get_products
+[22-Jul-2025 08:52:04 Europe/Berlin] Raw input: 
+[22-Jul-2025 08:52:04 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 08:52:04 Europe/Berlin] Raw input: {"action":"get_locations"}
+[22-Jul-2025 08:52:04 Europe/Berlin] Processing action: get_locations
+[22-Jul-2025 08:52:04 Europe/Berlin] Raw input: 
+[22-Jul-2025 08:52:04 Europe/Berlin] JSON decode error: Syntax error
+[22-Jul-2025 08:52:04 Europe/Berlin] Raw input: {"action":"get_inventory_staff"}
+[22-Jul-2025 08:52:04 Europe/Berlin] Processing action: get_inventory_staff
+[22-Jul-2025 08:52:04 Europe/Berlin] Raw input: {"action":"get_products"}
+[22-Jul-2025 08:52:04 Europe/Berlin] Processing action: get_products
+[22-Jul-2025 08:52:04 Europe/Berlin] Raw input: {"action":"get_locations"}
+[22-Jul-2025 08:52:04 Europe/Berlin] Processing action: get_locations
+[22-Jul-2025 08:52:04 Europe/Berlin] Raw input: {"action":"get_transfers_with_details"}
+[22-Jul-2025 08:52:04 Europe/Berlin] Processing action: get_transfers_with_details
+[22-Jul-2025 08:52:04 Europe/Berlin] Raw input: {"action":"get_inventory_staff"}
+[22-Jul-2025 08:52:04 Europe/Berlin] Processing action: get_inventory_staff

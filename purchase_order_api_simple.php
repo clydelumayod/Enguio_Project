@@ -202,7 +202,7 @@ function getPurchaseOrderDetails($conn, $po_id) {
     }
 }
 
-// Create purchase order
+
 function createPurchaseOrder($conn, $data) {
     try {
         mysqli_begin_transaction($conn);

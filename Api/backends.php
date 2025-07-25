@@ -19,7 +19,7 @@ ini_set('log_errors', 1);
 ini_set('error_log', 'php_errors.log');
 
 // Include DB connection
-include 'index.php';
+include 'conn.php';
 
 // Clear any output that might have been generated
 ob_clean();

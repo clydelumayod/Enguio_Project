@@ -379,93 +379,74 @@ export default function POS() {
     );
   };
 
-  const printReceipt = () => {
+  const printReceipt = async () => {
     // Get current date and time
     const now = new Date();
     const dateStr = now.toLocaleDateString();
     const timeStr = now.toLocaleTimeString();
     const transactionId = `TXN${now.getTime().toString().slice(-6)}`;
 
-    // Create a new window for the receipt
-    const printWindow = window.open('', '_blank', 'width=300,height=600');
-    
-    printWindow.document.write(`
-      <html>
-        <head>
-          <title>Receipt</title>
-          <style>
-            body {
-              font-family: 'Courier New', monospace;
-              width: 300px;
-              padding: 10px;
-            }
-            .center { text-align: center; }
-            .header { font-size: 14px; font-weight: bold; }
-            .items { margin: 10px 0; }
-            .total { font-weight: bold; }
-            .divider { border-top: 1px dashed #000; margin: 5px 0; }
-            @media print {
-              body { width: 100%; }
-              .no-print { display: none; }
-            }
-          </style>
-        </head>
-        <body>
-          <div class="center header">
-            Enguios Pharmacy & Convenience Store
-          </div>
-          <div class="center">Receipt</div>
-          <div class="divider"></div>
-          <div>
-            Date: ${dateStr}<br>
-            Time: ${timeStr}<br>
-            Transaction #: ${transactionId}
-          </div>
-          <div class="divider"></div>
-          <div class="items">
-            ${cart.map(item => `
-              ${item.product.name}<br>
-              &nbsp;&nbsp;${item.quantity} x ₱${item.product.price.toFixed(2)} = ₱${(item.product.price * item.quantity).toFixed(2)}
-            `).join('<br>')}
-          </div>
-          <div class="divider"></div>
-          <div class="total">
-            Subtotal: ₱${total.toFixed(2)}<br>
-            Payment Method: ${paymentMethod.toUpperCase()}<br>
-            Amount Paid: ₱${amountPaid}<br>
-            Change: ₱${change.toFixed(2)}<br>
-            ${paymentMethod === 'gcash' ? `GCash Ref #: ${referenceNumber}<br>` : ''}
-          </div>
-          <div class="divider"></div>
-          <div class="center">
-            Thank you for shopping!<br>
-            Please come again!
-          </div>
-          <button class="no-print" onclick="window.print(); window.close();" 
-            style="margin-top: 20px; padding: 10px; width: 100%;">
-            Print Receipt
-          </button>
-        </body>
-      </html>
-    `);
-    
-    printWindow.document.close();
+    // Prepare receipt data
+    const receiptData = {
+      storeName: "Enguios Pharmacy & Convenience Store",
+      date: dateStr,
+      time: timeStr,
+      transactionId: transactionId,
+      items: cart.map(item => ({
+        name: item.product.name,
+        quantity: item.quantity,
+        price: item.product.price,
+        total: item.product.price * item.quantity
+      })),
+      subtotal: total,
+      paymentMethod: paymentMethod.toUpperCase(),
+      amountPaid: parseFloat(amountPaid),
+      change: change,
+      gcashRef: paymentMethod === 'gcash' ? referenceNumber : null
+    };
+
+    try {
+      const response = await fetch('/api/print-receipt', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(receiptData)
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to print receipt');
+      }
+
+      const result = await response.json();
+      if (!result.success) {
+        throw new Error(result.message || 'Failed to print receipt');
+      }
+    } catch (error) {
+      console.error('Print error:', error);
+      alert('Failed to print receipt. Please try again.');
+      return false;
+    }
+    return true;
   };
 
-  const handleCheckout = () => {
+  const handleCheckout = async () => {
     if (cart.length === 0) return;
     
-    // Print receipt first
-    printReceipt();
+    // Try to print receipt
+    const printSuccess = await printReceipt();
     
-    // Clear cart and reset state
-    setCart([]);
-    localStorage.removeItem('pos-cart');
-    setAmountPaid('');
-    setReferenceNumber('');
-    setPaymentMethod('');
-    setShowRefInput(false);
-    setShowThankYouModal(true);
+    // Only proceed with checkout if printing was successful
+    if (printSuccess) {
+      // Clear cart and reset state
+      setCart([]);
+      localStorage.removeItem('pos-cart');
+      setAmountPaid('');
+      setReferenceNumber('');
+      setPaymentMethod('');
+      setShowRefInput(false);
+      setShowThankYouModal(true);
+    }
   };
 
   useEffect(() => {
@@ -578,14 +559,6 @@ export default function POS() {
               <div className="bg-gray-50 rounded-lg p-4 mb-4">
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="text-xl font-bold">Cart ({cart.length} items)</h2>
-                  {cart.length > 0 && (
-                    <button
-                      onClick={printReceipt}
-                      className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-                    >
-                      Print Receipt
-                    </button>
-                  )}
                 </div>
                 {cart.length === 0 ? (
                   <div className="text-center py-8 text-gray-500">

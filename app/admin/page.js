@@ -6,7 +6,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 
-const API_BASE_URL = "http://localhost/enguio/Api/backend.php";
+const API_BASE_URL = "http://localhost/Enguio_Project/Api/backends.php";
 //dashboard
 function Dashboard() {
   const metrics = [

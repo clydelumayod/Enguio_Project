@@ -1,12 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  async rewrites() {
-    return [
-      {
-        source: '/Api/print-receipt.php',
-        destination: 'http://localhost/Enguio_Project/Api/print-receipt.php'
-      }
-    ]
+  webpack: (config, { isServer }) => {
+    // Only on server-side
+    if (isServer) {
+      config.externals.push('printer');
+    }
+    return config;
   }
 };
 
