@@ -35,20 +35,19 @@ const Sidebar = ({
     { label: "Reports", icon: <FaChartLine />, key: "Reports" },
     { label: "Settings", icon: <FaCog />, key: "Settings" },
     { label: "Archive", icon: <FaUser />, key: "Archive" },
-
     { label: "Logout", icon: <FaSignOutAlt />, key: "Logout" },
   ];
 
   return (
     <div
-      className={`fixed top-0 left-0 h-full transition-all duration-300 ease-in-out bg-green-300 text-black p-4 z-10 ${
+      className={`fixed top-0 left-0 h-full transition-all duration-300 ease-in-out bg-white text-gray-800 p-4 z-10 border-r border-gray-200 ${
         isSidebarOpen ? "w-64" : "w-20"
       }`}
     >
       {/* Toggle Button */}
       <button
         onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-        className="absolute top-3 right-3 p-2"
+        className="absolute top-3 right-3 p-2 text-gray-600 hover:text-gray-800"
         aria-label="Toggle Sidebar"
       >
         <svg
@@ -68,15 +67,15 @@ const Sidebar = ({
       {/* Profile Section */}
       {isSidebarOpen && (
         <div className="flex flex-col items-center mt-6 mb-6">
-          <div className="w-24 h-24 rounded-full border border-black overflow-hidden">
+          <div className="w-24 h-24 rounded-full border border-gray-300 overflow-hidden">
             <img
               src="https://ui-avatars.com/api/?name=Elmer+Enguio&background=2f855a&color=ffffff&size=128"
               alt="Avatar"
               className="w-24 h-24 rounded-full object-cover"
             />
           </div>
-          <div className="text-xl font-bold font-serif uppercase">ELMER ENGUIO</div>
-          <div className="italic font-serif text-lg">Inventory Manager</div>
+          <div className="text-xl font-bold font-serif uppercase text-gray-900">ELMER ENGUIO</div>
+          <div className="italic font-serif text-lg text-gray-600">Inventory Manager</div>
         </div>
       )}
 
@@ -95,8 +94,8 @@ const Sidebar = ({
             >
               <button
                 onClick={() => onSelectFeature("Dashboard")}
-                className={`flex items-center gap-3 px-2 py-2 rounded hover:bg-green-400 w-full text-left ${
-                  selectedFeature === "Dashboard" ? "bg-green-500 font-semibold" : ""
+                className={`flex items-center gap-3 px-2 py-2 rounded hover:bg-gray-100 w-full text-left transition-colors ${
+                  selectedFeature === "Dashboard" ? "bg-blue-100 text-blue-600 font-semibold" : ""
                 }`}
               >
                 <span className="text-xl"><FaTachometerAlt /></span>
@@ -111,8 +110,8 @@ const Sidebar = ({
           <li>
             <button
               onClick={() => setIsInventoryDropdownOpen(!isInventoryDropdownOpen)}
-              className={`flex items-center gap-3 px-2 py-2 rounded hover:bg-green-400 w-full text-left ${
-                selectedFeature === "Inventory" ? "bg-green-500 font-semibold" : ""
+              className={`flex items-center gap-3 px-2 py-2 rounded hover:bg-gray-100 w-full text-left transition-colors ${
+                selectedFeature === "Inventory" ? "bg-blue-100 text-blue-600 font-semibold" : ""
               }`}
             >
               <span className="text-xl"><FaBoxOpen /></span>
@@ -127,8 +126,8 @@ const Sidebar = ({
                 <li>
                   <button
                     onClick={() => onSelectFeature("Inventory Transfer")}
-                    className={`flex items-center gap-3 px-2 py-2 rounded hover:bg-green-400 w-full text-left ${
-                      selectedFeature === "Inventory Transfer" ? "bg-green-500 font-semibold" : ""
+                    className={`flex items-center gap-3 px-2 py-2 rounded hover:bg-gray-100 w-full text-left transition-colors ${
+                      selectedFeature === "Inventory Transfer" ? "bg-blue-100 text-blue-600 font-semibold" : ""
                     }`}
                   >
                     <span className="text-xl"><FaTruck /></span>
@@ -155,8 +154,8 @@ const Sidebar = ({
                 >
                   <button
                     onClick={() => onSelectFeature(item.key)}
-                    className={`flex items-center gap-3 px-2 py-2 rounded hover:bg-green-400 w-full text-left ${
-                      selectedFeature === item.key ? "bg-green-500 font-semibold" : ""
+                    className={`flex items-center gap-3 px-2 py-2 rounded hover:bg-gray-100 w-full text-left transition-colors ${
+                      selectedFeature === item.key ? "bg-blue-100 text-blue-600 font-semibold" : ""
                     }`}
                   >
                     <span className="text-xl">{item.icon}</span>

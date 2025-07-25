@@ -435,7 +435,7 @@ function Dashboard() {
     const maxValue = Math.max(...data.map(item => item.quantity || 0));
     
     return (
-      <div className="bg-white p-6 rounded-lg shadow-sm">
+      <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">{title}</h3>
         <div className="space-y-3">
           {data.slice(0, 10).map((item, index) => (
@@ -465,7 +465,7 @@ function Dashboard() {
     const colors = ['#3B82F6', '#EF4444', '#10B981', '#F59E0B', '#8B5CF6', '#06B6D4', '#84CC16', '#F97316'];
     
     return (
-      <div className="bg-white p-6 rounded-lg shadow-sm">
+      <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">{title}</h3>
         <div className="grid grid-cols-2 gap-4">
           <div className="flex items-center justify-center">
@@ -510,7 +510,7 @@ function Dashboard() {
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
     
     return (
-      <div className="bg-white p-6 rounded-lg shadow-sm">
+      <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">{title}</h3>
         <div className="h-64 flex items-end justify-between space-x-1">
           {months.map((month, index) => {
@@ -548,7 +548,7 @@ function Dashboard() {
     const percentage = Math.min((criticalLevel / maxCritical) * 100, 100);
     
     return (
-      <div className="bg-white p-6 rounded-lg shadow-sm">
+      <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">{title}</h3>
         <div className="flex items-center justify-center">
           <div className="relative w-32 h-32">
@@ -587,7 +587,7 @@ function Dashboard() {
     const colors = ['#3B82F6', '#EF4444', '#10B981', '#F59E0B', '#8B5CF6'];
     
     return (
-      <div className="bg-white p-6 rounded-lg shadow-sm">
+      <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">{title}</h3>
         <div className="space-y-4">
           {locations.map((location, locIndex) => (
@@ -686,48 +686,49 @@ function Dashboard() {
       </div>
 
       {/* Warehouse KPIs Section */}
-      <div className="p-6">
-        <div className="grid grid-cols-8 gap-4 mb-8">
-          <div className="bg-white p-4 rounded-lg shadow-sm">
+      <div className="p-6 space-y-6">
+        {/* Main Warehouse KPIs */}
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
+          <div className="bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200">
             <p className="text-sm text-gray-600 mb-1">Total Products</p>
             <p className="text-2xl font-bold text-gray-900">
               {formatNumber(warehouseData.totalProducts)}
             </p>
           </div>
-          <div className="bg-white p-4 rounded-lg shadow-sm">
+          <div className="bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200">
             <p className="text-sm text-gray-600 mb-1">Total Suppliers</p>
             <p className="text-2xl font-bold text-gray-900">{formatNumber(warehouseData.totalSuppliers)}</p>
           </div>
-          <div className="bg-white p-4 rounded-lg shadow-sm">
+          <div className="bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200">
             <p className="text-sm text-gray-600 mb-1">Storage Capacity</p>
             <p className="text-2xl font-bold text-gray-900">{formatPercentage(warehouseData.storageCapacity)}</p>
           </div>
-          <div className="bg-white p-4 rounded-lg shadow-sm">
+          <div className="bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200">
             <p className="text-sm text-gray-600 mb-1">Warehouse Value</p>
             <p className="text-2xl font-bold text-gray-900">{formatCurrency(warehouseData.warehouseValue)}</p>
           </div>
-          <div className="bg-white p-4 rounded-lg shadow-sm">
+          <div className="bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200">
             <p className="text-sm text-gray-600 mb-1">Low Stock Items</p>
             <p className="text-2xl font-bold text-gray-900">{formatNumber(warehouseData.lowStockItems)}</p>
           </div>
-          <div className="bg-white p-4 rounded-lg shadow-sm">
+          <div className="bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200">
             <p className="text-sm text-gray-600 mb-1">Expiring Soon</p>
             <p className="text-2xl font-bold text-gray-900">{formatNumber(warehouseData.expiringSoon)}</p>
           </div>
-          <div className="bg-white p-4 rounded-lg shadow-sm">
+          <div className="bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200">
             <p className="text-sm text-gray-600 mb-1">Total Batches</p>
             <p className="text-2xl font-bold text-gray-900">{formatNumber(warehouseData.totalBatches)}</p>
           </div>
-          <div className="bg-white p-4 rounded-lg shadow-sm">
+          <div className="bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200">
             <p className="text-sm text-gray-600 mb-1">Active Transfers</p>
             <p className="text-2xl font-bold text-gray-900">{formatNumber(warehouseData.activeTransfers)}</p>
           </div>
         </div>
 
-        {/* Add new KPI cards for each module below the warehouse KPIs section */}
-        <div className="grid grid-cols-3 gap-4 mb-8">
+        {/* Module KPIs */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* Convenience Store KPIs */}
-          <div className="bg-white p-4 rounded-lg shadow-sm">
+          <div className="bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200">
             <p className="text-sm text-gray-600 mb-1">Convenience Store - Total Products</p>
             <p className="text-2xl font-bold text-gray-900">{formatNumber(convenienceKPIs.totalProducts)}</p>
             <p className="text-sm text-gray-600 mb-1">Low Stock</p>
@@ -736,7 +737,7 @@ function Dashboard() {
             <p className="text-xl font-bold text-orange-600">{formatNumber(convenienceKPIs.expiringSoon)}</p>
           </div>
           {/* Pharmacy KPIs */}
-          <div className="bg-white p-4 rounded-lg shadow-sm">
+          <div className="bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200">
             <p className="text-sm text-gray-600 mb-1">Pharmacy - Total Products</p>
             <p className="text-2xl font-bold text-gray-900">{formatNumber(pharmacyKPIs.totalProducts)}</p>
             <p className="text-sm text-gray-600 mb-1">Low Stock</p>
@@ -745,7 +746,7 @@ function Dashboard() {
             <p className="text-xl font-bold text-orange-600">{formatNumber(pharmacyKPIs.expiringSoon)}</p>
           </div>
           {/* Transfer KPIs */}
-          <div className="bg-white p-4 rounded-lg shadow-sm">
+          <div className="bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200">
             <p className="text-sm text-gray-600 mb-1">Total Transfers</p>
             <p className="text-2xl font-bold text-gray-900">{formatNumber(transferKPIs.totalTransfers)}</p>
             <p className="text-sm text-gray-600 mb-1">Active Transfers</p>
@@ -753,8 +754,8 @@ function Dashboard() {
           </div>
         </div>
 
-        {/* Charts Section */}
-        <div className="grid grid-cols-2 gap-6 mb-8">
+        {/* Charts Section - First Row */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Bar Chart - Top 10 products by quantity */}
           {renderBarChart(topProductsByQuantity, "Top 10 Products by Quantity")}
           
@@ -762,7 +763,8 @@ function Dashboard() {
           {renderPieChart(stockDistributionByCategory, "Stock Distribution by Category")}
         </div>
 
-        <div className="grid grid-cols-3 gap-6 mb-8">
+        {/* Charts Section - Second Row */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {/* Line Chart - Stock trend of fast-moving items */}
           {renderLineChart(fastMovingItemsTrend, "Fast-Moving Items Trend")}
           
@@ -774,9 +776,9 @@ function Dashboard() {
         </div>
 
         {/* Bottom Section */}
-        <div className="grid grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Warehouse Stockout Items */}
-          <div className="bg-white p-6 rounded-lg shadow-sm">
+          <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Warehouse Stockout Items</h3>
             <div className="h-80 flex items-end justify-between space-x-1">
               {Array.isArray(stockoutItems) && stockoutItems.map((item, index) => (
@@ -794,7 +796,7 @@ function Dashboard() {
           </div>
 
           {/* Warehouse Products KPIs Table */}
-          <div className="bg-white p-6 rounded-lg shadow-sm">
+          <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Warehouse Products KPIs</h3>
             <div className="overflow-x-auto">
               <table className="min-w-full text-sm">

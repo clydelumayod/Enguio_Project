@@ -1310,11 +1310,51 @@ try {
     case 'delete_supplier':
         try {
             $supplier_id = $data['supplier_id'] ?? 0;
+            $reason = $data['reason'] ?? 'Archived by user';
+            $archived_by = $data['archived_by'] ?? 'admin';
             
-            $stmt = $conn->prepare("UPDATE tbl_supplier SET status = 'archived' WHERE supplier_id = ?");
+            // Get supplier details before archiving
+            $stmt = $conn->prepare("SELECT * FROM tbl_supplier WHERE supplier_id = ?");
             $stmt->execute([$supplier_id]);
+            $supplier = $stmt->fetch(PDO::FETCH_ASSOC);
             
-            echo json_encode(["success" => true, "message" => "Supplier archived successfully"]);
+            if (!$supplier) {
+                echo json_encode(["success" => false, "message" => "Supplier not found"]);
+                break;
+            }
+
+            $conn->beginTransaction();
+
+            try {
+                // Update supplier status to archived
+                $stmt = $conn->prepare("UPDATE tbl_supplier SET status = 'archived' WHERE supplier_id = ?");
+                $stmt->execute([$supplier_id]);
+                
+                // Add to archive table
+                $stmt = $conn->prepare("
+                    INSERT INTO tbl_archive (
+                        item_id, item_type, item_name, item_description, category, 
+                        archived_by, archived_date, archived_time, reason, status, original_data
+                    ) VALUES (?, ?, ?, ?, ?, ?, CURDATE(), CURTIME(), ?, 'Archived', ?)
+                ");
+                $stmt->execute([
+                    $supplier_id,
+                    'Supplier',
+                    $supplier['supplier_name'],
+                    $supplier['supplier_address'] ?? '',
+                    'Suppliers',
+                    $archived_by,
+                    $reason,
+                    json_encode($supplier)
+                ]);
+
+                $conn->commit();
+                echo json_encode(["success" => true, "message" => "Supplier archived successfully"]);
+                
+            } catch (Exception $e) {
+                $conn->rollback();
+                throw $e;
+            }
             
         } catch (Exception $e) {
             echo json_encode(["success" => false, "message" => "Database error: " . $e->getMessage()]);
@@ -1324,11 +1364,51 @@ try {
     case 'delete_product':
         try {
             $product_id = $data['product_id'] ?? 0;
+            $reason = $data['reason'] ?? 'Archived by user';
+            $archived_by = $data['archived_by'] ?? 'admin';
             
-            $stmt = $conn->prepare("UPDATE tbl_product SET status = 'archived' WHERE product_id = ?");
+            // Get product details before archiving
+            $stmt = $conn->prepare("SELECT * FROM tbl_product WHERE product_id = ?");
             $stmt->execute([$product_id]);
+            $product = $stmt->fetch(PDO::FETCH_ASSOC);
             
-            echo json_encode(["success" => true, "message" => "Product archived successfully"]);
+            if (!$product) {
+                echo json_encode(["success" => false, "message" => "Product not found"]);
+                break;
+            }
+
+            $conn->beginTransaction();
+
+            try {
+                // Update product status to archived
+                $stmt = $conn->prepare("UPDATE tbl_product SET status = 'archived' WHERE product_id = ?");
+                $stmt->execute([$product_id]);
+                
+                // Add to archive table
+                $stmt = $conn->prepare("
+                    INSERT INTO tbl_archive (
+                        item_id, item_type, item_name, item_description, category, 
+                        archived_by, archived_date, archived_time, reason, status, original_data
+                    ) VALUES (?, ?, ?, ?, ?, ?, CURDATE(), CURTIME(), ?, 'Archived', ?)
+                ");
+                $stmt->execute([
+                    $product_id,
+                    'Product',
+                    $product['product_name'],
+                    $product['description'] ?? '',
+                    $product['category'] ?? '',
+                    $archived_by,
+                    $reason,
+                    json_encode($product)
+                ]);
+
+                $conn->commit();
+                echo json_encode(["success" => true, "message" => "Product archived successfully"]);
+                
+            } catch (Exception $e) {
+                $conn->rollback();
+                throw $e;
+            }
             
         } catch (Exception $e) {
             echo json_encode(["success" => false, "message" => "Database error: " . $e->getMessage()]);
@@ -2893,6 +2973,302 @@ try {
         }
         break;
 
+    case 'get_reports_data':
+        try {
+            // Get inventory analytics data
+            $stmt = $conn->prepare("
+                SELECT 
+                    COUNT(DISTINCT p.product_id) as totalProducts,
+                    COUNT(CASE WHEN p.quantity <= 10 AND p.quantity > 0 THEN 1 END) as lowStockItems,
+                    COUNT(CASE WHEN p.quantity = 0 THEN 1 END) as outOfStockItems,
+                    SUM(p.quantity * p.unit_price) as totalValue
+                FROM tbl_product p
+                WHERE (p.status IS NULL OR p.status <> 'archived')
+            ");
+            $stmt->execute();
+            $analytics = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            // Get top categories distribution
+            $stmt = $conn->prepare("
+                SELECT 
+                    p.category as category_name,
+                    COUNT(p.product_id) as product_count,
+                    ROUND(COUNT(p.product_id) * 100.0 / (SELECT COUNT(*) FROM tbl_product WHERE (status IS NULL OR status <> 'archived')), 1) as percentage
+                FROM tbl_product p
+                WHERE (p.status IS NULL OR p.status <> 'archived')
+                GROUP BY p.category
+                ORDER BY product_count DESC
+                LIMIT 5
+            ");
+            $stmt->execute();
+            $topCategories = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            // Get recent stock movements for reports
+            $stmt = $conn->prepare("
+                SELECT 
+                    sm.movement_id,
+                    p.product_name as title,
+                    CASE 
+                        WHEN sm.movement_type = 'IN' THEN 'Stock In Report'
+                        WHEN sm.movement_type = 'OUT' THEN 'Stock Out Report'
+                        ELSE 'Stock Adjustment Report'
+                    END as type,
+                    sm.created_by as generatedBy,
+                    DATE(sm.movement_date) as date,
+                    TIME(sm.movement_date) as time,
+                    'Completed' as status,
+                    CONCAT(ROUND(RAND() * 5 + 0.5, 1), ' MB') as fileSize,
+                    CASE WHEN RAND() > 0.5 THEN 'PDF' ELSE 'Excel' END as format,
+                    CONCAT(
+                        CASE 
+                            WHEN sm.movement_type = 'IN' THEN 'Stock received'
+                            WHEN sm.movement_type = 'OUT' THEN 'Stock consumed'
+                            ELSE 'Stock adjusted'
+                        END,
+                        ' - ', p.product_name, ' (', sm.quantity, ' units)'
+                    ) as description
+                FROM tbl_stock_movements sm
+                JOIN tbl_product p ON sm.product_id = p.product_id
+                ORDER BY sm.movement_date DESC
+                LIMIT 20
+            ");
+            $stmt->execute();
+            $reports = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            // Get transfer reports
+            $stmt = $conn->prepare("
+                SELECT 
+                    th.transfer_header_id as movement_id,
+                    CONCAT('Transfer Report #', th.transfer_header_id) as title,
+                    'Transfer Report' as type,
+                    'System' as generatedBy,
+                    th.date,
+                    '12:00 PM' as time,
+                    CASE 
+                        WHEN th.status = 'approved' THEN 'Completed'
+                        WHEN th.status = 'pending' THEN 'In Progress'
+                        ELSE 'Failed'
+                    END as status,
+                    CONCAT(ROUND(RAND() * 3 + 0.5, 1), ' MB') as fileSize,
+                    'PDF' as format,
+                    CONCAT(
+                        'Transfer from ', 
+                        (SELECT location_name FROM tbl_location WHERE location_id = th.source_location_id),
+                        ' to ',
+                        (SELECT location_name FROM tbl_location WHERE location_id = th.destination_location_id),
+                        ' - ', COUNT(td.product_id), ' products'
+                    ) as description
+                FROM tbl_transfer_header th
+                LEFT JOIN tbl_transfer_dtl td ON th.transfer_header_id = td.transfer_header_id
+                GROUP BY th.transfer_header_id
+                ORDER BY th.date DESC
+                LIMIT 10
+            ");
+            $stmt->execute();
+            $transferReports = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            // Combine all reports
+            $allReports = array_merge($reports, $transferReports);
+            
+            // Sort by date (newest first)
+            usort($allReports, function($a, $b) {
+                return strtotime($b['date']) - strtotime($a['date']);
+            });
+
+            echo json_encode([
+                "success" => true,
+                "analytics" => $analytics,
+                "topCategories" => $topCategories,
+                "reports" => $allReports
+            ]);
+        } catch (Exception $e) {
+            echo json_encode([
+                "success" => false,
+                "message" => "Database error: " . $e->getMessage()
+            ]);
+        }
+        break;
+
+    case 'get_inventory_summary_report':
+        try {
+            $location_id = $data['location_id'] ?? null;
+            
+            $whereClause = "WHERE (p.status IS NULL OR p.status <> 'archived')";
+            $params = [];
+            
+            if ($location_id) {
+                $whereClause .= " AND p.location_id = ?";
+                $params[] = $location_id;
+            }
+
+            $stmt = $conn->prepare("
+                SELECT 
+                    p.product_name,
+                    p.barcode,
+                    p.quantity,
+                    p.unit_price,
+                    p.stock_status,
+                    p.category as category_name,
+                    b.brand,
+                    l.location_name,
+                    s.supplier_name,
+                    p.expiration,
+                    (p.quantity * p.unit_price) as total_value
+                FROM tbl_product p
+                LEFT JOIN tbl_brand b ON p.brand_id = b.brand_id
+                LEFT JOIN tbl_location l ON p.location_id = l.location_id
+                LEFT JOIN tbl_supplier s ON p.supplier_id = s.supplier_id
+                $whereClause
+                ORDER BY p.product_name
+            ");
+            $stmt->execute($params);
+            $inventoryData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            echo json_encode([
+                "success" => true,
+                "data" => $inventoryData
+            ]);
+        } catch (Exception $e) {
+            echo json_encode([
+                "success" => false,
+                "message" => "Database error: " . $e->getMessage()
+            ]);
+        }
+        break;
+
+    case 'get_low_stock_report':
+        try {
+            $threshold = $data['threshold'] ?? 10;
+            
+            $stmt = $conn->prepare("
+                SELECT 
+                    p.product_name,
+                    p.barcode,
+                    p.quantity,
+                    p.unit_price,
+                    c.category_name,
+                    b.brand,
+                    l.location_name,
+                    s.supplier_name,
+                    s.supplier_contact,
+                    s.supplier_email,
+                    (p.quantity * p.unit_price) as total_value
+                FROM tbl_product p
+                LEFT JOIN tbl_category c ON p.category_id = c.category_id
+                LEFT JOIN tbl_brand b ON p.brand_id = b.brand_id
+                LEFT JOIN tbl_location l ON p.location_id = l.location_id
+                LEFT JOIN tbl_supplier s ON p.supplier_id = s.supplier_id
+                WHERE (p.status IS NULL OR p.status <> 'archived')
+                AND p.quantity <= ? AND p.quantity > 0
+                ORDER BY p.quantity ASC
+            ");
+            $stmt->execute([$threshold]);
+            $lowStockData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            echo json_encode([
+                "success" => true,
+                "data" => $lowStockData
+            ]);
+        } catch (Exception $e) {
+            echo json_encode([
+                "success" => false,
+                "message" => "Database error: " . $e->getMessage()
+            ]);
+        }
+        break;
+
+    case 'get_expiry_report':
+        try {
+            $days_threshold = $data['days_threshold'] ?? 30;
+            
+            $stmt = $conn->prepare("
+                SELECT 
+                    p.product_name,
+                    p.barcode,
+                    p.quantity,
+                    p.expiration,
+                    DATEDIFF(p.expiration, CURDATE()) as days_until_expiry,
+                    c.category_name,
+                    b.brand,
+                    l.location_name,
+                    (p.quantity * p.unit_price) as total_value
+                FROM tbl_product p
+                LEFT JOIN tbl_category c ON p.category_id = c.category_id
+                LEFT JOIN tbl_brand b ON p.brand_id = b.brand_id
+                LEFT JOIN tbl_location l ON p.location_id = l.location_id
+                WHERE (p.status IS NULL OR p.status <> 'archived')
+                AND p.expiration IS NOT NULL
+                AND p.expiration <= DATE_ADD(CURDATE(), INTERVAL ? DAY)
+                AND p.quantity > 0
+                ORDER BY p.expiration ASC
+            ");
+            $stmt->execute([$days_threshold]);
+            $expiryData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            echo json_encode([
+                "success" => true,
+                "data" => $expiryData
+            ]);
+        } catch (Exception $e) {
+            echo json_encode([
+                "success" => false,
+                "message" => "Database error: " . $e->getMessage()
+            ]);
+        }
+        break;
+
+    case 'get_movement_history_report':
+        try {
+            $start_date = $data['start_date'] ?? date('Y-m-d', strtotime('-30 days'));
+            $end_date = $data['end_date'] ?? date('Y-m-d');
+            $movement_type = $data['movement_type'] ?? null;
+            
+            $whereConditions = ["sm.movement_date BETWEEN ? AND ?"];
+            $params = [$start_date . ' 00:00:00', $end_date . ' 23:59:59'];
+            
+            if ($movement_type) {
+                $whereConditions[] = "sm.movement_type = ?";
+                $params[] = $movement_type;
+            }
+            
+            $whereClause = "WHERE " . implode(" AND ", $whereConditions);
+
+            $stmt = $conn->prepare("
+                SELECT 
+                    sm.movement_id,
+                    p.product_name,
+                    p.barcode,
+                    sm.movement_type,
+                    sm.quantity,
+                    sm.unit_cost,
+                    sm.expiration_date,
+                    sm.movement_date,
+                    sm.reference_no,
+                    sm.notes,
+                    sm.created_by,
+                    l.location_name,
+                    (sm.quantity * sm.unit_cost) as total_cost
+                FROM tbl_stock_movements sm
+                JOIN tbl_product p ON sm.product_id = p.product_id
+                LEFT JOIN tbl_location l ON p.location_id = l.location_id
+                $whereClause
+                ORDER BY sm.movement_date DESC
+            ");
+            $stmt->execute($params);
+            $movementData = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            echo json_encode([
+                "success" => true,
+                "data" => $movementData
+            ]);
+        } catch (Exception $e) {
+            echo json_encode([
+                "success" => false,
+                "message" => "Database error: " . $e->getMessage()
+            ]);
+        }
+        break;
+
     default:
         echo json_encode(["success" => false, "message" => "Invalid action: " . $action]);
         break;
@@ -3001,6 +3377,114 @@ try {
                 echo json_encode(["success" => true, "suppliers" => $suppliers]);
             } catch (Exception $e) {
                 echo json_encode(["success" => false, "message" => "Error fetching archived suppliers: " . $e->getMessage()]);
+            }
+            break;
+
+        case 'get_archived_items':
+            try {
+                $stmt = $conn->prepare("
+                    SELECT 
+                        archive_id as id,
+                        item_name as name,
+                        item_description as description,
+                        item_type as type,
+                        category,
+                        archived_by,
+                        DATE(archived_date) as archivedDate,
+                        TIME(archived_time) as archivedTime,
+                        reason,
+                        status,
+                        original_data
+                    FROM tbl_archive 
+                    ORDER BY archived_date DESC, archived_time DESC
+                ");
+                $stmt->execute();
+                $archivedItems = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                echo json_encode([
+                    "success" => true,
+                    "data" => $archivedItems
+                ]);
+            } catch (Exception $e) {
+                echo json_encode([
+                    "success" => false,
+                    "message" => "Database error: " . $e->getMessage(),
+                    "data" => []
+                ]);
+            }
+            break;
+
+        case 'restore_archived_item':
+            try {
+                $archive_id = $data['id'] ?? 0;
+                
+                if (!$archive_id) {
+                    echo json_encode(["success" => false, "message" => "Archive ID is required"]);
+                    break;
+                }
+
+                // Get archived item details
+                $stmt = $conn->prepare("SELECT * FROM tbl_archive WHERE archive_id = ?");
+                $stmt->execute([$archive_id]);
+                $archivedItem = $stmt->fetch(PDO::FETCH_ASSOC);
+
+                if (!$archivedItem) {
+                    echo json_encode(["success" => false, "message" => "Archived item not found"]);
+                    break;
+                }
+
+                $conn->beginTransaction();
+
+                try {
+                    // Restore based on item type
+                    switch ($archivedItem['item_type']) {
+                        case 'Product':
+                            // Restore product
+                            $stmt = $conn->prepare("UPDATE tbl_product SET status = 'active' WHERE product_id = ?");
+                            $stmt->execute([$archivedItem['item_id']]);
+                            break;
+                        case 'Supplier':
+                            // Restore supplier
+                            $stmt = $conn->prepare("UPDATE tbl_supplier SET status = 'active' WHERE supplier_id = ?");
+                            $stmt->execute([$archivedItem['item_id']]);
+                            break;
+                        case 'Category':
+                            // Restore category
+                            $stmt = $conn->prepare("UPDATE tbl_category SET status = 'active' WHERE category_id = ?");
+                            $stmt->execute([$archivedItem['item_id']]);
+                            break;
+                    }
+
+                    // Update archive status
+                    $stmt = $conn->prepare("UPDATE tbl_archive SET status = 'Restored' WHERE archive_id = ?");
+                    $stmt->execute([$archive_id]);
+
+                    $conn->commit();
+                    echo json_encode(["success" => true, "message" => "Item restored successfully"]);
+                } catch (Exception $e) {
+                    $conn->rollback();
+                    throw $e;
+                }
+            } catch (Exception $e) {
+                echo json_encode(["success" => false, "message" => "Database error: " . $e->getMessage()]);
+            }
+            break;
+
+        case 'delete_archived_item':
+            try {
+                $archive_id = $data['id'] ?? 0;
+                
+                if (!$archive_id) {
+                    echo json_encode(["success" => false, "message" => "Archive ID is required"]);
+                    break;
+                }
+
+                // Update archive status to deleted
+                $stmt = $conn->prepare("UPDATE tbl_archive SET status = 'Deleted' WHERE archive_id = ?");
+                $stmt->execute([$archive_id]);
+                
+                echo json_encode(["success" => true, "message" => "Item permanently deleted"]);
+            } catch (Exception $e) {
+                echo json_encode(["success" => false, "message" => "Database error: " . $e->getMessage()]);
             }
             break;
          

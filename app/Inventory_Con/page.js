@@ -15,10 +15,10 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Archive from "./Archive";
 import CreatePurchaseOrder from "./CreatePurchaseOrder";
+
 export default function Page() {
   const [selectedFeature, setSelectedFeature] = useState("Dashboard");
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-
 
   const componentMap = {
     "Dashboard": Dashboard,
@@ -33,6 +33,7 @@ export default function Page() {
     "Settings": Settings,
     "Archive": Archive,
   };
+  
   // Get the component to render
   const ComponentToRender = componentMap[selectedFeature] || Dashboard;
 
@@ -50,7 +51,7 @@ export default function Page() {
         {/* Main Content Area */}
         <main
           className={`flex-1 p-8 overflow-y-auto bg-white transition-all duration-300 ease-in-out ${
-            isSidebarOpen ? "ml-64" : "ml-16"
+            isSidebarOpen ? "ml-64" : "ml-20"
           }`}
         >
           <ComponentToRender />

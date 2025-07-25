@@ -10,7 +10,8 @@ import {
   FaEye, 
   FaFilter, 
   FaDownload, 
-  FaUpload
+  FaUpload,
+  FaArchive
 } from "react-icons/fa";
 import { Package, Truck, CheckCircle, AlertCircle } from "lucide-react";
 
@@ -23,6 +24,9 @@ const PharmacyInventory = () => {
   const [rowsPerPage] = useState(10);
   const [isLoading, setIsLoading] = useState(false);
   const [pharmacyLocationId, setPharmacyLocationId] = useState(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const API_BASE_URL = "http://localhost/Enguio_Project/Api/backend.php";
 
@@ -98,8 +102,13 @@ const PharmacyInventory = () => {
       
       if (response.success && Array.isArray(response.data)) {
         console.log("✅ Loaded pharmacy products:", response.data.length);
-        setInventory(response.data);
-        setFilteredInventory(response.data);
+        // Filter out archived products
+        const activeProducts = response.data.filter(
+          (product) => (product.status || "").toLowerCase() !== "archived"
+        );
+        console.log("✅ Active pharmacy products after filtering:", activeProducts.length);
+        setInventory(activeProducts);
+        setFilteredInventory(activeProducts);
       } else {
         // Fallback to the original API
         const fallbackResponse = await handleApiCall("get_location_products", {
@@ -110,8 +119,13 @@ const PharmacyInventory = () => {
         
         if (fallbackResponse.success && Array.isArray(fallbackResponse.data)) {
           console.log("✅ Loaded pharmacy products (fallback):", fallbackResponse.data.length);
-          setInventory(fallbackResponse.data);
-          setFilteredInventory(fallbackResponse.data);
+          // Filter out archived products
+          const activeProducts = fallbackResponse.data.filter(
+            (product) => (product.status || "").toLowerCase() !== "archived"
+          );
+          console.log("✅ Active pharmacy products after filtering (fallback):", activeProducts.length);
+          setInventory(activeProducts);
+          setFilteredInventory(activeProducts);
         } else {
           console.warn("⚠️ No products found for pharmacy");
           setInventory([]);
@@ -176,6 +190,43 @@ const PharmacyInventory = () => {
         return "danger";
       default:
         return "default";
+    }
+  };
+
+  // Archive functionality
+  const openDeleteModal = (item) => {
+    setSelectedItem(item);
+    setShowDeleteModal(true);
+  };
+
+  const closeDeleteModal = () => {
+    setShowDeleteModal(false);
+    setSelectedItem(null);
+  };
+
+  const handleDeleteItem = async () => {
+    if (!selectedItem) return;
+    
+    setLoading(true);
+    try {
+      const response = await handleApiCall("delete_product", {
+        product_id: selectedItem.product_id,
+        reason: "Archived from pharmacy inventory",
+        archived_by: "admin"
+      });
+      
+      if (response.success) {
+        toast.success("Product archived successfully");
+        closeDeleteModal();
+        loadProducts(); // Reload products
+      } else {
+        toast.error(response.message || "Failed to archive product");
+      }
+    } catch (error) {
+      console.error("Error archiving product:", error);
+      toast.error("Failed to archive product");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -378,8 +429,12 @@ const PharmacyInventory = () => {
                         <button className="text-green-600 hover:text-green-900 p-1">
                           <FaEye className="h-4 w-4" />
                         </button>
-                        <button className="text-red-600 hover:text-red-900 p-1">
-                          <FaTrash className="h-4 w-4" />
+                        <button 
+                          onClick={() => openDeleteModal(item)}
+                          className="text-red-600 hover:text-red-900 p-1"
+                          title="Archive Product"
+                        >
+                          <FaArchive className="h-4 w-4" />
                         </button>
                       </div>
                     </td>
@@ -427,6 +482,32 @@ const PharmacyInventory = () => {
           </div>
         )}
       </div>
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 backdrop-blur-md flex items-center justify-center z-50">
+          <div className="bg-white/90 backdrop-blur-md rounded-xl shadow-2xl p-6 border border-gray-200/50 w-96">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Confirm Archive</h3>
+            <p className="text-gray-700 mb-4">Are you sure you want to archive this product?</p>
+            <div className="flex justify-end space-x-4">
+              <button
+                type="button"
+                onClick={closeDeleteModal}
+                className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleDeleteItem}
+                className="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-md disabled:opacity-50"
+              >
+                {loading ? "Archiving..." : "Archive"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <ToastContainer
         position="top-right"

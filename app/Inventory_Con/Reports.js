@@ -26,103 +26,52 @@ const Reports = () => {
   const [selectedReport, setSelectedReport] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [analyticsData, setAnalyticsData] = useState({
+    totalProducts: 0,
+    lowStockItems: 0,
+    outOfStockItems: 0,
+    totalValue: 0
+  });
+  const [topCategories, setTopCategories] = useState([]);
 
-  // Sample data - replace with actual API calls
-  const sampleData = [
-    {
-      id: 1,
-      title: "Monthly Inventory Summary",
-      type: "Summary Report",
-      generatedBy: "John Doe",
-      date: "2024-01-15",
-      time: "10:30 AM",
-      status: "Completed",
-      fileSize: "2.5 MB",
-      format: "PDF",
-      description: "Comprehensive monthly inventory summary with stock levels and movements"
-    },
-    {
-      id: 2,
-      title: "Low Stock Alert Report",
-      type: "Alert Report",
-      generatedBy: "Jane Smith",
-      date: "2024-01-14",
-      time: "02:15 PM",
-      status: "Completed",
-      fileSize: "1.2 MB",
-      format: "Excel",
-      description: "Products with stock levels below minimum threshold"
-    },
-    {
-      id: 3,
-      title: "Movement Analysis Q4 2023",
-      type: "Analytics Report",
-      generatedBy: "Mike Johnson",
-      date: "2024-01-13",
-      time: "09:45 AM",
-      status: "Completed",
-      fileSize: "4.8 MB",
-      format: "PDF",
-      description: "Quarterly analysis of inventory movements and trends"
-    },
-    {
-      id: 4,
-      title: "Expiry Date Report",
-      type: "Alert Report",
-      generatedBy: "Sarah Wilson",
-      date: "2024-01-12",
-      time: "04:20 PM",
-      status: "Completed",
-      fileSize: "0.8 MB",
-      format: "Excel",
-      description: "Products approaching expiry dates"
-    },
-    {
-      id: 5,
-      title: "Supplier Performance Report",
-      type: "Analytics Report",
-      generatedBy: "David Brown",
-      date: "2024-01-11",
-      time: "11:30 AM",
-      status: "In Progress",
-      fileSize: "3.2 MB",
-      format: "PDF",
-      description: "Analysis of supplier delivery performance and quality"
-    },
-    {
-      id: 6,
-      title: "Daily Stock Count",
-      type: "Summary Report",
-      generatedBy: "Lisa Chen",
-      date: "2024-01-10",
-      time: "08:15 AM",
-      status: "Completed",
-      fileSize: "1.5 MB",
-      format: "Excel",
-      description: "Daily inventory count and reconciliation"
-    }
-  ];
-
-  // Sample analytics data
-  const analyticsData = {
-    totalProducts: 1250,
-    lowStockItems: 45,
-    outOfStockItems: 12,
-    totalValue: 1250000,
-    monthlyGrowth: 8.5,
-    topCategories: [
-      { name: "Pain Relief", percentage: 25, color: "bg-green-500" },
-      { name: "Vitamins", percentage: 20, color: "bg-blue-500" },
-      { name: "Antibiotics", percentage: 15, color: "bg-yellow-500" },
-      { name: "Gastrointestinal", percentage: 12, color: "bg-purple-500" },
-      { name: "Others", percentage: 28, color: "bg-gray-500" }
-    ]
-  };
-
+  // Fetch data from database
   useEffect(() => {
-    setReports(sampleData);
-    setFilteredReports(sampleData);
+    fetchReportsData();
   }, []);
+
+  const fetchReportsData = async () => {
+    setIsLoading(true);
+    try {
+      const API_BASE_URL = "http://localhost/Enguio_Project/Api/backend.php";
+      
+      const response = await fetch(API_BASE_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'get_reports_data' })
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        setReports(data.reports || []);
+        setFilteredReports(data.reports || []);
+        setAnalyticsData(data.analytics || {
+          totalProducts: 0,
+          lowStockItems: 0,
+          outOfStockItems: 0,
+          totalValue: 0
+        });
+        setTopCategories(data.topCategories || []);
+      } else {
+        toast.error('Failed to fetch reports data: ' + data.message);
+      }
+    } catch (error) {
+      console.error('Error fetching reports data:', error);
+      toast.error('Error connecting to server');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
     filterReports();
@@ -182,12 +131,14 @@ const Reports = () => {
 
   const getTypeColor = (type) => {
     switch (type) {
-      case "Summary Report":
+      case "Stock In Report":
         return "bg-blue-100 text-blue-800";
-      case "Alert Report":
+      case "Stock Out Report":
+        return "bg-red-100 text-red-800";
+      case "Stock Adjustment Report":
         return "bg-yellow-100 text-yellow-800";
-      case "Analytics Report":
-        return "bg-green-100 text-green-800";
+      case "Transfer Report":
+        return "bg-purple-100 text-purple-800";
       default:
         return "bg-gray-100 text-gray-800";
     }
@@ -198,8 +149,59 @@ const Reports = () => {
     setShowModal(true);
   };
 
-  const handleGenerateReport = () => {
-    toast.info('Report generation feature coming soon');
+  const handleGenerateReport = async (reportType) => {
+    setIsLoading(true);
+    try {
+      const API_BASE_URL = "http://localhost/Enguio_Project/Api/backend.php";
+      let action = '';
+      let requestData = {};
+      
+      switch (reportType) {
+        case 'inventory_summary':
+          action = 'get_inventory_summary_report';
+          break;
+        case 'low_stock':
+          action = 'get_low_stock_report';
+          requestData = { threshold: 10 };
+          break;
+        case 'expiry':
+          action = 'get_expiry_report';
+          requestData = { days_threshold: 30 };
+          break;
+        case 'movement_history':
+          action = 'get_movement_history_report';
+          requestData = { 
+            start_date: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+            end_date: new Date().toISOString().split('T')[0]
+          };
+          break;
+        default:
+          toast.info('Report generation feature coming soon');
+          setIsLoading(false);
+          return;
+      }
+
+      const response = await fetch(API_BASE_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action, ...requestData })
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        toast.success(`${reportType.replace('_', ' ')} report generated successfully`);
+        // Here you could trigger download or show the report data
+        console.log('Report data:', data.data);
+      } else {
+        toast.error('Failed to generate report: ' + data.message);
+      }
+    } catch (error) {
+      console.error('Error generating report:', error);
+      toast.error('Error generating report');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleDownload = (report) => {
@@ -210,7 +212,7 @@ const Reports = () => {
     toast.info(`Printing ${report.title}`);
   };
 
-  const reportTypes = ["all", "Summary Report", "Alert Report", "Analytics Report"];
+  const reportTypes = ["all", "Stock In Report", "Stock Out Report", "Stock Adjustment Report", "Transfer Report"];
   const dateRanges = ["all", "today", "week", "month"];
 
   const pages = Math.ceil(filteredReports.length / rowsPerPage);
@@ -225,6 +227,12 @@ const Reports = () => {
     return sum + size;
   }, 0);
 
+  // Generate colors for categories
+  const categoryColors = [
+    "bg-green-500", "bg-blue-500", "bg-yellow-500", 
+    "bg-purple-500", "bg-red-500", "bg-indigo-500"
+  ];
+
   return (
     <div className="p-6 space-y-6">
       {/* Header */}
@@ -235,11 +243,12 @@ const Reports = () => {
         </div>
         <div className="flex gap-3">
           <button 
-            onClick={handleGenerateReport}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+            onClick={() => handleGenerateReport('inventory_summary')}
+            disabled={isLoading}
+            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
           >
             <FaChartBar className="h-4 w-4" />
-            Generate Report
+            {isLoading ? 'Generating...' : 'Generate Report'}
           </button>
         </div>
       </div>
@@ -251,7 +260,7 @@ const Reports = () => {
             <BarChart3 className="h-8 w-8 text-blue-500" />
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-600">Total Products</p>
-              <p className="text-2xl font-bold text-gray-900">{analyticsData.totalProducts.toLocaleString()}</p>
+              <p className="text-2xl font-bold text-gray-900">{analyticsData.totalProducts?.toLocaleString() || 0}</p>
             </div>
           </div>
         </div>
@@ -261,7 +270,7 @@ const Reports = () => {
             <AlertCircle className="h-8 w-8 text-yellow-500" />
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-600">Low Stock Items</p>
-              <p className="text-2xl font-bold text-gray-900">{analyticsData.lowStockItems}</p>
+              <p className="text-2xl font-bold text-gray-900">{analyticsData.lowStockItems || 0}</p>
             </div>
           </div>
         </div>
@@ -271,7 +280,7 @@ const Reports = () => {
             <PieChart className="h-8 w-8 text-red-500" />
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-600">Out of Stock</p>
-              <p className="text-2xl font-bold text-gray-900">{analyticsData.outOfStockItems}</p>
+              <p className="text-2xl font-bold text-gray-900">{analyticsData.outOfStockItems || 0}</p>
             </div>
           </div>
         </div>
@@ -281,7 +290,7 @@ const Reports = () => {
             <FileText className="h-8 w-8 text-green-500" />
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-600">Total Value</p>
-              <p className="text-2xl font-bold text-gray-900">₱{(analyticsData.totalValue / 1000000).toFixed(1)}M</p>
+              <p className="text-2xl font-bold text-gray-900">₱{((analyticsData.totalValue || 0) / 1000000).toFixed(1)}M</p>
             </div>
           </div>
         </div>
@@ -331,32 +340,34 @@ const Reports = () => {
       </div>
 
       {/* Category Distribution */}
-      <div className="bg-white rounded-3xl shadow-xl p-6">
-        <div className="flex items-center gap-3 mb-6">
-          <PieChart className="h-6 w-6 text-blue-500" />
-          <h3 className="text-xl font-semibold text-gray-900">Top Categories Distribution</h3>
-        </div>
-        <div className="space-y-4">
-          {analyticsData.topCategories.map((category, index) => (
-            <div key={index} className="flex items-center gap-4">
-              <div className="w-32">
-                <span className="text-sm font-medium text-gray-900">{category.name}</span>
-              </div>
-              <div className="flex-1">
-                <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div 
-                    className={`h-2 rounded-full ${category.color}`}
-                    style={{ width: `${category.percentage}%` }}
-                  ></div>
+      {topCategories.length > 0 && (
+        <div className="bg-white rounded-3xl shadow-xl p-6">
+          <div className="flex items-center gap-3 mb-6">
+            <PieChart className="h-6 w-6 text-blue-500" />
+            <h3 className="text-xl font-semibold text-gray-900">Top Categories Distribution</h3>
+          </div>
+          <div className="space-y-4">
+            {topCategories.map((category, index) => (
+              <div key={index} className="flex items-center gap-4">
+                <div className="w-32">
+                  <span className="text-sm font-medium text-gray-900">{category.category_name}</span>
+                </div>
+                <div className="flex-1">
+                  <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div 
+                      className={`h-2 rounded-full ${categoryColors[index % categoryColors.length]}`}
+                      style={{ width: `${category.percentage}%` }}
+                    ></div>
+                  </div>
+                </div>
+                <div className="w-16 text-right">
+                  <span className="text-sm font-medium text-gray-900">{category.percentage}%</span>
                 </div>
               </div>
-              <div className="w-16 text-right">
-                <span className="text-sm font-medium text-gray-900">{category.percentage}%</span>
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Filters and Search */}
       <div className="bg-white rounded-3xl shadow-xl p-6">
@@ -444,7 +455,7 @@ const Reports = () => {
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {items.map((item) => (
-                <tr key={item.id} className="hover:bg-gray-50">
+                <tr key={item.movement_id} className="hover:bg-gray-50">
                   <td className="px-6 py-4">
                     <div>
                       <div className="text-sm font-medium text-gray-900">{item.title}</div>
@@ -533,7 +544,7 @@ const Reports = () => {
 
       {/* Report Details Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 backdrop-blur-md flex items-center justify-center z-50">
           <div className="bg-white rounded-3xl shadow-xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
             <div className="px-6 py-4 border-b border-gray-200">
               <div className="flex justify-between items-center">

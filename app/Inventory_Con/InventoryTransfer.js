@@ -1047,7 +1047,7 @@ function InventoryTransfer() {
 
         {/* Delete Confirmation Modal */}
         {showDeleteModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="fixed inset-0 backdrop-blur-md flex items-center justify-center z-50">
             <div className="bg-transparent backdrop-blur-sm rounded-lg shadow-xl p-6 w-96 border-2 border-gray-400">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Delete Transfer</h3>
               <p className="text-gray-700 mb-4">

@@ -46,12 +46,12 @@ const Archive = () => {
     }
   }
 
-  // Fetch archived products from backend on mount
+  // Fetch archived items from backend on mount
   useEffect(() => {
-    async function fetchArchivedProducts() {
+    async function fetchArchivedItems() {
       setIsLoading(true);
       try {
-        const response = await handleApiCall("get_archived_products");
+        const response = await handleApiCall("get_archived_items");
         if (response.success && Array.isArray(response.data)) {
           setArchivedItems(response.data);
           setFilteredItems(response.data);
@@ -66,7 +66,7 @@ const Archive = () => {
         setIsLoading(false);
       }
     }
-    fetchArchivedProducts();
+    fetchArchivedItems();
   }, []);
 
   useEffect(() => {
@@ -443,7 +443,7 @@ const Archive = () => {
 
       {/* Item Details Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 backdrop-blur-md flex items-center justify-center z-50">
           <div className="bg-white rounded-3xl shadow-xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
             <div className="px-6 py-4 border-b border-gray-200">
               <div className="flex justify-between items-center">

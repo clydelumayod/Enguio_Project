@@ -16,6 +16,7 @@ import {
   AlertCircle,
   Clock,
 } from "lucide-react";
+import { FaArchive } from "react-icons/fa";
 
 function ConvenienceInventory() {
   const [products, setProducts] = useState([]);
@@ -23,6 +24,9 @@ function ConvenienceInventory() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [convenienceLocationId, setConvenienceLocationId] = useState(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [archiveLoading, setArchiveLoading] = useState(false);
 
   const API_BASE_URL = "http://localhost/Enguio_Project/Api/backend.php";
 
@@ -107,8 +111,13 @@ function ConvenienceInventory() {
       
       if (response.success && Array.isArray(response.data)) {
         console.log("✅ Loaded convenience store products:", response.data.length);
-        console.log("📋 Products:", response.data.map(p => `${p.product_name} (${p.quantity}) - ${p.product_type}`));
-        setProducts(response.data);
+        // Filter out archived products
+        const activeProducts = response.data.filter(
+          (product) => (product.status || "").toLowerCase() !== "archived"
+        );
+        console.log("✅ Active convenience store products after filtering:", activeProducts.length);
+        console.log("📋 Products:", activeProducts.map(p => `${p.product_name} (${p.quantity}) - ${p.product_type}`));
+        setProducts(activeProducts);
       } else {
         console.warn("⚠️ Primary API failed, trying fallback...");
         // Fallback to the location name API
@@ -118,7 +127,12 @@ function ConvenienceInventory() {
         
         if (fallbackResponse.success && Array.isArray(fallbackResponse.data)) {
           console.log("✅ Loaded convenience store products (fallback):", fallbackResponse.data.length);
-          setProducts(fallbackResponse.data);
+          // Filter out archived products
+          const activeProducts = fallbackResponse.data.filter(
+            (product) => (product.status || "").toLowerCase() !== "archived"
+          );
+          console.log("✅ Active convenience store products after filtering (fallback):", activeProducts.length);
+          setProducts(activeProducts);
         } else {
           console.warn("⚠️ No products found for convenience store");
           setProducts([]);
@@ -180,6 +194,43 @@ function ConvenienceInventory() {
         return "text-red-600 bg-red-100";
       default:
         return "text-gray-600 bg-gray-100";
+    }
+  };
+
+  // Archive functionality
+  const openDeleteModal = (item) => {
+    setSelectedItem(item);
+    setShowDeleteModal(true);
+  };
+
+  const closeDeleteModal = () => {
+    setShowDeleteModal(false);
+    setSelectedItem(null);
+  };
+
+  const handleDeleteItem = async () => {
+    if (!selectedItem) return;
+    
+    setArchiveLoading(true);
+    try {
+      const response = await handleApiCall("delete_product", {
+        product_id: selectedItem.product_id,
+        reason: "Archived from convenience store inventory",
+        archived_by: "admin"
+      });
+      
+      if (response.success) {
+        toast.success("Product archived successfully");
+        closeDeleteModal();
+        loadProducts(); // Reload products
+      } else {
+        toast.error(response.message || "Failed to archive product");
+      }
+    } catch (error) {
+      console.error("Error archiving product:", error);
+      toast.error("Failed to archive product");
+    } finally {
+      setArchiveLoading(false);
     }
   };
 
@@ -422,8 +473,12 @@ function ConvenienceInventory() {
                      </td>
                     <td className="px-6 py-4 text-center">
                       <div className="flex justify-center gap-2">
-                        <button className="text-blue-600 hover:text-blue-900 p-1">
-                          <span className="text-xl">&#8226;&#8226;&#8226;</span>
+                        <button 
+                          onClick={() => openDeleteModal(product)}
+                          className="text-red-600 hover:text-red-900 p-1"
+                          title="Archive Product"
+                        >
+                          <FaArchive className="h-4 w-4" />
                         </button>
                       </div>
                     </td>
@@ -472,6 +527,32 @@ function ConvenienceInventory() {
         )}
       </div>
 
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 backdrop-blur-md flex items-center justify-center z-50">
+          <div className="bg-white/90 backdrop-blur-md rounded-xl shadow-2xl p-6 border border-gray-200/50 w-96">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Confirm Archive</h3>
+            <p className="text-gray-700 mb-4">Are you sure you want to archive this product?</p>
+            <div className="flex justify-end space-x-4">
+              <button
+                type="button"
+                onClick={closeDeleteModal}
+                className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleDeleteItem}
+                className="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-md disabled:opacity-50"
+              >
+                {archiveLoading ? "Archiving..." : "Archive"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Keep ToastContainer for notifications */}
       <ToastContainer
