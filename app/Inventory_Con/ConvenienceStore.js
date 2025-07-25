@@ -24,7 +24,7 @@ function ConvenienceInventory() {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [convenienceLocationId, setConvenienceLocationId] = useState(null);
 
-  const API_BASE_URL = "http://localhost/Enguio_Project/backend.php";
+  const API_BASE_URL = "http://localhost/Enguio_Project/Api/backend.php";
 
   // API function
   async function handleApiCall(action, data = {}) {
@@ -75,8 +75,11 @@ function ConvenienceInventory() {
           loc.location_name.toLowerCase().includes('convenience')
         );
         if (convenienceLocation) {
+          console.log("📍 Found convenience location:", convenienceLocation);
           setConvenienceLocationId(convenienceLocation.location_id);
           return convenienceLocation.location_id;
+        } else {
+          console.warn("⚠️ No convenience store location found");
         }
       }
     } catch (error) {
@@ -91,18 +94,35 @@ function ConvenienceInventory() {
     
     setLoading(true);
     try {
+      console.log("🔄 Loading convenience store products...");
+      
+      // Try the location products API that includes transfer information
       const response = await handleApiCall("get_location_products", {
         location_id: convenienceLocationId,
         search: searchTerm,
         category: selectedCategory
       });
       
+      console.log("📦 API Response:", response);
+      
       if (response.success && Array.isArray(response.data)) {
         console.log("✅ Loaded convenience store products:", response.data.length);
+        console.log("📋 Products:", response.data.map(p => `${p.product_name} (${p.quantity}) - ${p.product_type}`));
         setProducts(response.data);
       } else {
-        console.warn("⚠️ No products found for convenience store");
-        setProducts([]);
+        console.warn("⚠️ Primary API failed, trying fallback...");
+        // Fallback to the location name API
+        const fallbackResponse = await handleApiCall("get_products_by_location_name", {
+          location_name: "Convenience"
+        });
+        
+        if (fallbackResponse.success && Array.isArray(fallbackResponse.data)) {
+          console.log("✅ Loaded convenience store products (fallback):", fallbackResponse.data.length);
+          setProducts(fallbackResponse.data);
+        } else {
+          console.warn("⚠️ No products found for convenience store");
+          setProducts([]);
+        }
       }
     } catch (error) {
       console.error("Error loading products:", error);
@@ -130,6 +150,25 @@ function ConvenienceInventory() {
       loadProducts();
     }
   }, [searchTerm, selectedCategory, convenienceLocationId]);
+
+  // Auto-refresh products every 30 seconds to catch new transfers
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (convenienceLocationId && !loading) {
+        console.log("🔄 Auto-refreshing convenience store products...");
+        const previousCount = products.length;
+        loadProducts().then(() => {
+          // Check if new products were added
+          if (products.length > previousCount) {
+            const newProducts = products.length - previousCount;
+            toast.success(`🆕 ${newProducts} new product(s) transferred to convenience store!`);
+          }
+        });
+      }
+    }, 30000); // 30 seconds
+
+    return () => clearInterval(interval);
+  }, [convenienceLocationId, loading]);
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -221,113 +260,216 @@ function ConvenienceInventory() {
         </div>
       </div>
 
-      {/* Store Inventory Overview */}
-      <div className="bg-white rounded-xl shadow-md p-8 mb-8">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold text-gray-900">STORE INVENTORY OVERVIEW</h2>
-          {/* Search Bar */}
-          <div className="flex items-center w-80">
-            <input
-              type="text"
-              placeholder="Search store inventory..."
-              value={searchTerm}
-              onChange={e => setSearchTerm(e.target.value)}
-              className="flex-1 border border-gray-300 rounded-l-lg px-4 py-2 focus:outline-none bg-gray-50"
-            />
-            <button className="bg-gray-200 border border-l-0 border-gray-300 rounded-r-lg px-4 py-2">
-              <Search className="h-5 w-5 text-gray-600" />
-            </button>
+      {/* Filters and Search */}
+      <div className="bg-white rounded-3xl shadow-xl p-6 mb-6">
+        <div className="flex flex-col md:flex-row gap-4">
+          <div className="flex-1">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search products..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+          </div>
+          <div className="w-full md:w-48">
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="all">All Categories</option>
+              {categories.map((category) => (
+                <option key={category} value={category}>
+                  {category}
+                </option>
+              ))}
+            </select>
+          </div>
+          <button
+            onClick={loadProducts}
+            disabled={loading}
+            className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white px-4 py-2 rounded-lg flex items-center gap-2"
+          >
+            <Package className="h-4 w-4" />
+            {loading ? "Refreshing..." : "Refresh"}
+          </button>
+        </div>
+      </div>
+
+      {/* Inventory Table */}
+      <div className="bg-white rounded-3xl shadow-xl">
+        <div className="px-6 py-4 border-b border-gray-200">
+          <div className="flex justify-between items-center">
+            <h3 className="text-xl font-semibold text-gray-900">Store Products</h3>
+            <div className="text-sm text-gray-500">
+              {products.length} products found
+            </div>
           </div>
         </div>
-        {/* Inventory Table */}
         <div className="overflow-x-auto">
-          <table className="w-full border text-sm bg-white rounded-lg">
-            <thead className="bg-gray-50">
+          <table className="w-full">
+            <thead className="bg-gray-50 border-b border-gray-200">
               <tr>
-                <th className="px-3 py-2 border font-semibold text-gray-700">Barcode</th>
-                <th className="px-3 py-2 border font-semibold text-gray-700">Product Name</th>
-                <th className="px-3 py-2 border font-semibold text-gray-700">Category</th>
-                <th className="px-3 py-2 border font-semibold text-gray-700">Quantity</th>
-                <th className="px-3 py-2 border font-semibold text-gray-700">Unit Price</th>
-                <th className="px-3 py-2 border font-semibold text-gray-700">Total Value</th>
-                <th className="px-3 py-2 border font-semibold text-gray-700">Status</th>
-                <th className="px-3 py-2 border font-semibold text-gray-700">Product Type</th>
-                <th className="px-3 py-2 border font-semibold text-gray-700">Transfer Info</th>
-                <th className="px-3 py-2 border font-semibold text-gray-700">Supplier Name</th>
-                <th className="px-3 py-2 border font-semibold text-gray-700">Actions</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  PRODUCT NAME
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  BRAND
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  CATEGORY
+                </th>
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  STOCK
+                </th>
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  PRICE
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  SUPPLIER
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  BARCODE
+                </th>
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  STATUS
+                </th>
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  TRANSFER DETAILS
+                </th>
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  ACTIONS
+                </th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="bg-white divide-y divide-gray-200">
               {loading ? (
                 <tr>
-                  <td colSpan={11} className="text-center py-8">Loading...</td>
+                  <td colSpan={10} className="px-6 py-4 text-center text-gray-500">
+                    Loading products...
+                  </td>
                 </tr>
               ) : paginatedProducts.length > 0 ? (
-                paginatedProducts.map(product => (
-                  <tr key={`${product.product_id}-${product.product_type}`} className="hover:bg-gray-50 transition-colors">
-                    <td className="border px-3 py-2 font-mono font-semibold">{product.barcode}</td>
-                    <td className="border px-3 py-2">{product.product_name}</td>
-                    <td className="border px-3 py-2">{product.category}</td>
-                    <td className="border px-3 py-2 text-center">{product.quantity}</td>
-                    <td className="border px-3 py-2 text-center">₱{Number(product.unit_price).toFixed(2)}</td>
-                    <td className="border px-3 py-2 text-center">₱{(Number(product.unit_price) * Number(product.quantity)).toFixed(2)}</td>
-                    <td className="border px-3 py-2 text-center">
-                      <span className={`px-2 py-1 rounded text-xs font-semibold ${getStatusColor(product.stock_status)}`}>{product.stock_status ? product.stock_status.charAt(0).toUpperCase() + product.stock_status.slice(1) : 'Unknown'}</span>
+                paginatedProducts.map((product, index) => (
+                  <tr key={`${product.product_id}-${index}`} className="hover:bg-gray-50">
+                    <td className="px-6 py-4">
+                      <div className="text-sm font-medium text-gray-900">
+                        {product.product_name}
+                      </div>
                     </td>
-                    <td className="border px-3 py-2 text-center">
-                      <span className={`px-2 py-1 rounded text-xs font-semibold ${
-                        product.product_type === 'Transferred' 
-                          ? 'text-blue-600 bg-blue-100' 
-                          : 'text-green-600 bg-green-100'
-                      }`}>
-                        {product.product_type}
+                    <td className="px-6 py-4 text-sm text-gray-900">
+                      {product.brand || 'N/A'}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-900">
+                      <span className="inline-flex px-2 py-1 text-xs font-medium bg-gray-100 text-gray-800 rounded-full">
+                        {product.category}
                       </span>
                     </td>
-                    <td className="border px-3 py-2 text-center">
-                      {product.product_type === 'Transferred' ? (
-                        <div className="text-xs">
-                          <div className="font-semibold">From: {product.source_location}</div>
-                          <div>By: {product.transferred_by}</div>
-                          <div>{new Date(product.transfer_date).toLocaleDateString()}</div>
-                        </div>
-                      ) : (
-                        <span className="text-gray-400">-</span>
-                      )}
+                    <td className="px-6 py-4 text-center">
+                      <div>
+                        <div className="font-semibold">{product.quantity || 0}</div>
+                        <div className="text-sm text-gray-500">units</div>
+                      </div>
                     </td>
-                    <td className="border px-3 py-2">{product.supplier_name || 'N/A'}</td>
-                    <td className="border px-3 py-2 text-center">
-                      <button className="text-gray-700 hover:text-black px-2 py-1 rounded">
-                        <span className="text-xl">&#8226;&#8226;&#8226;</span>
-                      </button>
+                    <td className="px-6 py-4 text-center text-sm text-gray-900">
+                      ₱{Number.parseFloat(product.unit_price || 0).toFixed(2)}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-900">
+                      {product.supplier_name || "N/A"}
+                    </td>
+                    <td className="px-6 py-4 text-sm font-mono text-gray-900">
+                      {product.barcode}
+                    </td>
+                                         <td className="px-6 py-4 text-center">
+                       <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                         product.stock_status === "in stock"
+                           ? "bg-green-100 text-green-800"
+                           : product.stock_status === "low stock"
+                             ? "bg-yellow-100 text-yellow-800"
+                             : product.stock_status === "out of stock"
+                               ? "bg-red-100 text-red-800"
+                               : "bg-gray-100 text-gray-800"
+                       }`}>
+                         {product.stock_status || "unknown"}
+                       </span>
+                     </td>
+                     <td className="px-6 py-4 text-center">
+                       {product.product_type === 'Transferred' ? (
+                         <div className="text-xs text-gray-600">
+                           <div className="font-semibold text-blue-600">From: {product.source_location}</div>
+                           <div>By: {product.transferred_by}</div>
+                           <div>{new Date(product.transfer_date).toLocaleDateString()}</div>
+                           <div className="mt-1">
+                             <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
+                               Transferred
+                             </span>
+                           </div>
+                         </div>
+                       ) : (
+                         <div className="text-xs text-gray-600">
+                           <div className="font-semibold text-green-600">From: {product.source_location || 'Warehouse'}</div>
+                           <div className="mt-1">
+                             <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+                               Direct Stock
+                             </span>
+                           </div>
+                         </div>
+                       )}
+                     </td>
+                    <td className="px-6 py-4 text-center">
+                      <div className="flex justify-center gap-2">
+                        <button className="text-blue-600 hover:text-blue-900 p-1">
+                          <span className="text-xl">&#8226;&#8226;&#8226;</span>
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))
-              ) : (
-                <tr>
-                  <td colSpan={11} className="text-center py-8 text-gray-500">No products found</td>
-                </tr>
-              )}
+                              ) : (
+                  <tr>
+                    <td colSpan={10} className="px-6 py-8 text-center">
+                      <div className="flex flex-col items-center space-y-3">
+                        <Package className="h-12 w-12 text-gray-300" />
+                        <div className="text-gray-500">
+                          <p className="text-lg font-medium">No products found</p>
+                          <p className="text-sm">Products will appear here when transferred from warehouse</p>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                )}
             </tbody>
           </table>
         </div>
-        {/* Pagination Controls */}
-        <div className="flex justify-end items-center gap-2 mt-4">
-          <button
-            onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-            disabled={currentPage === 1}
-            className="px-3 py-1 border rounded bg-gray-100 text-gray-700 disabled:opacity-50"
-          >
-            {'< Previous'}
-          </button>
-          <span className="text-sm">Page {currentPage} of {totalPages}</span>
-          <button
-            onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-            disabled={currentPage === totalPages}
-            className="px-3 py-1 border rounded bg-gray-100 text-gray-700 disabled:opacity-50"
-          >
-            {'Next >'}
-          </button>
-        </div>
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex justify-center mt-4 pb-4">
+            <div className="flex items-center space-x-2">
+              <button
+                onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                disabled={currentPage === 1}
+                className="px-3 py-1 border border-gray-300 rounded disabled:opacity-50"
+              >
+                Previous
+              </button>
+              <span className="px-3 py-1 text-sm">
+                Page {currentPage} of {totalPages}
+              </span>
+              <button
+                onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                disabled={currentPage === totalPages}
+                className="px-3 py-1 border border-gray-300 rounded disabled:opacity-50"
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
 

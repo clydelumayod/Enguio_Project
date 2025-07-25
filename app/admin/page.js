@@ -707,7 +707,7 @@ UserManagement() {
       {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded shadow-lg w-full max-w-md mx-auto">
+          <div className="bg-transparent backdrop-blur-sm p-6 rounded shadow-lg w-full max-w-md mx-auto border-2 border-gray-400">
             <h2 className="text-xl font-semibold mb-4">Add New Employee</h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               {/* First, Middle, Last Name */}

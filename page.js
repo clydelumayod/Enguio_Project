@@ -1509,7 +1509,7 @@ function Warehouse() {
         {/* SUPPLIER MODAL - ALL FIELDS KEPT */}
         {showSupplierModal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div className="bg-transparent backdrop-blur-sm rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto border-2 border-gray-400">
               <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
                 <h3 className="text-lg font-semibold text-gray-900">Add New Supplier</h3>
                 <button onClick={closeSupplierModal} className="text-gray-400 hover:text-gray-600">
@@ -1677,7 +1677,7 @@ function Warehouse() {
         {/* Edit Modal */}
         {showEditModal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div className="bg-transparent backdrop-blur-sm rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto border-2 border-gray-400">
               <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
                 <h3 className="text-lg font-semibold text-gray-900">Edit Supplier</h3>
                 <button onClick={closeEditModal} className="text-gray-400 hover:text-gray-600">

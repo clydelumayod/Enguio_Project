@@ -1,11 +1,14 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const printer = require('printer-npm');
+const printer = require('printer');
 
 const app = express();
 const PORT = 4000;
 
 app.use(bodyParser.json());
+
+// Debug: List all available printers on startup
+console.log('Available printers:', printer.getPrinters().map(p => p.name));
 
 app.post('/print', (req, res) => {
   const data = req.body;

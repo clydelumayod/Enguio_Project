@@ -13,6 +13,7 @@ import {
   Truck,
   Trash2,
   Package,
+  CheckCircle,
 } from "lucide-react";
 
 
@@ -50,7 +51,7 @@ function InventoryTransfer() {
     deliveryDate: "",
   })
 
-  const API_BASE_URL = "http://localhost/Enguio_Project/backend.php"
+  const API_BASE_URL = "http://localhost/Enguio_Project/Api/backend.php"
 
   // API function
   async function handleApiCall(action, data = {}) {
@@ -117,12 +118,12 @@ function InventoryTransfer() {
     }
   }
 
-  const loadAvailableProducts = async () => {
+  const loadAvailableProducts = async (sourceLocationId = null) => {
     try {
-      console.log("Loading warehouse products...")
-      const response = await handleApiCall("get_products")
+      console.log("Loading products from source location...")
+      const response = await handleApiCall("get_products", sourceLocationId ? { location_id: sourceLocationId } : {})
       if (response.success && Array.isArray(response.data)) {
-        console.log("✅ Loaded warehouse products:", response.data.length)
+        console.log("✅ Loaded products from source location:", response.data.length)
         setAvailableProducts(response.data)
       } else {
         console.warn("⚠️ No products found from API")
@@ -130,17 +131,44 @@ function InventoryTransfer() {
       }
     } catch (error) {
       console.error("Error loading products:", error)
-      toast.error("Failed to load warehouse products")
+      toast.error("Failed to load products from source location")
       setAvailableProducts([])
     }
   }
 
+  // Load locations
   const loadLocations = async () => {
     try {
       const res = await handleApiCall("get_locations")
       console.log("📦 API Response from get_locations:", res)
       if (res.success && Array.isArray(res.data)) {
         setLocations(res.data)
+        
+        // Validate location mapping
+        console.log("🔍 Location Mapping Validation:")
+        res.data.forEach(loc => {
+          console.log(`Location: ${loc.location_name} (ID: ${loc.location_id})`)
+        })
+        
+        // Check for convenience store specifically
+        const convenienceStore = res.data.find(loc => 
+          loc.location_name === "Convenience"
+        )
+        if (convenienceStore) {
+          console.log("✅ Found Convenience Store:", convenienceStore.location_name, "(ID:", convenienceStore.location_id, ")")
+        } else {
+          console.warn("⚠️ No convenience store found in locations")
+        }
+        
+        // Check for warehouse specifically
+        const warehouse = res.data.find(loc => 
+          loc.location_name.toLowerCase().includes('warehouse')
+        )
+        if (warehouse) {
+          console.log("✅ Found Warehouse:", warehouse.location_name, "(ID:", warehouse.location_id, ")")
+        } else {
+          console.warn("⚠️ No warehouse found in locations")
+        }
       } else {
         console.warn("⚠️ No locations found or invalid response")
         setLocations([])
@@ -165,11 +193,61 @@ function InventoryTransfer() {
       }
     }
 
+  // Test transfer function to verify destination
+  const testTransferDestination = async () => {
+    console.log("🧪 Testing Transfer Destination...")
+    
+    // Get current locations
+    const res = await handleApiCall("get_locations")
+    if (!res.success) {
+      console.error("❌ Failed to get locations for testing")
+      return
+    }
+    
+    const locations = res.data
+    const warehouse = locations.find(loc => loc.location_name.toLowerCase().includes('warehouse'))
+    const convenience = locations.find(loc => loc.location_name === "Convenience")
+    
+    if (!warehouse || !convenience) {
+      console.error("❌ Required locations not found for testing")
+      return
+    }
+    
+    console.log("✅ Test locations found:")
+    console.log("Warehouse:", warehouse.location_name, "(ID:", warehouse.location_id, ")")
+    console.log("Convenience Store:", convenience.location_name, "(ID:", convenience.location_id, ")")
+    
+    // Test the transfer data structure
+    const testTransferData = {
+      source_location_id: warehouse.location_id,
+      destination_location_id: convenience.location_id,
+      employee_id: 1, // Assuming employee ID 1 exists
+      status: "Completed",
+      products: [
+        {
+          product_id: 1, // Assuming product ID 1 exists
+          quantity: 1
+        }
+      ]
+    }
+    
+    console.log("📦 Test transfer data:", testTransferData)
+    console.log("Expected: Warehouse (", warehouse.location_id, ") → Convenience Store (", convenience.location_id, ")")
+    
+    return {
+      warehouse,
+      convenience,
+      testTransferData
+    }
+  }
+
   useEffect(() => {
     loadTransfers()
-    loadAvailableProducts()
     loadLocations()
     loadStaff()
+    
+    // Test transfer destination on component mount
+    testTransferDestination()
   }, [])
 
   // Fixed transfer submission function
@@ -191,14 +269,48 @@ function InventoryTransfer() {
       return
     }
 
+    // Enhanced validation for convenience store transfers
+    const isConvenienceStoreTransfer = storeData.destinationStore === "Convenience";
+    const convenience = locations.find(loc => loc.location_name === "Convenience");
+    
+    if (isConvenienceStoreTransfer) {
+      console.log("🏪 Special handling for Warehouse → Convenience Store transfer")
+      
+      // Validate that we have sufficient quantities
+      const insufficientProducts = productsToTransfer.filter(p => p.transfer_quantity > p.quantity)
+      if (insufficientProducts.length > 0) {
+        const productNames = insufficientProducts.map(p => p.product_name).join(', ')
+        toast.error(`Insufficient quantity for: ${productNames}`)
+        return
+      }
+    }
+
     setLoading(true)
     try {
       // Find location IDs
       const sourceLocation = locations.find((loc) => loc.location_name === storeData.originalStore)
       const destinationLocation = locations.find((loc) => loc.location_name === storeData.destinationStore)
 
+      console.log("🔍 Location Debug Info:")
+      console.log("Available locations:", locations.map(loc => `${loc.location_name} (ID: ${loc.location_id})`))
+      console.log("Selected original store:", storeData.originalStore)
+      console.log("Selected destination store:", storeData.destinationStore)
+      console.log("Found source location:", sourceLocation)
+      console.log("Found destination location:", destinationLocation)
+
       if (!sourceLocation || !destinationLocation) {
+        console.error("❌ Location validation failed:")
+        console.error("Source location found:", !!sourceLocation)
+        console.error("Destination location found:", !!destinationLocation)
         toast.error("Invalid location selection")
+        setLoading(false)
+        return
+      }
+
+      // Validate that we're not transferring to the same location
+      if (sourceLocation.location_id === destinationLocation.location_id) {
+        console.error("❌ Same location transfer detected")
+        toast.error("Source and destination cannot be the same")
         setLoading(false)
         return
       }
@@ -206,6 +318,7 @@ function InventoryTransfer() {
       // Find employee ID
       const transferEmployee = staff.find((emp) => emp.name === transferInfo.transferredBy)
       if (!transferEmployee) {
+        console.error("❌ Employee not found:", transferInfo.transferredBy)
         toast.error("Invalid employee selection")
         setLoading(false)
         return
@@ -224,12 +337,50 @@ function InventoryTransfer() {
         })),
       }
 
+      console.log("📦 Transfer Data Validation:")
+      console.log("Source Location ID:", transferData.source_location_id, "Name:", sourceLocation.location_name)
+      console.log("Destination Location ID:", transferData.destination_location_id, "Name:", destinationLocation.location_name)
+      console.log("Employee ID:", transferData.employee_id, "Name:", transferEmployee.name)
+      console.log("Products to transfer:", productsToTransfer.map(p => `${p.product_name} (${p.transfer_quantity} qty)`))
+      
+      // Double-check convenience store transfer
+      if (isConvenienceStoreTransfer) {
+        console.log("🏪 Convenience Store Transfer Validation:")
+        console.log("Is convenience store transfer:", isConvenienceStoreTransfer)
+        console.log("Destination location name:", destinationLocation.location_name)
+        console.log("Destination location ID:", destinationLocation.location_id)
+        console.log("Expected destination should be convenience store")
+      }
+
       console.log("📦 Sending transfer data:", transferData)
+      console.log("📍 Transfer Direction: FROM", storeData.originalStore, "TO", storeData.destinationStore)
+      console.log("📦 Products being transferred:", productsToTransfer.map(p => `${p.product_name} (${p.transfer_quantity} qty)`))
+      
+      // Special confirmation for convenience store transfers
+      if (isConvenienceStoreTransfer) {
+        console.log("🏪 Confirming convenience store transfer...")
+        toast.info("🔄 Processing transfer to convenience store...")
+      }
+      
       const response = await handleApiCall("create_transfer", transferData)
       console.log("📥 Transfer creation response:", response)
 
       if (response.success) {
-        toast.success("Transfer approved successfully! Products have been added to destination store.")
+        const transferredCount = response.products_transferred || 0;
+        
+        console.log("✅ Transfer successful!")
+        console.log("Transfer ID:", response.transfer_id)
+        console.log("Products transferred:", transferredCount)
+        console.log("Source location:", response.source_location)
+        console.log("Destination location:", response.destination_location)
+        
+        // Enhanced success message based on transfer type
+        if (isConvenienceStoreTransfer) {
+          toast.success(`✅ Transfer completed! ${transferredCount} product(s) moved FROM ${storeData.originalStore} TO ${storeData.destinationStore}. Products are now available in the convenience store inventory.`)
+        } else {
+          toast.success(`✅ Transfer completed! ${transferredCount} product(s) moved FROM ${storeData.originalStore} TO ${storeData.destinationStore}.`)
+        }
+        
         console.log("✅ Transfer created with ID:", response.transfer_id)
 
         // Reset form
@@ -243,7 +394,19 @@ function InventoryTransfer() {
         // Reload transfers to show the new one
         console.log("🔄 Reloading transfers...")
         await loadTransfers()
-        await loadAvailableProducts() // Reload products to update quantities
+        
+        // Force reload of available products to reflect the transfer
+        if (sourceLocation) {
+          console.log("🔄 Reloading source location products...")
+          await loadAvailableProducts(sourceLocation.location_id)
+        }
+        
+        // Special notification for convenience store transfers
+        if (isConvenienceStoreTransfer) {
+          setTimeout(() => {
+            toast.info("🏪 You can now view the transferred products in the Convenience Store inventory page.")
+          }, 2000)
+        }
       } else {
         console.error("❌ Transfer creation failed:", response.message)
         toast.error(response.message || "Failed to create transfer")
@@ -274,8 +437,19 @@ function InventoryTransfer() {
       toast.error("Original and destination stores must be different")
       return
     }
+    
+    // Find the source location ID
+    const sourceLocation = locations.find((loc) => loc.location_name === storeData.originalStore)
+    if (!sourceLocation) {
+      toast.error("Invalid source location selection")
+      return
+    }
+    
     setStoreData((prev) => ({ ...prev, storesConfirmed: true }))
     setCurrentStep(2)
+    
+    // Load products from the selected source location
+    loadAvailableProducts(sourceLocation.location_id)
   }
 
   const handleNextToProducts = () => {
@@ -334,8 +508,8 @@ function InventoryTransfer() {
   }
 
   const handleStatusUpdate = async (transferId, currentStatus) => {
-    // Since transfers are now completed immediately, we'll just show a message
-    toast.info("Transfer status: " + currentStatus + " - Products have been immediately added to destination store")
+    // Since transfers are now approved immediately, we'll just show a message
+    toast.info("Transfer status: " + (currentStatus === "approved" ? "Completed" : currentStatus) + " - Products have been transferred to destination store")
   }
 
   const handleDeleteTransfer = async (transferId) => {
@@ -412,6 +586,20 @@ function InventoryTransfer() {
             </div>
             <div className="flex items-center gap-2">
               <button
+                onClick={() => window.location.href = '/Inventory_Con/ConvenienceStore'}
+                className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md flex items-center gap-2 whitespace-nowrap"
+              >
+                <Package className="h-4 w-4" />
+                <span>View Convenience Store</span>
+              </button>
+              <button
+                onClick={testTransferDestination}
+                className="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-md flex items-center gap-2 whitespace-nowrap"
+              >
+                <Package className="h-4 w-4" />
+                <span>Test Transfer</span>
+              </button>
+              <button
                 onClick={handleCreateTransfer}
                 className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md flex items-center gap-2 whitespace-nowrap"
               >
@@ -446,7 +634,7 @@ function InventoryTransfer() {
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-orange-600">
-                {transfers.filter((t) => t.status === "New").length}
+                {transfers.filter((t) => t.status === "pending").length}
               </div>
               <div className="text-sm text-gray-600">Pending Transfers</div>
             </div>
@@ -454,27 +642,80 @@ function InventoryTransfer() {
           
           {/* Additional Transfer Summary */}
           <div className="mt-6 pt-6 border-t border-gray-200">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div className="text-center">
                 <div className="text-lg font-semibold text-gray-700">
-                  {transfers.filter((t) => t.status === "Completed").length}
+                  {transfers.filter((t) => t.status === "approved").length}
                 </div>
                 <div className="text-sm text-gray-600">Completed Transfers</div>
               </div>
               <div className="text-center">
                 <div className="text-lg font-semibold text-gray-700">
-                  {transfers.filter((t) => t.status === "In Storage").length}
+                  {transfers.filter((t) => t.status === "rejected").length}
                 </div>
-                <div className="text-sm text-gray-600">In Storage</div>
+                <div className="text-sm text-gray-600">Rejected Transfers</div>
               </div>
               <div className="text-center">
                 <div className="text-lg font-semibold text-gray-700">
-                  {transfers.filter((t) => t.status === "Transferring").length}
+                  {transfers.filter((t) => t.status === "pending").length}
                 </div>
-                <div className="text-sm text-gray-600">In Transit</div>
+                <div className="text-sm text-gray-600">Pending Review</div>
+              </div>
+              <div className="text-center">
+                <div className="text-lg font-semibold text-green-600">
+                  {transfers.filter((t) => 
+                    t.destination_location_name && 
+                    t.destination_location_name.toLowerCase().includes('convenience')
+                  ).length}
+                </div>
+                <div className="text-sm text-gray-600">To Convenience Store</div>
               </div>
             </div>
           </div>
+          
+          {/* Convenience Store Transfer Summary */}
+          {transfers.filter((t) => 
+            t.destination_location_name && 
+            t.destination_location_name.toLowerCase().includes('convenience')
+          ).length > 0 && (
+            <div className="mt-4 pt-4 border-t border-gray-200">
+              <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                <div className="flex items-center mb-2">
+                  <Package className="h-5 w-5 text-green-600 mr-2" />
+                  <span className="font-medium text-green-900">Convenience Store Transfer Summary</span>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                  <div>
+                    <span className="font-medium text-green-700">Total Transfers:</span>
+                    <span className="ml-2 text-green-600">
+                      {transfers.filter((t) => 
+                        t.destination_location_name && 
+                        t.destination_location_name.toLowerCase().includes('convenience')
+                      ).length}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="font-medium text-green-700">Products Moved:</span>
+                    <span className="ml-2 text-green-600">
+                      {transfers.filter((t) => 
+                        t.destination_location_name && 
+                        t.destination_location_name.toLowerCase().includes('convenience')
+                      ).reduce((sum, transfer) => sum + (transfer.total_products || 0), 0)}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="font-medium text-green-700">Total Value:</span>
+                    <span className="ml-2 text-green-600">
+                      ₱{transfers.filter((t) => 
+                        t.destination_location_name && 
+                        t.destination_location_name.toLowerCase().includes('convenience')
+                      ).reduce((sum, transfer) => sum + (Number.parseFloat(transfer.total_value) || 0), 0).toFixed(2)}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Transfers Table */}
@@ -549,26 +790,34 @@ function InventoryTransfer() {
                           {transfer.source_location_name}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {transfer.destination_location_name}
+                          <div className="flex items-center">
+                            <span>{transfer.destination_location_name}</span>
+                            {transfer.destination_location_name && transfer.destination_location_name.toLowerCase().includes('convenience') && (
+                              <span className="ml-2 inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                <Package className="h-3 w-3 mr-1" />
+                                Retail
+                              </span>
+                            )}
+                          </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center space-x-2">
                           <span
                             className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                              transfer.status === "New"
+                              transfer.status === "pending"
                                 ? "bg-blue-100 text-blue-800"
-                                : transfer.status === "In Storage"
-                                  ? "bg-yellow-100 text-yellow-800"
-                                    : transfer.status === "Transferring"
-                                      ? "bg-orange-100 text-orange-800"
+                                : transfer.status === "approved"
+                                  ? "bg-green-100 text-green-800"
+                                    : transfer.status === "rejected"
+                                      ? "bg-red-100 text-red-800"
                                     : transfer.status === "Completed"
                                       ? "bg-green-100 text-green-800"
-                                      : transfer.status === "Cancelled"
-                                        ? "bg-red-100 text-red-800"
+                                      : transfer.status === "New"
+                                        ? "bg-blue-100 text-blue-800"
                                       : "bg-gray-100 text-gray-800"
                               }`}
                             >
-                              {transfer.status || "New"}
+                              {transfer.status === "approved" ? "Completed" : (transfer.status || "pending")}
                             </span>
                             <span className="text-xs text-gray-500">
                               Auto-completed
@@ -799,7 +1048,7 @@ function InventoryTransfer() {
         {/* Delete Confirmation Modal */}
         {showDeleteModal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg shadow-xl p-6 w-96">
+            <div className="bg-transparent backdrop-blur-sm rounded-lg shadow-xl p-6 w-96 border-2 border-gray-400">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Delete Transfer</h3>
               <p className="text-gray-700 mb-4">
                 Are you sure you want to delete transfer TR-{transferToDelete?.transfer_header_id}? This action cannot
@@ -878,6 +1127,20 @@ function InventoryTransfer() {
                 </span>
                 Transfer stores
               </h4>
+              
+              {/* Transfer Direction Guide */}
+              <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <div className="flex items-center mb-2">
+                  <Truck className="h-5 w-5 text-blue-600 mr-2" />
+                  <span className="font-medium text-blue-900">Transfer Direction Guide</span>
+                </div>
+                <div className="text-sm text-blue-700 space-y-1">
+                  <p>• <strong>Warehouse → Convenience Store:</strong> Move products from warehouse to convenience store for retail</p>
+                  <p>• <strong>Warehouse → Pharmacy:</strong> Move products from warehouse to pharmacy for prescription sales</p>
+                  <p>• <strong>Convenience Store → Pharmacy:</strong> Move products between retail locations</p>
+                </div>
+              </div>
+              
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Original Store*</label>
@@ -894,7 +1157,7 @@ function InventoryTransfer() {
                       </option>
                     ))}
                   </select>
-      </div>
+                </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Destination Store*</label>
                   <select
@@ -910,8 +1173,47 @@ function InventoryTransfer() {
                       </option>
                     ))}
                   </select>
-    </div>
+                  
+                  {/* Convenience Store Indicator */}
+                  {storeData.destinationStore && storeData.destinationStore.toLowerCase().includes('convenience') && (
+                    <div className="mt-2 p-2 bg-green-50 border border-green-200 rounded text-sm text-green-700">
+                      <div className="flex items-center">
+                        <CheckCircle className="h-4 w-4 mr-1" />
+                        <span>Products will be available for retail sales in convenience store</span>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
+              
+              {/* Transfer Preview */}
+              {storeData.originalStore && storeData.destinationStore && storeData.originalStore !== storeData.destinationStore && (
+                <div className="mb-6 p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-4">
+                      <div className="text-center">
+                        <div className="font-medium text-gray-900">{storeData.originalStore}</div>
+                        <div className="text-xs text-gray-500">Source</div>
+                      </div>
+                      <div className="flex items-center">
+                        <Truck className="h-5 w-5 text-blue-600" />
+                        <div className="mx-2 text-gray-400">→</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="font-medium text-gray-900">{storeData.destinationStore}</div>
+                        <div className="text-xs text-gray-500">Destination</div>
+                      </div>
+                    </div>
+                    {storeData.destinationStore.toLowerCase().includes('convenience') && (
+                      <div className="flex items-center text-green-600">
+                        <Package className="h-4 w-4 mr-1" />
+                        <span className="text-sm font-medium">Retail Ready</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+              
               {!storeData.storesConfirmed ? (
                 <div className="text-center">
                   <button
@@ -1014,6 +1316,23 @@ function InventoryTransfer() {
                 </span>
                 Transfer Products*
               </h4>
+              
+              {/* Convenience Store Transfer Tips */}
+              {storeData.destinationStore && storeData.destinationStore.toLowerCase().includes('convenience') && (
+                <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+                  <div className="flex items-center mb-2">
+                    <Package className="h-5 w-5 text-green-600 mr-2" />
+                    <span className="font-medium text-green-900">Convenience Store Transfer Tips</span>
+                  </div>
+                  <div className="text-sm text-green-700 space-y-1">
+                    <p>• Select products that are suitable for retail sales</p>
+                    <p>• Ensure quantities are appropriate for convenience store demand</p>
+                    <p>• Products will be immediately available for POS transactions</p>
+                    <p>• Check expiration dates for perishable items</p>
+                  </div>
+                </div>
+              )}
+              
               {selectedProducts.length === 0 ? (
                 <div className="text-center py-12">
                   <div className="mb-4">
@@ -1024,11 +1343,28 @@ function InventoryTransfer() {
                     className="text-blue-600 hover:text-blue-800 text-lg flex items-center justify-center space-x-2 mx-auto border-2 border-dashed border-blue-300 px-6 py-3 rounded-lg"
                   >
                     <Package className="h-5 w-5" />
-                    <span>Select Transfer Products</span>
+                    <span>Select Products from {storeData.originalStore}</span>
                   </button>
+                  
+                  {/* Additional guidance for convenience store */}
+                  {storeData.destinationStore && storeData.destinationStore.toLowerCase().includes('convenience') && (
+                    <div className="mt-4 text-sm text-gray-600">
+                      <p>💡 Tip: Choose products that customers typically buy in convenience stores</p>
+                    </div>
+                  )}
                 </div>
               ) : (
                 <div>
+                  {/* Transfer Summary */}
+                  {storeData.destinationStore && storeData.destinationStore.toLowerCase().includes('convenience') && (
+                    <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded text-sm text-blue-700">
+                      <div className="flex items-center">
+                        <CheckCircle className="h-4 w-4 mr-2" />
+                        <span>Products will be transferred to convenience store for retail sales</span>
+                      </div>
+                    </div>
+                  )}
+                  
                   <div className="overflow-x-auto mb-4 max-h-96 overflow-y-auto">
                     <table className="w-full border-collapse border border-gray-300 text-sm">
                       <thead className="bg-gray-50">
@@ -1132,7 +1468,7 @@ function InventoryTransfer() {
                       className="text-blue-600 hover:text-blue-800 text-sm border border-blue-300 px-4 py-2 rounded"
                     >
                       <Package className="h-4 w-4 inline mr-2" />
-                      Select Transfer Products
+                      Select Products from {storeData.originalStore}
                     </button>
                     <div className="flex space-x-4">
                       <button
@@ -1162,7 +1498,7 @@ function InventoryTransfer() {
                 <span className="bg-gray-900 text-white rounded-full w-6 h-6 inline-flex items-center justify-center text-sm mr-2">
                   3
                 </span>
-                Select Transfer Products from Warehouse ({availableProducts.length} products available)
+                Select Transfer Products from {storeData.originalStore} ({availableProducts.length} products available)
               </h4>
               {/* Search and Filters */}
               <div className="flex items-center gap-4 mb-6">
