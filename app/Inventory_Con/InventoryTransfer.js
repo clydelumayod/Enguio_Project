@@ -1388,6 +1388,9 @@ function InventoryTransfer() {
                             Barcode
                           </th>
                           <th className="border border-gray-300 px-2 py-1 text-center text-xs font-medium text-gray-700">
+                            Batch Number
+                          </th>
+                          <th className="border border-gray-300 px-2 py-1 text-center text-xs font-medium text-gray-700">
                             Available Qty
                           </th>
                           <th className="border border-gray-300 px-2 py-1 text-center text-xs font-medium text-gray-700">
@@ -1442,6 +1445,9 @@ function InventoryTransfer() {
                             <td className="border border-gray-300 px-2 py-1 text-sm">{product.category}</td>
                             <td className="border border-gray-300 px-2 py-1 text-sm">{product.brand || "-"}</td>
                             <td className="border border-gray-300 px-2 py-1 text-sm font-mono">{product.barcode}</td>
+                            <td className="border border-gray-300 px-2 py-1 text-sm text-center font-semibold">
+                              {product.batch_id || 'N/A'}
+                            </td>
                             <td className="border border-gray-300 px-2 py-1 text-sm text-center font-semibold">
                               {product.quantity || 0}
                             </td>
@@ -1574,6 +1580,9 @@ function InventoryTransfer() {
                         Barcode
                       </th>
                       <th className="border border-gray-300 px-4 py-2 text-center text-sm font-medium text-gray-700">
+                        Batch Number
+                      </th>
+                      <th className="border border-gray-300 px-4 py-2 text-center text-sm font-medium text-gray-700">
                         Available Qty
                       </th>
                       <th className="border border-gray-300 px-4 py-2 text-center text-sm font-medium text-gray-700">
@@ -1599,6 +1608,9 @@ function InventoryTransfer() {
                         <td className="border border-gray-300 px-4 py-2 text-sm">{product.brand || "-"}</td>
                         <td className="border border-gray-300 px-4 py-2 text-sm">{product.supplier_name || "-"}</td>
                         <td className="border border-gray-300 px-4 py-2 text-sm font-mono">{product.barcode}</td>
+                        <td className="border border-gray-300 px-4 py-2 text-sm text-center font-semibold">
+                          {product.batch_id || 'N/A'}
+                        </td>
                         <td className="border border-gray-300 px-4 py-2 text-sm text-center font-semibold">
                           {product.quantity || 0}
                         </td>

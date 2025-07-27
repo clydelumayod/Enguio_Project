@@ -724,6 +724,7 @@ switch ($action) {
                 s.supplier_name,
                 b.brand,
                 l.location_name,
+                batch.batch_id,
                 batch.batch as batch_reference,
                 batch.entry_date,
                 batch.entry_by
@@ -731,7 +732,19 @@ switch ($action) {
             LEFT JOIN tbl_supplier s ON p.supplier_id = s.supplier_id 
             LEFT JOIN tbl_brand b ON p.brand_id = b.brand_id 
             LEFT JOIN tbl_location l ON p.location_id = l.location_id
-            LEFT JOIN tbl_batch batch ON p.batch_id = batch.batch_id
+            LEFT JOIN (
+                SELECT 
+                    p2.product_id,
+                    b2.batch_id,
+                    b2.batch,
+                    b2.entry_date,
+                    b2.entry_by
+                FROM tbl_product p2
+                LEFT JOIN tbl_batch b2 ON p2.batch_id = b2.batch_id
+                WHERE p2.batch_id IS NOT NULL
+                GROUP BY p2.product_id
+                HAVING MIN(b2.entry_date) = b2.entry_date
+            ) batch ON p.product_id = batch.product_id
             WHERE (p.status IS NULL OR p.status <> 'archived')
             ORDER BY p.product_id DESC
         ");
@@ -850,11 +863,12 @@ switch ($action) {
                 break;
             }
             
-            // Get FIFO stock levels for the product
+            // Get FIFO stock levels for the product with batch dates
             $stmt = $conn->prepare("
                 SELECT 
                     ss.summary_id,
                     ss.batch_id,
+                    ss.batch_id as batch_number,
                     ss.batch_reference,
                     ss.available_quantity,
                     ss.unit_cost,
@@ -862,6 +876,7 @@ switch ($action) {
                     ss.total_quantity,
                     b.entry_date as batch_date,
                     b.entry_time as batch_time,
+                    ROW_NUMBER() OVER (ORDER BY b.entry_date ASC, ss.summary_id ASC) as fifo_order,
                     DATEDIFF(ss.expiration_date, CURDATE()) as days_until_expiry
                 FROM tbl_stock_summary ss
                 JOIN tbl_batch b ON ss.batch_id = b.batch_id

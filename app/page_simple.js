@@ -6,7 +6,7 @@ import axios from "axios";
 
 const API_BASE_URL = "http://localhost/Enguio_Project/Api/backend.php";
 
-export default function LoginForm() {
+export default function LoginFormSimple() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -15,8 +15,6 @@ export default function LoginForm() {
   const [captchaAnswer, setCaptchaAnswer] = useState("");
   const [captchaInput, setCaptchaInput] = useState("");
   const [loading, setLoading] = useState(false);
-  const [debugMode, setDebugMode] = useState(false);
-  const [debugInfo, setDebugInfo] = useState("");
   const router = useRouter();
 
   // Generate captcha when component mounts
@@ -33,9 +31,7 @@ export default function LoginForm() {
       if (response.data.success) {
         setCaptchaQuestion(response.data.question);
         setCaptchaAnswer(response.data.answer.toString());
-        if (debugMode) {
-          setDebugInfo(`Generated: ${response.data.question} | Answer: ${response.data.answer} | Type: ${typeof response.data.answer}`);
-        }
+        console.log("Generated captcha:", response.data.question, "Answer:", response.data.answer);
       }
     } catch (err) {
       console.error("Error generating captcha:", err);
@@ -44,40 +40,7 @@ export default function LoginForm() {
       const num2 = Math.floor(Math.random() * 10) + 1;
       setCaptchaQuestion(`What is ${num1} + ${num2}?`);
       setCaptchaAnswer((num1 + num2).toString());
-      if (debugMode) {
-        setDebugInfo(`Fallback: ${num1} + ${num2} = ${num1 + num2}`);
-      }
     }
-  };
-
-  const testCaptchaAPI = async () => {
-    try {
-      const response = await axios.post(API_BASE_URL, {
-        action: "generate_captcha"
-      });
-      
-      setDebugInfo(`
-        API Test Results:
-        Status: Success
-        Question: ${response.data.question}
-        Answer: ${response.data.answer} (Type: ${typeof response.data.answer})
-        Full Response: ${JSON.stringify(response.data, null, 2)}
-      `);
-    } catch (error) {
-      setDebugInfo(`API Error: ${error.message}`);
-    }
-  };
-
-  const testCaptchaComparison = () => {
-    const result = captchaInput.toString() === captchaAnswer.toString();
-    setDebugInfo(`
-      Captcha Comparison Test:
-      Question: ${captchaQuestion}
-      Expected Answer: ${captchaAnswer} (Type: ${typeof captchaAnswer})
-      User Input: ${captchaInput} (Type: ${typeof captchaInput})
-      String Comparison: "${captchaInput.toString()}" === "${captchaAnswer.toString()}"
-      Result: ${result ? '✅ PASS' : '❌ FAIL'}
-    `);
   };
 
   const handleSubmit = async (e) => {
@@ -102,23 +65,16 @@ export default function LoginForm() {
       return;
     }
 
-    // Debug: Log captcha values
-    if (debugMode) {
-      console.log("Captcha Input:", captchaInput, "Type:", typeof captchaInput);
-      console.log("Captcha Answer:", captchaAnswer, "Type:", typeof captchaAnswer);
-      testCaptchaComparison();
-    }
-    
-    if (captchaInput.toString() !== captchaAnswer.toString()) {
-      setError("Incorrect captcha answer. Please try again.");
-      setCaptchaInput("");
-      generateCaptcha();
-      return;
-    }
-
     setLoading(true);
 
     try {
+      console.log("Sending login request with:", {
+        username,
+        password,
+        captcha: captchaInput,
+        captchaAnswer
+      });
+
       const res = await axios.post(API_BASE_URL, {
         action: "login",
         username: username,
@@ -126,6 +82,8 @@ export default function LoginForm() {
         captcha: captchaInput,
         captchaAnswer: captchaAnswer
       });
+
+      console.log("Login response:", res.data);
 
       if (res.data.success) {
         const role = res.data.role;
@@ -189,53 +147,9 @@ export default function LoginForm() {
             <p className="text-gray-600">Please sign in to your account</p>
           </div>
 
-          {/* Debug Mode Toggle */}
-          <div className="flex items-center justify-center space-x-2">
-            <label className="flex items-center space-x-2 text-sm">
-              <input
-                type="checkbox"
-                checked={debugMode}
-                onChange={(e) => setDebugMode(e.target.checked)}
-                className="rounded"
-              />
-              <span>Debug Mode</span>
-            </label>
-          </div>
-
           {error && (
             <div className="bg-red-50 border border-red-200 rounded-lg p-4">
               <p className="text-red-600 text-center text-sm">{error}</p>
-            </div>
-          )}
-
-          {/* Debug Information */}
-          {debugMode && debugInfo && (
-            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-              <h4 className="font-semibold text-yellow-800 mb-2">Debug Info:</h4>
-              <pre className="text-xs text-yellow-700 whitespace-pre-wrap">{debugInfo}</pre>
-              <div className="mt-2 space-x-2">
-                <button
-                  type="button"
-                  onClick={testCaptchaAPI}
-                  className="px-3 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600"
-                >
-                  Test API
-                </button>
-                <button
-                  type="button"
-                  onClick={testCaptchaComparison}
-                  className="px-3 py-1 text-xs bg-green-500 text-white rounded hover:bg-green-600"
-                >
-                  Test Comparison
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setDebugInfo("")}
-                  className="px-3 py-1 text-xs bg-gray-500 text-white rounded hover:bg-gray-600"
-                >
-                  Clear
-                </button>
-              </div>
             </div>
           )}
 
@@ -280,11 +194,7 @@ export default function LoginForm() {
               
               <div className="bg-white p-4 rounded-lg border border-blue-300 mb-4">
                 <p className="text-center text-lg font-medium text-gray-800">{captchaQuestion}</p>
-                {debugMode && (
-                  <p className="text-center text-xs text-blue-500 mt-1">
-                    Debug: Answer is "{captchaAnswer}" (Type: {typeof captchaAnswer})
-                  </p>
-                )}
+                <p className="text-center text-xs text-gray-500 mt-1">Debug: Answer is {captchaAnswer}</p>
               </div>
               
               <input
@@ -341,4 +251,4 @@ export default function LoginForm() {
       </div>
     </div>
   );
-}
+} 

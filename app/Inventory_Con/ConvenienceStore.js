@@ -361,9 +361,9 @@ function ConvenienceInventory() {
             </div>
           </div>
         </div>
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-50 border-b border-gray-200">
+        <div className="overflow-x-auto max-h-96">
+          <table className="w-full min-w-max">
+            <thead className="bg-gray-50 border-b border-gray-200 sticky top-0 z-10">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   PRODUCT NAME
@@ -386,6 +386,12 @@ function ConvenienceInventory() {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   BARCODE
                 </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  BATCH NO.
+                </th>
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  BATCH DATE
+                </th>
                 <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                   STATUS
                 </th>
@@ -400,7 +406,7 @@ function ConvenienceInventory() {
             <tbody className="bg-white divide-y divide-gray-200">
               {loading ? (
                 <tr>
-                  <td colSpan={10} className="px-6 py-4 text-center text-gray-500">
+                  <td colSpan={12} className="px-6 py-4 text-center text-gray-500">
                     Loading products...
                   </td>
                 </tr>
@@ -435,7 +441,18 @@ function ConvenienceInventory() {
                     <td className="px-6 py-4 text-sm font-mono text-gray-900">
                       {product.barcode}
                     </td>
-                                         <td className="px-6 py-4 text-center">
+                    <td className="px-6 py-4 text-sm text-gray-900">
+                      <div>
+                        <div className="font-medium">{product.batch_reference || <span className="text-gray-400 italic">None</span>}</div>
+                        {product.entry_by && (
+                          <div className="text-xs text-gray-500">by {product.entry_by}</div>
+                        )}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-center text-sm text-gray-900">
+                      {product.entry_date ? new Date(product.entry_date).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: '2-digit' }) : <span className="text-gray-400 italic">N/A</span>}
+                    </td>
+                    <td className="px-6 py-4 text-center">
                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
                          product.stock_status === "in stock"
                            ? "bg-green-100 text-green-800"
@@ -486,7 +503,7 @@ function ConvenienceInventory() {
                 ))
                               ) : (
                   <tr>
-                    <td colSpan={10} className="px-6 py-8 text-center">
+                    <td colSpan={12} className="px-6 py-8 text-center">
                       <div className="flex flex-col items-center space-y-3">
                         <Package className="h-12 w-12 text-gray-300" />
                         <div className="text-gray-500">

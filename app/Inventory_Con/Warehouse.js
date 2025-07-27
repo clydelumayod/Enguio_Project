@@ -1222,9 +1222,9 @@ function Warehouse() {
                 <th className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">STOCK</th>
                 <th className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">PRICE</th>
                 <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">SUPPLIER</th>
-                <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">BATCH</th>
+                <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">BATCH NO.</th>
                 <th className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">EXPIRY</th>
-                <th className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">ADDED</th>
+                <th className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">BATCH DATE</th>
                 <th className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">TYPE</th>
                 <th className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">STATUS</th>
                 <th className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">STOCK STATUS</th>
@@ -1276,13 +1276,18 @@ function Warehouse() {
                       {product.supplier_name || "N/A"}
                     </td>
                     <td className="px-3 py-2 text-sm text-gray-900">
-                      {product.batch_reference || <span className="text-gray-400 italic">None</span>}
+                      <div>
+                        <div className="font-medium">{product.batch_reference || <span className="text-gray-400 italic">None</span>}</div>
+                        {product.entry_by && (
+                          <div className="text-xs text-gray-500">by {product.entry_by}</div>
+                        )}
+                      </div>
                     </td>
                     <td className="px-3 py-2 text-center text-sm text-gray-900">
                       {product.expiration ? new Date(product.expiration).toLocaleDateString() : <span className="text-gray-400 italic">None</span>}
                     </td>
                     <td className="px-3 py-2 text-center text-sm text-gray-900">
-                      {product.date_added ? new Date(product.date_added).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: '2-digit' }) : <span className="text-gray-400 italic">N/A</span>}
+                      {product.entry_date ? new Date(product.entry_date).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: '2-digit' }) : <span className="text-gray-400 italic">N/A</span>}
                     </td>
                     <td className="px-3 py-2 text-center">
                       {(() => {
@@ -2293,7 +2298,7 @@ function Warehouse() {
                     <thead>
                       <tr className="bg-gray-100">
                         <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold">FIFO Order</th>
-                        <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold">Batch Reference</th>
+                        <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold">Batch Number</th>
                         <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold">Available Qty</th>
                         <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold">Unit Cost</th>
                         <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold">Expiration Date</th>
@@ -2308,7 +2313,7 @@ function Warehouse() {
                             #{index + 1}
                           </td>
                           <td className="border border-gray-300 px-3 py-2 font-mono text-sm">
-                            {batch.batch_reference}
+                            {batch.batch_number || batch.batch_id}
                           </td>
                           <td className="border border-gray-300 px-3 py-2 text-center">
                             <span className={`inline-block px-2 py-1 text-xs font-medium rounded-full ${

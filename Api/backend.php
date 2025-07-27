@@ -136,6 +136,90 @@ try {
         }
         break;
 
+    case 'login':
+        try {
+            $username = isset($data['username']) ? trim($data['username']) : '';
+            $password = isset($data['password']) ? trim($data['password']) : '';
+            $captcha = isset($data['captcha']) ? trim($data['captcha']) : '';
+            $captchaAnswer = isset($data['captchaAnswer']) ? trim($data['captchaAnswer']) : '';
+
+            // Validate inputs
+            if (empty($username) || empty($password)) {
+                echo json_encode(["success" => false, "message" => "Username and password are required"]);
+                exit;
+            }
+
+            // Verify captcha
+            if (empty($captcha) || empty($captchaAnswer) || $captcha !== $captchaAnswer) {
+                echo json_encode(["success" => false, "message" => "Invalid captcha"]);
+                exit;
+            }
+
+            // Check if user exists and is active
+            $stmt = $conn->prepare("
+                SELECT e.emp_id, e.username, e.password, e.status, e.Fname, e.Lname, r.role 
+                FROM tbl_employee e 
+                JOIN tbl_role r ON e.role_id = r.role_id 
+                WHERE e.username = :username AND e.status = 'Active'
+            ");
+            $stmt->bindParam(":username", $username, PDO::PARAM_STR);
+            $stmt->execute();
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            // Check password - handle both hashed and plain text passwords
+            $passwordValid = false;
+            if ($user) {
+                // First try to verify as hashed password
+                if (password_verify($password, $user['password'])) {
+                    $passwordValid = true;
+                } 
+                // If that fails, check if it's a plain text password (for backward compatibility)
+                elseif ($password === $user['password']) {
+                    $passwordValid = true;
+                }
+            }
+
+            if ($user && $passwordValid) {
+                // Start session and store user data
+                session_start();
+                $_SESSION['user_id'] = $user['emp_id'];
+                $_SESSION['username'] = $user['username'];
+                $_SESSION['role'] = $user['role'];
+                $_SESSION['full_name'] = $user['Fname'] . ' ' . $user['Lname'];
+
+                echo json_encode([
+                    "success" => true,
+                    "message" => "Login successful",
+                    "role" => $user['role'],
+                    "user_id" => $user['emp_id'],
+                    "full_name" => $user['Fname'] . ' ' . $user['Lname']
+                ]);
+            } else {
+                echo json_encode(["success" => false, "message" => "Invalid username or password"]);
+            }
+
+        } catch (Exception $e) {
+            echo json_encode(["success" => false, "message" => "An error occurred: " . $e->getMessage()]);
+        }
+        break;
+
+    case 'generate_captcha':
+        try {
+            // Generate a simple math captcha
+            $num1 = rand(1, 10);
+            $num2 = rand(1, 10);
+            $answer = $num1 + $num2;
+            
+            echo json_encode([
+                "success" => true,
+                "question" => "What is $num1 + $num2?",
+                "answer" => $answer
+            ]);
+        } catch (Exception $e) {
+            echo json_encode(["success" => false, "message" => "An error occurred: " . $e->getMessage()]);
+        }
+        break;
+
    
         case 'display_employee':
             try {
@@ -824,6 +908,7 @@ try {
                 s.supplier_name,
                 b.brand,
                 l.location_name,
+                batch.batch_id,
                 batch.batch as batch_reference,
                 batch.entry_date,
                 batch.entry_by,
@@ -832,7 +917,19 @@ try {
             LEFT JOIN tbl_supplier s ON p.supplier_id = s.supplier_id 
             LEFT JOIN tbl_brand b ON p.brand_id = b.brand_id 
             LEFT JOIN tbl_location l ON p.location_id = l.location_id
-            LEFT JOIN tbl_batch batch ON p.batch_id = batch.batch_id
+            LEFT JOIN (
+                SELECT 
+                    p2.product_id,
+                    b2.batch_id,
+                    b2.batch,
+                    b2.entry_date,
+                    b2.entry_by
+                FROM tbl_product p2
+                LEFT JOIN tbl_batch b2 ON p2.batch_id = b2.batch_id
+                WHERE p2.batch_id IS NOT NULL
+                GROUP BY p2.product_id
+                HAVING MIN(b2.entry_date) = b2.entry_date
+            ) batch ON p.product_id = batch.product_id
             $whereClause
             ORDER BY p.product_name ASC
         ");
@@ -1966,23 +2063,27 @@ try {
                 break;
             }
             
-            // Query to get FIFO stock data for the product
+            // Query to get FIFO stock data for the product with batch dates
             $stmt = $conn->prepare("
                 SELECT 
-                    fs.batch_id,
-                    fs.batch_reference,
-                    fs.available_quantity,
-                    fs.unit_cost,
-                    fs.expiration_date,
-                    fs.batch_date,
-                    fs.fifo_order,
+                    ss.summary_id,
+                    ss.batch_id,
+                    ss.batch_id as batch_number,
+                    ss.batch_reference,
+                    ss.available_quantity,
+                    ss.unit_cost,
+                    ss.expiration_date,
+                    b.entry_date as batch_date,
+                    b.entry_time as batch_time,
+                    ROW_NUMBER() OVER (ORDER BY b.entry_date ASC, ss.summary_id ASC) as fifo_order,
                     CASE 
-                        WHEN fs.expiration_date IS NULL THEN NULL
-                        ELSE DATEDIFF(fs.expiration_date, CURDATE())
+                        WHEN ss.expiration_date IS NULL THEN NULL
+                        ELSE DATEDIFF(ss.expiration_date, CURDATE())
                     END as days_until_expiry
-                FROM v_fifo_stock fs
-                WHERE fs.product_id = ? AND fs.available_quantity > 0
-                ORDER BY fs.fifo_order ASC
+                FROM tbl_stock_summary ss
+                JOIN tbl_batch b ON ss.batch_id = b.batch_id
+                WHERE ss.product_id = ? AND ss.available_quantity > 0
+                ORDER BY b.entry_date ASC, ss.summary_id ASC
             ");
             
             $stmt->execute([$product_id]);

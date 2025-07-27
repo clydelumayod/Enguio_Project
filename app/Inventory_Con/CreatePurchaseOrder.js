@@ -786,9 +786,9 @@ function CreatePurchaseOrder() {
 
           {/* Purchase Orders Table */}
           <div className="bg-white rounded-3xl shadow-xl overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+            <div className="overflow-x-auto max-h-96">
+              <table className="w-full min-w-max">
+                <thead className="bg-gray-50 border-b border-gray-200 sticky top-0 z-10">
                   <tr>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       PO Number
@@ -869,9 +869,9 @@ function CreatePurchaseOrder() {
 
           {/* Receiving List Table */}
           <div className="bg-white rounded-3xl shadow-xl overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+            <div className="overflow-x-auto max-h-96">
+              <table className="w-full min-w-max">
+                <thead className="bg-gray-50 border-b border-gray-200 sticky top-0 z-10">
                   <tr>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       PO Number

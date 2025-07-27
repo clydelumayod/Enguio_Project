@@ -336,9 +336,9 @@ const PharmacyInventory = () => {
             </div>
           </div>
         </div>
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-50 border-b border-gray-200">
+        <div className="overflow-x-auto max-h-96">
+          <table className="w-full min-w-max">
+            <thead className="bg-gray-50 border-b border-gray-200 sticky top-0 z-10">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   PRODUCT NAME
@@ -361,6 +361,12 @@ const PharmacyInventory = () => {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   BARCODE
                 </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  BATCH NO.
+                </th>
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  BATCH DATE
+                </th>
                 <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                   STATUS
                 </th>
@@ -372,7 +378,7 @@ const PharmacyInventory = () => {
             <tbody className="bg-white divide-y divide-gray-200">
               {isLoading ? (
                 <tr>
-                  <td colSpan={8} className="px-6 py-4 text-center text-gray-500">
+                  <td colSpan={10} className="px-6 py-4 text-center text-gray-500">
                     Loading products...
                   </td>
                 </tr>
@@ -408,6 +414,17 @@ const PharmacyInventory = () => {
                     <td className="px-6 py-4 text-sm font-mono text-gray-900">
                       {item.barcode}
                     </td>
+                    <td className="px-6 py-4 text-sm text-gray-900">
+                      <div>
+                        <div className="font-medium">{item.batch_reference || <span className="text-gray-400 italic">None</span>}</div>
+                        {item.entry_by && (
+                          <div className="text-xs text-gray-500">by {item.entry_by}</div>
+                        )}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-center text-sm text-gray-900">
+                      {item.entry_date ? new Date(item.entry_date).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: '2-digit' }) : <span className="text-gray-400 italic">N/A</span>}
+                    </td>
                     <td className="px-6 py-4 text-center">
                       <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
                         item.stock_status === "in stock"
@@ -442,7 +459,7 @@ const PharmacyInventory = () => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={8} className="px-6 py-8 text-center">
+                  <td colSpan={10} className="px-6 py-8 text-center">
                     <div className="flex flex-col items-center space-y-3">
                       <Package className="h-12 w-12 text-gray-300" />
                       <div className="text-gray-500">

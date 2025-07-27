@@ -23,7 +23,7 @@ const Sidebar = ({
 }) => {
   const [isInventoryDropdownOpen, setIsInventoryDropdownOpen] = useState(false);
 
-  // Features except inventory dropdown
+  // Features except inventory dropdown and logout
   const features = [
     { label: "Dashboard", icon: <FaTachometerAlt />, key: "Dashboard" },
     { label: "Warehouse Inventory", icon: <FaTags />, key: "Warehouse Inventory" },
@@ -35,7 +35,6 @@ const Sidebar = ({
     { label: "Reports", icon: <FaChartLine />, key: "Reports" },
     { label: "Settings", icon: <FaCog />, key: "Settings" },
     { label: "Archive", icon: <FaUser />, key: "Archive" },
-    { label: "Logout", icon: <FaSignOutAlt />, key: "Logout" },
   ];
 
   return (
@@ -167,6 +166,27 @@ const Sidebar = ({
               </li>
             ))}
         </ul>
+      </div>
+
+      {/* Logout Button - Fixed at bottom */}
+      <div className="absolute bottom-4 left-4 right-4">
+        <Tooltip
+          content="Logout"
+          placement="right"
+          className={`bg-black text-white rounded ${
+            isSidebarOpen ? "hidden" : ""
+          }`}
+        >
+          <button
+            onClick={() => onSelectFeature("Logout")}
+            className="flex items-center gap-3 px-2 py-2 rounded hover:bg-red-100 w-full text-left transition-colors text-red-600 hover:text-red-700"
+          >
+            <span className="text-xl"><FaSignOutAlt /></span>
+            <span className={`${!isSidebarOpen ? "hidden" : "inline"}`}>
+              Logout
+            </span>
+          </button>
+        </Tooltip>
       </div>
     </div>
   );
