@@ -19,10 +19,12 @@ import {
 
 function InventoryTransfer() {
   const [transfers, setTransfers] = useState([])
+  const [transferLogs, setTransferLogs] = useState([])
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [currentStep, setCurrentStep] = useState(1)
   const [loading, setLoading] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
+  const [dateFilter, setDateFilter] = useState("")
   const [selectedProducts, setSelectedProducts] = useState([])
   const [availableProducts, setAvailableProducts] = useState([])
   const [checkedProducts, setCheckedProducts] = useState([])
@@ -51,7 +53,7 @@ function InventoryTransfer() {
     deliveryDate: "",
   })
 
-  const API_BASE_URL = "http://localhost/Enguio_Project/Api/backend.php"
+  const API_BASE_URL = "http://localhost/Enguio_Project/Api/backend_mysqli.php"
 
   // API function
   async function handleApiCall(action, data = {}) {
@@ -103,7 +105,26 @@ function InventoryTransfer() {
       if (response.success && Array.isArray(response.data)) {
         console.log("✅ Number of transfers received:", response.data.length)
         console.log("📋 Transfer details:", response.data)
-        setTransfers(response.data)
+        
+        // Process and enhance transfer data
+        const processedTransfers = response.data.map(transfer => ({
+          ...transfer,
+          // Ensure products array exists and has proper structure
+          products: transfer.products || [],
+          // Calculate totals if not provided
+          total_products: transfer.total_products || (transfer.products ? transfer.products.length : 0),
+          total_value: transfer.total_value || (transfer.products ? 
+            transfer.products.reduce((sum, product) => sum + (Number.parseFloat(product.srp || product.unit_price || 0) * Number.parseInt(product.qty || 0)), 0) : 0
+          ),
+          // Format status for display
+          display_status: transfer.status === "approved" ? "Completed" : 
+                         transfer.status === "pending" ? "Pending Review" : 
+                         transfer.status === "rejected" ? "Rejected" : 
+                         transfer.status || "Completed"
+        }))
+        
+        console.log("🔄 Processed transfers:", processedTransfers)
+        setTransfers(processedTransfers)
       } else {
         console.warn("⚠️ No transfers found or invalid format")
         console.log("🔍 Response structure:", response)
@@ -115,6 +136,24 @@ function InventoryTransfer() {
       setTransfers([])
     } finally {
       setLoading(false)
+    }
+  }
+
+  const loadTransferLogs = async () => {
+    try {
+      const response = await handleApiCall("get_transfer_log")
+      console.log("📊 Transfer Logs Loaded from API:", response)
+
+      if (response.success && Array.isArray(response.data)) {
+        console.log("✅ Number of transfer logs received:", response.data.length)
+        setTransferLogs(response.data)
+      } else {
+        console.warn("⚠️ No transfer logs found or invalid format")
+        setTransferLogs([])
+      }
+    } catch (error) {
+      console.error("❌ Error loading transfer logs:", error)
+      setTransferLogs([])
     }
   }
 
@@ -193,61 +232,77 @@ function InventoryTransfer() {
       }
     }
 
-  // Test transfer function to verify destination
-  const testTransferDestination = async () => {
-    console.log("🧪 Testing Transfer Destination...")
+  // Function to calculate total products transferred
+  const calculateTotalProductsTransferred = () => {
+    let totalProducts = 0;
     
-    // Get current locations
-    const res = await handleApiCall("get_locations")
-    if (!res.success) {
-      console.error("❌ Failed to get locations for testing")
-      return
-    }
+    // Calculate from transfers array
+    transfers.forEach(transfer => {
+      if (transfer.products && Array.isArray(transfer.products)) {
+        transfer.products.forEach(product => {
+          totalProducts += Number.parseInt(product.qty || 0);
+        });
+      } else if (transfer.total_products) {
+        totalProducts += Number.parseInt(transfer.total_products);
+      }
+    });
     
-    const locations = res.data
-    const warehouse = locations.find(loc => loc.location_name.toLowerCase().includes('warehouse'))
-    const convenience = locations.find(loc => loc.location_name === "Convenience")
+    // Also calculate from transfer logs for more accurate count
+    transferLogs.forEach(log => {
+      totalProducts += Number.parseInt(log.quantity || 0);
+    });
     
-    if (!warehouse || !convenience) {
-      console.error("❌ Required locations not found for testing")
-      return
-    }
-    
-    console.log("✅ Test locations found:")
-    console.log("Warehouse:", warehouse.location_name, "(ID:", warehouse.location_id, ")")
-    console.log("Convenience Store:", convenience.location_name, "(ID:", convenience.location_id, ")")
-    
-    // Test the transfer data structure
-    const testTransferData = {
-      source_location_id: warehouse.location_id,
-      destination_location_id: convenience.location_id,
-      employee_id: 1, // Assuming employee ID 1 exists
-      status: "Completed",
-      products: [
-        {
-          product_id: 1, // Assuming product ID 1 exists
-          quantity: 1
-        }
-      ]
-    }
-    
-    console.log("📦 Test transfer data:", testTransferData)
-    console.log("Expected: Warehouse (", warehouse.location_id, ") → Convenience Store (", convenience.location_id, ")")
+    return totalProducts;
+  }
+
+  // Function to get transfer statistics
+  const getTransferStatistics = () => {
+    const totalProducts = calculateTotalProductsTransferred();
+    const totalTransfers = transfers.length;
+    const totalLogs = transferLogs.length;
     
     return {
-      warehouse,
-      convenience,
-      testTransferData
-    }
+      totalProducts,
+      totalTransfers,
+      totalLogs,
+      averageProductsPerTransfer: totalTransfers > 0 ? Math.round(totalProducts / totalTransfers) : 0
+    };
   }
+
+  // Function to track transfer records per session
+  const [sessionTransfers, setSessionTransfers] = useState(0);
+  const [sessionStartTime, setSessionStartTime] = useState(new Date());
+
+  // Function to get session transfer statistics
+  const getSessionTransferStats = () => {
+    const currentTime = new Date();
+    const sessionDuration = Math.round((currentTime - sessionStartTime) / 1000 / 60); // in minutes
+    
+    return {
+      sessionTransfers,
+      sessionDuration,
+      transfersPerMinute: sessionDuration > 0 ? (sessionTransfers / sessionDuration).toFixed(2) : 0
+    };
+  };
+
+  // Function to increment session transfer count
+  const incrementSessionTransfers = () => {
+    setSessionTransfers(prev => prev + 1);
+  };
+
+  // Function to reset session
+  const resetSession = () => {
+    setSessionTransfers(0);
+    setSessionStartTime(new Date());
+  };
+
+
 
   useEffect(() => {
     loadTransfers()
+    loadTransferLogs()
     loadLocations()
     loadStaff()
-    
-    // Test transfer destination on component mount
-    testTransferDestination()
   }, [])
 
   // Fixed transfer submission function
@@ -391,9 +446,16 @@ function InventoryTransfer() {
         setSelectedProducts([])
         setCheckedProducts([])
 
+        // Increment session transfer count
+        incrementSessionTransfers();
+        
         // Reload transfers to show the new one
         console.log("🔄 Reloading transfers...")
         await loadTransfers()
+        
+        // Reload transfer logs to show the new entries
+        console.log("🔄 Reloading transfer logs...")
+        await loadTransferLogs()
         
         // Force reload of available products to reflect the transfer
         if (sourceLocation) {
@@ -533,10 +595,17 @@ function InventoryTransfer() {
   }
 
   const filteredTransfers = transfers.filter(
-    (transfer) =>
-      transfer.transfer_header_id?.toString().toLowerCase().includes(searchTerm.toLowerCase()) ||
-      transfer.source_location_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      transfer.destination_location_name?.toLowerCase().includes(searchTerm.toLowerCase()),
+    (transfer) => {
+      const matchesSearch = 
+        transfer.transfer_header_id?.toString().toLowerCase().includes(searchTerm.toLowerCase()) ||
+        transfer.source_location_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        transfer.destination_location_name?.toLowerCase().includes(searchTerm.toLowerCase());
+      
+      const matchesDate = !dateFilter || 
+        (transfer.date && new Date(transfer.date).toISOString().split('T')[0] === dateFilter);
+      
+      return matchesSearch && matchesDate;
+    }
   )
 
   const filteredProducts = availableProducts.filter((product) => {
@@ -583,22 +652,25 @@ function InventoryTransfer() {
                   className="pl-10 pr-4 py-2 w-64 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
+              <div className="relative">
+                <input
+                  type="date"
+                  placeholder="Filter by date..."
+                  value={dateFilter}
+                  onChange={(e) => setDateFilter(e.target.value)}
+                  className="px-4 py-2 w-48 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                {dateFilter && (
+                  <button
+                    onClick={() => setDateFilter("")}
+                    className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                )}
+              </div>
             </div>
             <div className="flex items-center gap-2">
-              <button
-                onClick={() => window.location.href = '/Inventory_Con/ConvenienceStore'}
-                className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md flex items-center gap-2 whitespace-nowrap"
-              >
-                <Package className="h-4 w-4" />
-                <span>View Convenience Store</span>
-              </button>
-              <button
-                onClick={testTransferDestination}
-                className="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-md flex items-center gap-2 whitespace-nowrap"
-              >
-                <Package className="h-4 w-4" />
-                <span>Test Transfer</span>
-              </button>
               <button
                 onClick={handleCreateTransfer}
                 className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md flex items-center gap-2 whitespace-nowrap"
@@ -610,75 +682,47 @@ function InventoryTransfer() {
           </div>
         </div>
 
-        {/* Transfer Statistics */}
+                {/* Transfer Statistics */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div className="text-center">
-              <div className="text-2xl font-bold text-blue-600">{transfers.length}</div>
-              <div className="text-sm text-gray-600">Total Transfers</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-green-600">
-                {transfers.reduce((sum, transfer) => sum + (transfer.total_products || 0), 0)}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="text-center p-4 bg-blue-50 rounded-lg border border-blue-200">
+              <div className="text-3xl font-bold text-blue-600">
+                {calculateTotalProductsTransferred()}
               </div>
-              <div className="text-sm text-gray-600">Total Products Transferred</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-purple-600">
-                ₱
-                {transfers
-                  .reduce((sum, transfer) => sum + (Number.parseFloat(transfer.total_value) || 0), 0)
-                  .toFixed(2)}
+              <div className="text-sm text-gray-600 mt-1">Total Products Transferred</div>
+              <div className="text-xs text-blue-500 mt-1">
+                {getTransferStatistics().averageProductsPerTransfer} avg per transfer
               </div>
-              <div className="text-sm text-gray-600">Total Transfer Value</div>
             </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-orange-600">
-                {transfers.filter((t) => t.status === "pending").length}
+            <div className="text-center p-4 bg-purple-50 rounded-lg border border-purple-200">
+              <div className="text-3xl font-bold text-purple-600">
+                {transfers.length}
               </div>
-              <div className="text-sm text-gray-600">Pending Transfers</div>
+              <div className="text-sm text-gray-600 mt-1">Total Transfer Records</div>
+              <div className="text-xs text-purple-500 mt-1">
+                {getSessionTransferStats().sessionTransfers} this session ({getSessionTransferStats().sessionDuration} min)
+              </div>
             </div>
           </div>
           
-          {/* Additional Transfer Summary */}
-          <div className="mt-6 pt-6 border-t border-gray-200">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <div className="text-center">
-                <div className="text-lg font-semibold text-gray-700">
-                  {transfers.filter((t) => t.status === "approved").length}
-                </div>
-                <div className="text-sm text-gray-600">Completed Transfers</div>
-              </div>
-              <div className="text-center">
-                <div className="text-lg font-semibold text-gray-700">
-                  {transfers.filter((t) => t.status === "rejected").length}
-                </div>
-                <div className="text-sm text-gray-600">Rejected Transfers</div>
-              </div>
-              <div className="text-center">
-                <div className="text-lg font-semibold text-gray-700">
-                  {transfers.filter((t) => t.status === "pending").length}
-                </div>
-                <div className="text-sm text-gray-600">Pending Review</div>
-              </div>
-              <div className="text-center">
-                <div className="text-lg font-semibold text-green-600">
-                  {transfers.filter((t) => 
-                    t.destination_location_name && 
-                    t.destination_location_name.toLowerCase().includes('convenience')
-                  ).length}
-                </div>
-                <div className="text-sm text-gray-600">To Convenience Store</div>
-              </div>
-            </div>
+          {/* Session Controls */}
+          <div className="mt-4 flex justify-center">
+            <button
+              onClick={resetSession}
+              className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-md text-sm flex items-center gap-2"
+            >
+              <span>🔄</span>
+              Reset Session Counter
+            </button>
           </div>
+        </div>
           
           {/* Convenience Store Transfer Summary */}
           {transfers.filter((t) => 
             t.destination_location_name && 
             t.destination_location_name.toLowerCase().includes('convenience')
           ).length > 0 && (
-            <div className="mt-4 pt-4 border-t border-gray-200">
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
               <div className="bg-green-50 border border-green-200 rounded-lg p-4">
                 <div className="flex items-center mb-2">
                   <Package className="h-5 w-5 text-green-600 mr-2" />
@@ -716,325 +760,108 @@ function InventoryTransfer() {
               </div>
             </div>
           )}
-        </div>
 
-        {/* Transfers Table */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-gray-50 border-b border-gray-200">
+
+
+        {/* Transfer Log Table */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-6">
+          <div className="p-4 border-b border-gray-200">
+            <h3 className="text-lg font-semibold text-gray-900">Transfer Log Details</h3>
+            <p className="text-sm text-gray-600 mt-1">Detailed log of all product transfers with individual item tracking</p>
+          </div>
+          <div className="overflow-x-auto max-h-96">
+            <table className="w-full min-w-max">
+              <thead className="bg-indigo-50 border-b border-gray-200 sticky top-0 z-10">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Transfer No.
+                  <th className="px-6 py-3 text-left text-xs font-medium text-indigo-900 uppercase tracking-wider">
+                    Transfer ID
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Date
+                  <th className="px-6 py-3 text-left text-xs font-medium text-indigo-900 uppercase tracking-wider">
+                    Product
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    From
+                  <th className="px-6 py-3 text-left text-xs font-medium text-indigo-900 uppercase tracking-wider">
+                    From Location
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">To</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Status
+                  <th className="px-6 py-3 text-left text-xs font-medium text-indigo-900 uppercase tracking-wider">
+                    To Location
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Products
+                  <th className="px-6 py-3 text-left text-xs font-medium text-indigo-900 uppercase tracking-wider">
+                    Quantity
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Total Value
+                  <th className="px-6 py-3 text-left text-xs font-medium text-indigo-900 uppercase tracking-wider">
+                    Transfer Date
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
+                  <th className="px-6 py-3 text-left text-xs font-medium text-indigo-900 uppercase tracking-wider">
+                    Logged At
                   </th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {loading ? (
                   <tr>
-                    <td colSpan={8} className="px-6 py-4 text-center text-gray-500">
-                      Loading transfers...
+                    <td colSpan={7} className="px-6 py-4 text-center text-gray-500">
+                      Loading transfer logs...
                     </td>
                   </tr>
-                ) : filteredTransfers.length > 0 ? (
-                  filteredTransfers.map((transfer) => (
-                    <>
-                      <tr key={transfer.transfer_header_id} className="hover:bg-gray-50">
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600">
-                          <button
-                            onClick={() =>
-                              setExpandedTransfer(
-                                expandedTransfer === transfer.transfer_header_id ? null : transfer.transfer_header_id,
-                              )
-                            }
-                            className="flex items-center gap-2 hover:underline"
-                          >
-                            TR-{transfer.transfer_header_id}
-                            {expandedTransfer === transfer.transfer_header_id ? (
-                              <ChevronUp className="h-4 w-4" />
-                            ) : (
-                              <ChevronDown className="h-4 w-4" />
-                            )}
-                          </button>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          <div className="flex flex-col">
-                            <span className="font-medium">
-                              {new Date(transfer.date).toLocaleDateString()}
-                            </span>
-                            <span className="text-xs text-gray-500">
-                              {new Date(transfer.date).toLocaleTimeString()}
-                            </span>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {transfer.source_location_name}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          <div className="flex items-center">
-                            <span>{transfer.destination_location_name}</span>
-                            {transfer.destination_location_name && transfer.destination_location_name.toLowerCase().includes('convenience') && (
-                              <span className="ml-2 inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                <Package className="h-3 w-3 mr-1" />
-                                Retail
-                              </span>
-                            )}
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="flex items-center space-x-2">
-                          <span
-                            className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                              transfer.status === "pending"
-                                ? "bg-blue-100 text-blue-800"
-                                : transfer.status === "approved"
-                                  ? "bg-green-100 text-green-800"
-                                    : transfer.status === "rejected"
-                                      ? "bg-red-100 text-red-800"
-                                    : transfer.status === "Completed"
-                                      ? "bg-green-100 text-green-800"
-                                      : transfer.status === "New"
-                                        ? "bg-blue-100 text-blue-800"
-                                      : "bg-gray-100 text-gray-800"
-                              }`}
-                            >
-                              {transfer.status === "approved" ? "Completed" : (transfer.status || "pending")}
-                            </span>
-                            <span className="text-xs text-gray-500">
-                              Auto-completed
-                            </span>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          <div className="flex flex-col space-y-1">
-                            <span className="font-medium">{transfer.total_products || 0} items</span>
-                            {transfer.products && transfer.products.length > 0 && (
-                              <div className="text-xs text-gray-500 max-w-xs">
-                                {transfer.products.slice(0, 3).map((product, idx) => (
-                                  <div key={idx} className="truncate flex items-center">
-                                    <span className="w-2 h-2 bg-blue-500 rounded-full mr-1"></span>
-                                    {product.product_name} ({product.qty})
-                                  </div>
-                                ))}
-                                {transfer.products.length > 3 && (
-                                  <div className="text-xs text-gray-400 italic">
-                                    +{transfer.products.length - 3} more products
-                                  </div>
-                                )}
-                              </div>
-                            )}
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          <div className="flex flex-col">
-                            <span className="font-semibold text-green-600">
-                              ₱{transfer.total_value ? Number.parseFloat(transfer.total_value).toFixed(2) : "0.00"}
-                            </span>
-                            <span className="text-xs text-gray-500">
-                          {transfer.total_products || 0} items
-                            </span>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          <div className="flex items-center space-x-2">
-                            <button
-                              onClick={() => {
-                                setTransferToDelete(transfer)
-                                setShowDeleteModal(true)
-                              }}
-                              className="text-red-600 hover:text-red-800 p-1 rounded"
-                              title="Delete Transfer"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-
-                      {/* Expanded row showing transfer details */}
-                      {expandedTransfer === transfer.transfer_header_id && (
-                        <tr>
-                          <td colSpan={8} className="px-6 py-4 bg-gray-50">
-                            <div className="space-y-4">
-                              <div className="flex items-center justify-between">
-                                <h4 className="font-semibold text-gray-900 flex items-center">
-                                  <Package className="h-5 w-5 mr-2 text-blue-600" />
-                                  Transferred Products
-                                </h4>
-                                <div className="flex items-center space-x-4 text-sm text-gray-600">
-                                  <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-semibold">
-                                    TR-{transfer.transfer_header_id}
-                                  </span>
-                                  <span>Employee: {transfer.employee_name}</span>
-                                  {transfer.delivery_date && (
-                                    <span>Delivery: {new Date(transfer.delivery_date).toLocaleDateString()}</span>
-                                  )}
-                                </div>
-                              </div>
-
-                              {transfer.products && transfer.products.length > 0 ? (
-                              <div className="overflow-x-auto">
-                                  <table className="min-w-full border border-gray-200 rounded-lg overflow-hidden">
-                                    <thead className="bg-blue-50">
-                                      <tr>
-                                        <th className="px-4 py-3 text-left text-xs font-semibold text-blue-900 uppercase tracking-wider">
-                                          Product Details
-                                        </th>
-                                        <th className="px-4 py-3 text-left text-xs font-semibold text-blue-900 uppercase tracking-wider">
-                                          Category
-                                        </th>
-                                        <th className="px-4 py-3 text-left text-xs font-semibold text-blue-900 uppercase tracking-wider">
-                                          Brand
-                                        </th>
-                                        <th className="px-4 py-3 text-left text-xs font-semibold text-blue-900 uppercase tracking-wider">
-                                          Barcode
-                                        </th>
-                                        <th className="px-4 py-3 text-center text-xs font-semibold text-blue-900 uppercase tracking-wider">
-                                          Quantity
-                                        </th>
-                                        <th className="px-4 py-3 text-center text-xs font-semibold text-blue-900 uppercase tracking-wider">
-                                          Unit Price
-                                        </th>
-                                        <th className="px-4 py-3 text-center text-xs font-semibold text-blue-900 uppercase tracking-wider">
-                                          Total Value
-                                        </th>
-                                    </tr>
-                                  </thead>
-                                    <tbody className="bg-white divide-y divide-gray-200">
-                                      {transfer.products.map((product, index) => (
-                                        <tr key={index} className="hover:bg-gray-50 transition-colors">
-                                          <td className="px-4 py-3">
-                                            <div className="flex items-center space-x-3">
-                                              <div className="flex-shrink-0">
-                                                <img
-                                                  src={product.image || "/placeholder.svg?height=32&width=32"}
-                                                alt={product.product_name}
-                                                  className="h-8 w-8 rounded object-cover border border-gray-200"
-                                                />
-                                              </div>
-                                              <div className="flex-1 min-w-0">
-                                                <p className="text-sm font-medium text-gray-900 truncate">
-                                                  {product.product_name}
-                                                </p>
-                                                {product.Variation && (
-                                                  <p className="text-xs text-gray-500">
-                                                    Variation: {product.Variation}
-                                                  </p>
-                                                )}
-                                                {product.description && (
-                                                  <p className="text-xs text-gray-400 truncate">
-                                                    {product.description}
-                                                  </p>
-                                                )}
-                                              </div>
-                                            </div>
-                                          </td>
-                                          <td className="px-4 py-3 text-sm text-gray-600">
-                                            <span className="inline-flex px-2 py-1 text-xs font-medium bg-gray-100 text-gray-800 rounded-full">
-                                              {product.category}
-                                            </span>
-                                          </td>
-                                          <td className="px-4 py-3 text-sm text-gray-600">
-                                            <span className="inline-flex px-2 py-1 text-xs font-medium bg-purple-100 text-purple-800 rounded-full">
-                                              {product.brand || "N/A"}
-                                            </span>
-                                          </td>
-                                          <td className="px-4 py-3 text-sm font-mono text-gray-600">
-                                            {product.barcode}
-                                          </td>
-                                          <td className="px-4 py-3 text-sm text-center">
-                                            <span className="inline-flex px-3 py-1 text-sm font-semibold bg-green-100 text-green-800 rounded-full">
-                                              {product.qty}
-                                            </span>
-                                          </td>
-                                          <td className="px-4 py-3 text-sm text-center text-gray-900">
-                                            ₱{Number.parseFloat(product.unit_price || 0).toFixed(2)}
-                                          </td>
-                                          <td className="px-4 py-3 text-sm text-center">
-                                            <span className="font-semibold text-blue-600">
-                                            ₱
-                                            {(
-                                              Number.parseFloat(product.unit_price || 0) *
-                                              Number.parseInt(product.qty || 0)
-                                            ).toFixed(2)}
-                                            </span>
-                                          </td>
-                                        </tr>
-                                      ))}
-                                  </tbody>
-                                </table>
-                              </div>
-                              ) : (
-                                <div className="text-center py-8 text-gray-500">
-                                  <Package className="h-12 w-12 mx-auto text-gray-300 mb-2" />
-                                  <p>No products found for this transfer</p>
-                                </div>
-                              )}
-
-                              <div className="flex justify-between items-center pt-4 border-t border-gray-200">
-                                <div className="flex items-center space-x-6 text-sm text-gray-600">
-                                  <span className="flex items-center">
-                                    <span className="font-medium">Total Items:</span>
-                                    <span className="ml-1 bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-semibold">
-                                      {transfer.products ? transfer.products.length : 0}
-                                </span>
-                                  </span>
-                                  <span className="flex items-center">
-                                    <span className="font-medium">From:</span>
-                                    <span className="ml-1 text-blue-600 font-medium">
-                                      {transfer.source_location_name}
-                                    </span>
-                                  </span>
-                                  <span className="flex items-center">
-                                    <span className="font-medium">To:</span>
-                                    <span className="ml-1 text-green-600 font-medium">
-                                      {transfer.destination_location_name}
-                                    </span>
-                                </span>
-                              </div>
-                                <div className="text-right">
-                                  <div className="text-sm text-gray-600">Total Transfer Value</div>
-                                  <div className="text-lg font-bold text-blue-600">
-                                    ₱
-                                    {transfer.total_value ? Number.parseFloat(transfer.total_value).toFixed(2) : "0.00"}
-                                  </div>
-                                </div>
-                              </div>
-
-                              {/* Transfer Notes */}
-                            </div>
-                          </td>
-                        </tr>
-                      )}
-                    </>
+                ) : transferLogs.length > 0 ? (
+                  transferLogs.map((log, index) => (
+                    <tr key={index} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-indigo-600">
+                        TR-{log.transfer_id}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        <div className="flex flex-col">
+                          <span className="font-medium">{log.product_name || `Product ID: ${log.product_id}`}</span>
+                          <span className="text-xs text-gray-500">ID: {log.product_id}</span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        <span className="inline-flex px-2 py-1 text-xs font-medium bg-red-100 text-red-800 rounded-full">
+                          {log.from_location}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        <span className="inline-flex px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">
+                          {log.to_location}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        <span className="inline-flex px-3 py-1 text-sm font-semibold bg-blue-100 text-blue-800 rounded-full">
+                          {log.quantity} units
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        <div className="flex flex-col">
+                          <span className="font-medium">
+                            {new Date(log.transfer_date).toLocaleDateString()}
+                          </span>
+                          <span className="text-xs text-gray-500">
+                            {new Date(log.transfer_date).toLocaleTimeString()}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <div className="flex flex-col">
+                          <span className="font-medium">
+                            {new Date(log.created_at).toLocaleDateString()}
+                          </span>
+                          <span className="text-xs text-gray-400">
+                            {new Date(log.created_at).toLocaleTimeString()}
+                          </span>
+                        </div>
+                      </td>
+                    </tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={8} className="px-6 py-8 text-center">
+                    <td colSpan={7} className="px-6 py-8 text-center">
                       <div className="flex flex-col items-center space-y-3">
-                        <Truck className="h-12 w-12 text-gray-300" />
+                        <div className="h-12 w-12 bg-indigo-100 rounded-full flex items-center justify-center">
+                          <span className="text-indigo-600 text-xl">📊</span>
+                        </div>
                         <div className="text-gray-500">
-                          <p className="text-lg font-medium">No transfers found</p>
-                          <p className="text-sm">Create your first transfer to get started</p>
+                          <p className="text-lg font-medium">No transfer logs found</p>
+                          <p className="text-sm">Transfer logs will appear here after transfers are created</p>
                         </div>
                       </div>
                     </td>
@@ -1356,19 +1183,30 @@ function InventoryTransfer() {
               ) : (
                 <div>
                   {/* Transfer Summary */}
-                  {storeData.destinationStore && storeData.destinationStore.toLowerCase().includes('convenience') && (
-                    <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded text-sm text-blue-700">
+                  <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded text-sm text-blue-700">
+                    <div className="flex items-center justify-between">
                       <div className="flex items-center">
                         <CheckCircle className="h-4 w-4 mr-2" />
-                        <span>Products will be transferred to convenience store for retail sales</span>
+                        <span>Products will be transferred to {storeData.destinationStore} for retail sales</span>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-sm font-medium text-blue-900">
+                          {selectedProducts.filter(p => p.transfer_quantity > 0).length} products selected for transfer
+                        </div>
+                        <div className="text-xs text-blue-700">
+                          Total quantity: {selectedProducts.reduce((sum, p) => sum + (p.transfer_quantity || 0), 0)} items
+                        </div>
                       </div>
                     </div>
-                  )}
+                  </div>
                   
-                  <div className="overflow-x-auto mb-4 max-h-96 overflow-y-auto">
-                    <table className="w-full border-collapse border border-gray-300 text-sm">
-                      <thead className="bg-gray-50">
+                  <div className="overflow-x-auto max-h-96">
+                    <table className="w-full min-w-max border-collapse border border-gray-300 text-sm">
+                      <thead className="bg-gray-50 border-b border-gray-200 sticky top-0 z-10">
                         <tr>
+                          <th className="border border-gray-300 px-2 py-1 text-center text-xs font-medium text-gray-700">
+                            Status
+                          </th>
                           <th className="border border-gray-300 px-2 py-1 text-center text-xs font-medium text-gray-700">
                             Transfer Qty
                           </th>
@@ -1393,9 +1231,9 @@ function InventoryTransfer() {
                           <th className="border border-gray-300 px-2 py-1 text-center text-xs font-medium text-gray-700">
                             Available Qty
                           </th>
-                          <th className="border border-gray-300 px-2 py-1 text-center text-xs font-medium text-gray-700">
-                            Unit Price
-                          </th>
+                                                  <th className="border border-gray-300 px-2 py-1 text-center text-xs font-medium text-gray-700">
+                          SRP
+                        </th>
                           <th className="border border-gray-300 px-2 py-1 text-center text-xs font-medium text-gray-700">
                             Action
                           </th>
@@ -1403,7 +1241,13 @@ function InventoryTransfer() {
                       </thead>
                       <tbody>
                         {selectedProducts.map((product) => (
-                          <tr key={product.product_id} className="hover:bg-gray-50">
+                          <tr key={product.product_id} className="hover:bg-gray-50 bg-green-50">
+                            <td className="border border-gray-300 px-2 py-1 text-center">
+                              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                <CheckCircle className="h-3 w-3 mr-1" />
+                                Selected for Transfer
+                              </span>
+                            </td>
                             <td className="border border-gray-300 px-2 py-1 text-center">
                               <div className="flex flex-col items-center">
                                 <input
@@ -1452,7 +1296,7 @@ function InventoryTransfer() {
                               {product.quantity || 0}
                             </td>
                             <td className="border border-gray-300 px-2 py-1 text-sm text-center">
-                              ₱{Number.parseFloat(product.unit_price || 0).toFixed(2)}
+                              ₱{Number.parseFloat(product.srp || 0).toFixed(2)}
                             </td>
                             <td className="border border-gray-300 px-2 py-1 text-center">
                               <button
@@ -1544,23 +1388,26 @@ function InventoryTransfer() {
                 </select>
               </div>
               {/* Products Table */}
-              <div className="overflow-x-auto max-h-96 overflow-y-auto mb-4">
-                <table className="w-full border-collapse border border-gray-300">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="border border-gray-300 px-4 py-2 text-center">
-                        <input
-                          type="checkbox"
-                          onChange={(e) => {
-                            if (e.target.checked) {
-                              setCheckedProducts(filteredProducts.map((p) => p.product_id))
-                            } else {
-                              setCheckedProducts([])
-                            }
-                          }}
-                          checked={checkedProducts.length === filteredProducts.length && filteredProducts.length > 0}
-                        />
-                      </th>
+              <div className="overflow-x-auto max-h-96 mb-4">
+                <table className="w-full min-w-max border-collapse border border-gray-300">
+                                        <thead className="bg-gray-50 border-b border-gray-200 sticky top-0 z-10">
+                        <tr>
+                          <th className="border border-gray-300 px-4 py-2 text-center">
+                            <input
+                              type="checkbox"
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  setCheckedProducts(filteredProducts.map((p) => p.product_id))
+                                } else {
+                                  setCheckedProducts([])
+                                }
+                              }}
+                              checked={checkedProducts.length === filteredProducts.length && filteredProducts.length > 0}
+                            />
+                          </th>
+                          <th className="border border-gray-300 px-4 py-2 text-center text-sm font-medium text-gray-700">
+                            Status
+                          </th>
                       <th className="border border-gray-300 px-4 py-2 text-left text-sm font-medium text-gray-700">
                         Product
                       </th>
@@ -1585,20 +1432,35 @@ function InventoryTransfer() {
                       <th className="border border-gray-300 px-4 py-2 text-center text-sm font-medium text-gray-700">
                         Available Qty
                       </th>
-                      <th className="border border-gray-300 px-4 py-2 text-center text-sm font-medium text-gray-700">
-                        Unit Price
+                                              <th className="border border-gray-300 px-4 py-2 text-center text-sm font-medium text-gray-700">
+                        SRP
                       </th>
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredProducts.map((product) => (
-                      <tr key={product.product_id} className="hover:bg-gray-50">
+                    {filteredProducts.map((product) => {
+                      const isTransferred = selectedProducts.some(sp => sp.product_id === product.product_id);
+                      return (
+                      <tr key={product.product_id} className={`hover:bg-gray-50 ${isTransferred ? 'bg-green-50' : ''}`}>
                         <td className="border border-gray-300 px-4 py-2 text-center">
                           <input
                             type="checkbox"
                             checked={checkedProducts.includes(product.product_id)}
                             onChange={(e) => handleProductCheck(product.product_id, e.target.checked)}
+                            disabled={isTransferred}
                           />
+                        </td>
+                        <td className="border border-gray-300 px-4 py-2 text-center">
+                          {isTransferred ? (
+                            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                              <CheckCircle className="h-3 w-3 mr-1" />
+                              Transferred
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                              Available
+                            </span>
+                          )}
                         </td>
                         <td className="border border-gray-300 px-4 py-2">
                           <span className="text-sm font-medium">{product.product_name}</span>
@@ -1615,10 +1477,11 @@ function InventoryTransfer() {
                           {product.quantity || 0}
                         </td>
                         <td className="border border-gray-300 px-4 py-2 text-sm text-center">
-                          ₱{Number.parseFloat(product.unit_price || 0).toFixed(2)}
+                          ₱{Number.parseFloat(product.srp || 0).toFixed(2)}
                         </td>
                       </tr>
-                    ))}
+                    );
+                    })}
                   </tbody>
                 </table>
               </div>

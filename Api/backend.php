@@ -522,6 +522,7 @@ try {
             $bulk = isset($data['bulk']) ? intval($data['bulk']) : 0;
             $quantity = isset($data['quantity']) ? intval($data['quantity']) : 0;
             $unit_price = isset($data['unit_price']) ? floatval($data['unit_price']) : 0;
+            $srp = isset($data['srp']) ? floatval($data['srp']) : $unit_price; // Default SRP to unit_price if not provided
             $supplier_id = isset($data['supplier_id']) ? intval($data['supplier_id']) : 0;
             $brand_id = isset($data['brand_id']) ? intval($data['brand_id']) : 30; // Default to first brand (30)
             $expiration = isset($data['expiration']) ? trim($data['expiration']) : null;
@@ -577,11 +578,11 @@ try {
             $stmt = $conn->prepare("
                 INSERT INTO tbl_product (
                     product_name, category, barcode, description, prescription, bulk,
-                    expiration, date_added, quantity, unit_price, brand_id, supplier_id,
+                    expiration, date_added, quantity, unit_price, srp, brand_id, supplier_id,
                     location_id, batch_id, status, Variation, stock_status
                 ) VALUES (
                     :product_name, :category, :barcode, :description, :prescription, :bulk,
-                    :expiration, :date_added, :quantity, :unit_price, :brand_id, :supplier_id,
+                    :expiration, :date_added, :quantity, :unit_price, :srp, :brand_id, :supplier_id,
                     :location_id, :batch_id, :status, :variation, :stock_status
                 )
             ");
@@ -597,6 +598,7 @@ try {
             $stmt->bindParam(':date_added', $date_added);
             $stmt->bindParam(':quantity', $quantity);
             $stmt->bindParam(':unit_price', $unit_price);
+            $stmt->bindParam(':srp', $srp);
             $stmt->bindParam(':brand_id', $brand_id);
             $stmt->bindParam(':supplier_id', $supplier_id);
             $stmt->bindParam(':location_id', $location_id);
@@ -636,6 +638,7 @@ try {
             $bulk = isset($data['bulk']) ? intval($data['bulk']) : 0;
             $quantity = isset($data['quantity']) ? intval($data['quantity']) : 0;
             $unit_price = isset($data['unit_price']) ? floatval($data['unit_price']) : 0;
+            $srp = isset($data['srp']) ? floatval($data['srp']) : $unit_price; // Default SRP to unit_price if not provided
             $supplier_id = isset($data['supplier_id']) ? intval($data['supplier_id']) : 0;
             $brand_id = isset($data['brand_id']) ? intval($data['brand_id']) : 0;
             $expiration = isset($data['expiration']) ? trim($data['expiration']) : null;
@@ -662,6 +665,7 @@ try {
                     bulk = ?,
                     quantity = ?,
                     unit_price = ?,
+                    srp = ?,
                     supplier_id = ?,
                     brand_id = ?,
                     expiration = ?,
@@ -682,6 +686,7 @@ try {
                 $bulk,
                 $quantity,
                 $unit_price,
+                $srp,
                 $supplier_id,
                 $brand_id,
                 $expiration,
@@ -1931,12 +1936,12 @@ try {
             if ($batch_id) {
                 $fifoStmt = $conn->prepare("
                     INSERT INTO tbl_fifo_stock (
-                        product_id, batch_id, batch_reference, quantity, unit_cost,
+                        product_id, batch_id, batch_reference, quantity, available_quantity, unit_cost,
                         expiration_date, entry_date, entry_by
-                    ) VALUES (?, ?, ?, ?, ?, ?, CURDATE(), ?)
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, CURDATE(), ?)
                 ");
                 $fifoStmt->execute([
-                    $product_id, $batch_id, $batch_reference, $new_quantity, 
+                    $product_id, $batch_id, $batch_reference, $new_quantity, $new_quantity,
                     $unit_cost, $expiration_date, $entry_by
                 ]);
             }
@@ -2066,24 +2071,24 @@ try {
             // Query to get FIFO stock data for the product with batch dates
             $stmt = $conn->prepare("
                 SELECT 
-                    ss.summary_id,
-                    ss.batch_id,
-                    ss.batch_id as batch_number,
-                    ss.batch_reference,
-                    ss.available_quantity,
-                    ss.unit_cost,
-                    ss.expiration_date,
+                    fs.fifo_id as summary_id,
+                    fs.batch_id,
+                    fs.batch_id as batch_number,
+                    fs.batch_reference,
+                    fs.available_quantity,
+                    fs.unit_cost,
+                    fs.expiration_date,
                     b.entry_date as batch_date,
                     b.entry_time as batch_time,
-                    ROW_NUMBER() OVER (ORDER BY b.entry_date ASC, ss.summary_id ASC) as fifo_order,
+                    ROW_NUMBER() OVER (ORDER BY b.entry_date ASC, fs.fifo_id ASC) as fifo_order,
                     CASE 
-                        WHEN ss.expiration_date IS NULL THEN NULL
-                        ELSE DATEDIFF(ss.expiration_date, CURDATE())
+                        WHEN fs.expiration_date IS NULL THEN NULL
+                        ELSE DATEDIFF(fs.expiration_date, CURDATE())
                     END as days_until_expiry
-                FROM tbl_stock_summary ss
-                JOIN tbl_batch b ON ss.batch_id = b.batch_id
-                WHERE ss.product_id = ? AND ss.available_quantity > 0
-                ORDER BY b.entry_date ASC, ss.summary_id ASC
+                FROM tbl_fifo_stock fs
+                JOIN tbl_batch b ON fs.batch_id = b.batch_id
+                WHERE fs.product_id = ? AND fs.available_quantity > 0
+                ORDER BY b.entry_date ASC, fs.fifo_id ASC
             ");
             
             $stmt->execute([$product_id]);
@@ -2128,9 +2133,10 @@ try {
                     fs.batch_reference,
                     fs.available_quantity,
                     fs.unit_cost
-                FROM v_fifo_stock fs
+                FROM tbl_fifo_stock fs
+                JOIN tbl_batch b ON fs.batch_id = b.batch_id
                 WHERE fs.product_id = ? AND fs.available_quantity > 0
-                ORDER BY fs.fifo_order ASC
+                ORDER BY b.entry_date ASC, fs.fifo_id ASC
             ");
             $fifoStmt->execute([$product_id]);
             $fifoStock = $fifoStmt->fetchAll(PDO::FETCH_ASSOC);

@@ -136,6 +136,7 @@ function Warehouse() {
       barcode: "",
       description: "",
       unit_price: "",
+      srp: "",
       brand_id: "",
       brand_search: "",
       quantity: "",
@@ -251,7 +252,20 @@ function Warehouse() {
   
     // Edit form data
     const [editFormData, setEditFormData] = useState({})
-    const [editProductFormData, setEditProductFormData] = useState({})
+    const [editProductFormData, setEditProductFormData] = useState({
+      product_name: "",
+      category: "",
+      barcode: "",
+      description: "",
+      unit_price: "",
+      srp: "",
+      brand_id: "",
+      quantity: "",
+      supplier_id: "",
+      expiration: "",
+      prescription: 0,
+      bulk: 0
+    })
   
   
     // FIXED API Functions with better error handling
@@ -776,7 +790,20 @@ function Warehouse() {
 
     function openEditProductModal(product) {
       setSelectedItem(product)
-      setEditProductFormData(product)
+      setEditProductFormData({
+        product_name: product.product_name || "",
+        category: product.category || "",
+        barcode: product.barcode || "",
+        description: product.description || "",
+        unit_price: product.unit_price || "",
+        srp: product.srp || product.unit_price || "",
+        brand_id: product.brand_id || "",
+        quantity: product.quantity || "",
+        supplier_id: product.supplier_id || "",
+        expiration: product.expiration || "",
+        prescription: product.prescription || 0,
+        bulk: product.bulk || 0
+      })
       setShowEditProductModal(true)
     }
   
@@ -789,7 +816,20 @@ function Warehouse() {
     function closeEditProductModal() {
       setShowEditProductModal(false)
       setSelectedItem(null)
-      setEditProductFormData({})
+      setEditProductFormData({
+        product_name: "",
+        category: "",
+        barcode: "",
+        description: "",
+        unit_price: "",
+        srp: "",
+        brand_id: "",
+        quantity: "",
+        supplier_id: "",
+        expiration: "",
+        prescription: 0,
+        bulk: 0
+      })
     }
   
     function openDeleteModal(item) {
@@ -817,6 +857,7 @@ function Warehouse() {
         barcode: "",
         description: "",
         unit_price: "",
+        srp: "",
         brand_id: "",
         brand_search: "",
         quantity: "",
@@ -832,10 +873,19 @@ function Warehouse() {
 
     // Form handlers for new product modal
     function handleNewProductInputChange(field, value) {
-      setNewProductForm(prev => ({
-        ...prev,
-        [field]: value
-      }));
+      setNewProductForm(prev => {
+        const updated = {
+          ...prev,
+          [field]: value
+        };
+        
+        // Auto-fill SRP with unit price if SRP is empty
+        if (field === 'unit_price' && value && !prev.srp) {
+          updated.srp = value;
+        }
+        
+        return updated;
+      });
     }
 
     // FIFO Functions
@@ -955,6 +1005,7 @@ function Warehouse() {
           barcode: newProductForm.barcode,
           description: newProductForm.description,
           unit_price: parseFloat(newProductForm.unit_price),
+          srp: parseFloat(newProductForm.srp || newProductForm.unit_price), // Use unit_price as default if SRP is empty
           brand_id: newProductForm.brand_id || 30, // Default brand
           quantity: parseInt(newProductForm.quantity),
           supplier_id: newProductForm.supplier_id || 13, // Default supplier
@@ -1221,6 +1272,7 @@ function Warehouse() {
                 <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">BRAND</th>
                 <th className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">STOCK</th>
                 <th className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">PRICE</th>
+                <th className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">SRP</th>
                 <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">SUPPLIER</th>
                 <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">BATCH NO.</th>
                 <th className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">EXPIRY</th>
@@ -1234,7 +1286,7 @@ function Warehouse() {
             <tbody className="bg-white divide-y divide-gray-200">
               {inventoryData.length === 0 ? (
                 <tr>
-                  <td colSpan="14" className="px-3 py-6 text-center">
+                  <td colSpan="15" className="px-3 py-6 text-center">
                     <div className="flex flex-col items-center space-y-3">
                       <Package className="h-12 w-12 text-gray-300" />
                       <div className="text-gray-500">
@@ -1271,6 +1323,9 @@ function Warehouse() {
                     </td>
                     <td className="px-3 py-2 text-center text-sm text-gray-900">
                       ₱{Number.parseFloat(product.unit_price || 0).toFixed(2)}
+                    </td>
+                    <td className="px-3 py-2 text-center text-sm text-gray-900">
+                      ₱{Number.parseFloat(product.srp || product.unit_price || 0).toFixed(2)}
                     </td>
                     <td className="px-3 py-2 text-sm text-gray-900">
                       {product.supplier_name || "N/A"}
@@ -1430,7 +1485,7 @@ function Warehouse() {
                     <input
                       type="text"
                       required
-                      value={supplierFormData.supplier_name}
+                      value={supplierFormData.supplier_name || ""}
                       onChange={(e) => handleSupplierInputChange("supplier_name", e.target.value)}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
@@ -1441,7 +1496,7 @@ function Warehouse() {
                     <input
                       type="text"
                       required
-                      value={supplierFormData.supplier_contact}
+                      value={supplierFormData.supplier_contact || ""}
                       onChange={(e) => handleSupplierInputChange("supplier_contact", e.target.value)}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
@@ -1452,7 +1507,7 @@ function Warehouse() {
                     <input
                       type="email"
                       required
-                      value={supplierFormData.supplier_email}
+                      value={supplierFormData.supplier_email || ""}
                       onChange={(e) => handleSupplierInputChange("supplier_email", e.target.value)}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
@@ -1462,7 +1517,7 @@ function Warehouse() {
                     <label className="block text-sm font-medium text-gray-700 mb-1">Primary Phone</label>
                     <input
                       type="text"
-                      value={supplierFormData.primary_phone}
+                      value={supplierFormData.primary_phone || ""}
                       onChange={(e) => handleSupplierInputChange("primary_phone", e.target.value)}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
@@ -1472,7 +1527,7 @@ function Warehouse() {
                     <label className="block text-sm font-medium text-gray-700 mb-1">Primary Email</label>
                     <input
                       type="email"
-                      value={supplierFormData.primary_email}
+                      value={supplierFormData.primary_email || ""}
                       onChange={(e) => handleSupplierInputChange("primary_email", e.target.value)}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
@@ -1482,7 +1537,7 @@ function Warehouse() {
                     <label className="block text-sm font-medium text-gray-700 mb-1">Contact Person</label>
                     <input
                       type="text"
-                      value={supplierFormData.contact_person}
+                      value={supplierFormData.contact_person || ""}
                       onChange={(e) => handleSupplierInputChange("contact_person", e.target.value)}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
@@ -1492,7 +1547,7 @@ function Warehouse() {
                     <label className="block text-sm font-medium text-gray-700 mb-1">Contact Title</label>
                                         <input
                       type="text"
-                      value={supplierFormData.contact_title}
+                      value={supplierFormData.contact_title || ""}
                       onChange={(e) => handleSupplierInputChange("contact_title", e.target.value)}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
@@ -1502,7 +1557,7 @@ function Warehouse() {
                     <label className="block text-sm font-medium text-gray-700 mb-1">Payment Terms</label>
                     <input
                       type="text"
-                      value={supplierFormData.payment_terms}
+                      value={supplierFormData.payment_terms || ""}
                       onChange={(e) => handleSupplierInputChange("payment_terms", e.target.value)}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
@@ -1512,7 +1567,7 @@ function Warehouse() {
                     <label className="block text-sm font-medium text-gray-700 mb-1">Lead Time (Days)</label>
                     <input
                       type="number"
-                      value={supplierFormData.lead_time_days}
+                      value={supplierFormData.lead_time_days || ""}
                       onChange={(e) => handleSupplierInputChange("lead_time_days", e.target.value)}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
@@ -1522,7 +1577,7 @@ function Warehouse() {
                     <label className="block text-sm font-medium text-gray-700 mb-1">Order Level</label>
                     <input
                       type="number"
-                      value={supplierFormData.order_level}
+                      value={supplierFormData.order_level || ""}
                       onChange={(e) => handleSupplierInputChange("order_level", e.target.value)}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
@@ -1532,7 +1587,7 @@ function Warehouse() {
                     <label className="block text-sm font-medium text-gray-700 mb-1">Credit Rating</label>
                     <input
                       type="text"
-                      value={supplierFormData.credit_rating}
+                      value={supplierFormData.credit_rating || ""}
                       onChange={(e) => handleSupplierInputChange("credit_rating", e.target.value)}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
@@ -1760,6 +1815,16 @@ function Warehouse() {
                       className="w-full px-3 py-2 border border-gray-300 rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Suggested Retail Price (SRP)</label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      value={editProductFormData.srp || ""}
+                      onChange={(e) => handleEditProductInputChange("srp", e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Quantity *</label>
@@ -1919,7 +1984,7 @@ function Warehouse() {
               <label className="block text-sm font-medium text-gray-700 mb-1">Product Name</label>
               <input
                 type="text"
-                value={existingProduct.product_name}
+                                        value={existingProduct.product_name || ""}
                 readOnly
                 className="w-full px-3 py-2 border border-gray-300 rounded-md bg-transparent text-gray-700"
               />
@@ -1928,7 +1993,7 @@ function Warehouse() {
               <label className="block text-sm font-medium text-gray-700 mb-1">Barcode</label>
               <input
                 type="text"
-                value={existingProduct.barcode}
+                                        value={existingProduct.barcode || ""}
                 readOnly
                 className="w-full px-3 py-2 border border-gray-300 rounded-md bg-transparent text-gray-700"
               />
@@ -1937,7 +2002,7 @@ function Warehouse() {
               <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
               <input
                 type="text"
-                value={existingProduct.category}
+                                        value={existingProduct.category || ""}
                 readOnly
                 className="w-full px-3 py-2 border border-gray-300 rounded-md bg-transparent text-gray-700"
               />
@@ -1955,7 +2020,7 @@ function Warehouse() {
               <label className="block text-sm font-medium text-gray-700 mb-1">Current Stock</label>
               <input
                 type="text"
-                value={existingProduct.quantity}
+                                        value={existingProduct.quantity || ""}
                 readOnly
                 className="w-full px-3 py-2 border border-gray-300 rounded-md bg-transparent text-gray-700"
               />
@@ -1964,10 +2029,15 @@ function Warehouse() {
               <label className="block text-sm font-medium text-gray-700 mb-1">Unit Price</label>
               <input
                 type="text"
-                value={`₱${Number.parseFloat(existingProduct.unit_price || 0).toFixed(2)}`}
-                readOnly
-                className="w-full px-3 py-2 border border-gray-300 rounded-md bg-transparent text-gray-700"
-              />
+                                        value={`₱${Number.parseFloat(existingProduct.unit_price || 0).toFixed(2)}`}
+                      />
+                      <input
+                        type="text"
+                        readOnly
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-sm"
+                        placeholder="SRP"
+                        value={`₱${Number.parseFloat(existingProduct.srp || existingProduct.unit_price || 0).toFixed(2)}`}
+                      />
             </div>
             <div className="md:col-span-2">
               <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
@@ -1985,7 +2055,7 @@ function Warehouse() {
               <label className="block text-sm font-medium text-gray-700 mb-1">New Stock to Add *</label>
               <input
                 type="number"
-                value={newStockQuantity}
+                value={newStockQuantity || ""}
                 onChange={(e) => setNewStockQuantity(e.target.value)}
                 placeholder="Enter quantity to add"
                 className="w-full px-3 py-2 border border-gray-300 rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -2036,7 +2106,7 @@ function Warehouse() {
               <input
                 type="text"
                 required
-                value={newProductForm.product_name}
+                value={newProductForm.product_name || ""}
                 onChange={(e) => handleNewProductInputChange("product_name", e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
@@ -2045,7 +2115,7 @@ function Warehouse() {
               <label className="block text-sm font-medium text-gray-700 mb-1">Barcode</label>
               <input
                 type="text"
-                value={newProductForm.barcode}
+                value={newProductForm.barcode || ""}
                 readOnly
                 className="w-full px-3 py-2 border border-gray-300 rounded-md bg-transparent text-gray-700"
               />
@@ -2054,7 +2124,7 @@ function Warehouse() {
               <label className="block text-sm font-medium text-gray-700 mb-1">Category *</label>
               <select
                 required
-                value={newProductForm.category}
+                value={newProductForm.category || ""}
                 onChange={(e) => {
                   handleNewProductInputChange("category", e.target.value);
                 }}
@@ -2075,8 +2145,19 @@ function Warehouse() {
                 type="number"
                 step="0.01"
                 required
-                value={newProductForm.unit_price}
+                value={newProductForm.unit_price || ""}
                 onChange={(e) => handleNewProductInputChange("unit_price", e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Suggested Retail Price (SRP)</label>
+              <input
+                type="number"
+                step="0.01"
+                value={newProductForm.srp || ""}
+                onChange={(e) => handleNewProductInputChange("srp", e.target.value)}
+                placeholder="Auto-filled with unit price"
                 className="w-full px-3 py-2 border border-gray-300 rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
@@ -2085,7 +2166,7 @@ function Warehouse() {
               <input
                 type="number"
                 required
-                value={newProductForm.quantity}
+                value={newProductForm.quantity || ""}
                 onChange={(e) => handleNewProductInputChange("quantity", e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
@@ -2138,7 +2219,7 @@ function Warehouse() {
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Supplier</label>
               <select
-                value={newProductForm.supplier_id}
+                value={newProductForm.supplier_id || ""}
                 onChange={(e) => handleNewProductInputChange("supplier_id", e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
@@ -2154,7 +2235,7 @@ function Warehouse() {
               <label className="block text-sm font-medium text-gray-700 mb-1">Expiration Date</label>
               <input
                 type="date"
-                value={newProductForm.expiration}
+                value={newProductForm.expiration || ""}
                 onChange={(e) => handleNewProductInputChange("expiration", e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
@@ -2163,7 +2244,7 @@ function Warehouse() {
               <label className="block text-sm font-medium text-gray-700 mb-1">Batch Number</label>
               <input
                 type="text"
-                value={newProductForm.batch}
+                value={newProductForm.batch || ""}
                 onChange={(e) => handleNewProductInputChange("batch", e.target.value)}
                 placeholder="Enter batch number"
                 className="w-full px-3 py-2 border border-gray-300 rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -2180,7 +2261,7 @@ function Warehouse() {
               <label className="block text-sm font-medium text-gray-700 mb-1">Order Number</label>
               <input
                 type="text"
-                value={newProductForm.order_number}
+                value={newProductForm.order_number || ""}
                 onChange={(e) => handleNewProductInputChange("order_number", e.target.value)}
                 placeholder="Enter order number"
                 className="w-full px-3 py-2 border border-gray-300 rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -2190,7 +2271,7 @@ function Warehouse() {
               <label className="block text-sm font-medium text-gray-700 mb-1">Date Added</label>
               <input
                 type="date"
-                value={newProductForm.date_added}
+                value={newProductForm.date_added || ""}
                 readOnly
                 className="w-full px-3 py-2 border border-gray-300 rounded-md bg-transparent text-gray-700 cursor-not-allowed"
               />
@@ -2200,7 +2281,7 @@ function Warehouse() {
               <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
               <textarea
                 rows={3}
-                value={newProductForm.description}
+                value={newProductForm.description || ""}
                 onChange={(e) => handleNewProductInputChange("description", e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
@@ -2284,6 +2365,7 @@ function Warehouse() {
                       <h4 className="font-semibold text-green-900">Stock Status</h4>
                       <p className="text-sm text-green-700">Status: {selectedProductForFifo.stock_status}</p>
                       <p className="text-sm text-green-700">Unit Price: ₱{Number.parseFloat(selectedProductForFifo.unit_price || 0).toFixed(2)}</p>
+                    <p className="text-sm text-blue-700">SRP: ₱{Number.parseFloat(selectedProductForFifo.srp || selectedProductForFifo.unit_price || 0).toFixed(2)}</p>
                     </div>
                     <div className="bg-yellow-50 p-4 rounded-lg">
                       <h4 className="font-semibold text-yellow-900">FIFO Summary</h4>

@@ -10059,3 +10059,2090 @@
 [27-Jul-2025 18:04:54 Europe/Berlin] Processing action: get_inventory_staff
 [27-Jul-2025 18:04:58 Europe/Berlin] Raw input: {"action":"get_products","location_id":2}
 [27-Jul-2025 18:04:58 Europe/Berlin] Processing action: get_products
+[27-Jul-2025 18:07:47 Europe/Berlin] Raw input: 
+[27-Jul-2025 18:07:47 Europe/Berlin] Raw input: 
+[27-Jul-2025 18:07:47 Europe/Berlin] Raw input: 
+[27-Jul-2025 18:07:47 Europe/Berlin] Raw input: 
+[27-Jul-2025 18:07:47 Europe/Berlin] JSON decode error: Syntax error
+[27-Jul-2025 18:07:47 Europe/Berlin] JSON decode error: Syntax error
+[27-Jul-2025 18:07:47 Europe/Berlin] JSON decode error: Syntax error
+[27-Jul-2025 18:07:47 Europe/Berlin] JSON decode error: Syntax error
+[27-Jul-2025 18:07:47 Europe/Berlin] Raw input: {"action":"get_movement_history","search":"","movement_type":"all","location":"all","date_range":"all"}
+[27-Jul-2025 18:07:47 Europe/Berlin] Raw input: {"action":"get_movement_history","search":"","movement_type":"all","location":"all","date_range":"all"}
+[27-Jul-2025 18:07:47 Europe/Berlin] Raw input: {"action":"get_locations_for_filter"}
+[27-Jul-2025 18:07:47 Europe/Berlin] Processing action: get_movement_history
+[27-Jul-2025 18:07:47 Europe/Berlin] Processing action: get_locations_for_filter
+[27-Jul-2025 18:07:47 Europe/Berlin] Raw input: {"action":"get_locations_for_filter"}
+[27-Jul-2025 18:07:47 Europe/Berlin] Processing action: get_movement_history
+[27-Jul-2025 18:07:47 Europe/Berlin] Processing action: get_locations_for_filter
+[27-Jul-2025 18:07:47 Europe/Berlin] Raw input: {"action":"get_movement_history","search":"","movement_type":"all","location":"all","date_range":"all"}
+[27-Jul-2025 18:07:47 Europe/Berlin] Processing action: get_movement_history
+[27-Jul-2025 18:07:49 Europe/Berlin] Raw input: {"action":"get_movement_history","search":"","movement_type":"all","location":"all","date_range":"all"}
+[27-Jul-2025 18:07:49 Europe/Berlin] Raw input: {"action":"get_locations_for_filter"}
+[27-Jul-2025 18:07:49 Europe/Berlin] Raw input: {"action":"get_movement_history","search":"","movement_type":"all","location":"all","date_range":"all"}
+[27-Jul-2025 18:07:49 Europe/Berlin] Raw input: {"action":"get_locations_for_filter"}
+[27-Jul-2025 18:07:49 Europe/Berlin] Processing action: get_movement_history
+[27-Jul-2025 18:07:49 Europe/Berlin] Processing action: get_movement_history
+[27-Jul-2025 18:07:49 Europe/Berlin] Processing action: get_locations_for_filter
+[27-Jul-2025 18:07:49 Europe/Berlin] Processing action: get_locations_for_filter
+[27-Jul-2025 18:07:50 Europe/Berlin] Raw input: {"action":"get_movement_history","search":"","movement_type":"all","location":"all","date_range":"all"}
+[27-Jul-2025 18:07:50 Europe/Berlin] Processing action: get_movement_history
+[27-Jul-2025 18:07:54 Europe/Berlin] Raw input: 
+[27-Jul-2025 18:07:54 Europe/Berlin] JSON decode error: Syntax error
+[27-Jul-2025 18:07:54 Europe/Berlin] Raw input: 
+[27-Jul-2025 18:07:54 Europe/Berlin] JSON decode error: Syntax error
+[27-Jul-2025 18:07:54 Europe/Berlin] Raw input: {"action":"get_reports_data"}
+[27-Jul-2025 18:07:54 Europe/Berlin] Processing action: get_reports_data
+[27-Jul-2025 18:07:54 Europe/Berlin] Raw input: {"action":"get_reports_data"}
+[27-Jul-2025 18:07:54 Europe/Berlin] Processing action: get_reports_data
+[27-Jul-2025 18:08:04 Europe/Berlin] Raw input: 
+[27-Jul-2025 18:08:04 Europe/Berlin] JSON decode error: Syntax error
+[27-Jul-2025 18:08:04 Europe/Berlin] Raw input: 
+[27-Jul-2025 18:08:04 Europe/Berlin] JSON decode error: Syntax error
+[27-Jul-2025 18:08:04 Europe/Berlin] Raw input: {"action":"get_reports_data"}
+[27-Jul-2025 18:08:04 Europe/Berlin] Processing action: get_reports_data
+[27-Jul-2025 18:08:04 Europe/Berlin] Raw input: {"action":"get_reports_data"}
+[27-Jul-2025 18:08:04 Europe/Berlin] Processing action: get_reports_data
+[27-Jul-2025 18:08:04 Europe/Berlin] Raw input: {"action":"get_archived_items"}
+[27-Jul-2025 18:08:04 Europe/Berlin] Raw input: {"action":"get_archived_items"}
+[27-Jul-2025 18:08:04 Europe/Berlin] Processing action: get_archived_items
+[27-Jul-2025 18:08:04 Europe/Berlin] Processing action: get_archived_items
+[27-Jul-2025 18:08:07 Europe/Berlin] Raw input: {"action":"get_archived_items"}
+[27-Jul-2025 18:08:07 Europe/Berlin] Raw input: {"action":"get_archived_items"}
+[27-Jul-2025 18:08:07 Europe/Berlin] Processing action: get_archived_items
+[27-Jul-2025 18:08:07 Europe/Berlin] Processing action: get_archived_items
+[27-Jul-2025 18:08:09 Europe/Berlin] Raw input: 
+[27-Jul-2025 18:08:09 Europe/Berlin] Raw input: 
+[27-Jul-2025 18:08:09 Europe/Berlin] JSON decode error: Syntax error
+[27-Jul-2025 18:08:09 Europe/Berlin] JSON decode error: Syntax error
+[27-Jul-2025 18:08:09 Europe/Berlin] Raw input: {"action":"get_reports_data"}
+[27-Jul-2025 18:08:09 Europe/Berlin] Raw input: {"action":"get_reports_data"}
+[27-Jul-2025 18:08:09 Europe/Berlin] Processing action: get_reports_data
+[27-Jul-2025 18:08:09 Europe/Berlin] Processing action: get_reports_data
+[27-Jul-2025 18:08:10 Europe/Berlin] Raw input: {"action":"get_locations"}
+[27-Jul-2025 18:08:10 Europe/Berlin] Raw input: {"action":"get_locations"}
+[27-Jul-2025 18:08:10 Europe/Berlin] Processing action: get_locations
+[27-Jul-2025 18:08:10 Europe/Berlin] Processing action: get_locations
+[27-Jul-2025 18:08:10 Europe/Berlin] Raw input: {"action":"get_products_by_location_name","location_name":"Pharmacy"}
+[27-Jul-2025 18:08:10 Europe/Berlin] Raw input: {"action":"get_locations"}
+[27-Jul-2025 18:08:10 Europe/Berlin] Processing action: get_products_by_location_name
+[27-Jul-2025 18:08:10 Europe/Berlin] Processing action: get_locations
+[27-Jul-2025 18:08:10 Europe/Berlin] Raw input: {"action":"get_products_by_location_name","location_name":"Pharmacy"}
+[27-Jul-2025 18:08:10 Europe/Berlin] Processing action: get_products_by_location_name
+[27-Jul-2025 18:08:12 Europe/Berlin] Raw input: {"action":"get_locations"}
+[27-Jul-2025 18:08:12 Europe/Berlin] Raw input: {"action":"get_locations"}
+[27-Jul-2025 18:08:12 Europe/Berlin] Processing action: get_locations
+[27-Jul-2025 18:08:12 Europe/Berlin] Processing action: get_locations
+[27-Jul-2025 18:08:12 Europe/Berlin] Raw input: {"action":"get_location_products","location_id":4,"search":"","category":"all"}
+[27-Jul-2025 18:08:12 Europe/Berlin] Raw input: {"action":"get_locations"}
+[27-Jul-2025 18:08:12 Europe/Berlin] Processing action: get_location_products
+[27-Jul-2025 18:08:12 Europe/Berlin] Processing action: get_locations
+[27-Jul-2025 18:08:12 Europe/Berlin] Raw input: {"action":"get_products_by_location_name","location_name":"Convenience"}
+[27-Jul-2025 18:08:12 Europe/Berlin] Processing action: get_products_by_location_name
+[27-Jul-2025 18:08:12 Europe/Berlin] Raw input: {"action":"get_location_products","location_id":4,"search":"","category":"all"}
+[27-Jul-2025 18:08:12 Europe/Berlin] Processing action: get_location_products
+[27-Jul-2025 18:08:12 Europe/Berlin] Raw input: {"action":"get_products_by_location_name","location_name":"Convenience"}
+[27-Jul-2025 18:08:12 Europe/Berlin] Processing action: get_products_by_location_name
+[27-Jul-2025 18:08:12 Europe/Berlin] Raw input: {"action":"get_suppliers"}
+[27-Jul-2025 18:08:12 Europe/Berlin] Raw input: {"action":"get_products"}
+[27-Jul-2025 18:08:12 Europe/Berlin] Processing action: get_suppliers
+[27-Jul-2025 18:08:12 Europe/Berlin] Processing action: get_products
+[27-Jul-2025 18:08:12 Europe/Berlin] Raw input: {"action":"get_batches"}
+[27-Jul-2025 18:08:12 Europe/Berlin] Processing action: get_batches
+[27-Jul-2025 18:08:12 Europe/Berlin] Raw input: {"action":"get_warehouse_kpis","location":"warehouse"}
+[27-Jul-2025 18:08:12 Europe/Berlin] Processing action: get_warehouse_kpis
+[27-Jul-2025 18:08:12 Europe/Berlin] Raw input: {"action":"get_categories"}
+[27-Jul-2025 18:08:12 Europe/Berlin] Raw input: {"action":"get_brands"}
+[27-Jul-2025 18:08:12 Europe/Berlin] Processing action: get_brands
+[27-Jul-2025 18:08:12 Europe/Berlin] Processing action: get_categories
+[27-Jul-2025 18:08:12 Europe/Berlin] Raw input: {"action":"get_suppliers"}
+[27-Jul-2025 18:08:12 Europe/Berlin] Raw input: {"action":"get_batches"}
+[27-Jul-2025 18:08:12 Europe/Berlin] Raw input: {"action":"get_warehouse_kpis","location":"warehouse"}
+[27-Jul-2025 18:08:12 Europe/Berlin] Processing action: get_suppliers
+[27-Jul-2025 18:08:12 Europe/Berlin] Processing action: get_batches
+[27-Jul-2025 18:08:12 Europe/Berlin] Processing action: get_warehouse_kpis
+[27-Jul-2025 18:08:12 Europe/Berlin] Raw input: {"action":"get_products"}
+[27-Jul-2025 18:08:12 Europe/Berlin] Processing action: get_products
+[27-Jul-2025 18:08:12 Europe/Berlin] Raw input: {"action":"get_categories"}
+[27-Jul-2025 18:08:12 Europe/Berlin] Processing action: get_categories
+[27-Jul-2025 18:08:12 Europe/Berlin] Raw input: {"action":"get_brands"}
+[27-Jul-2025 18:08:12 Europe/Berlin] Processing action: get_brands
+[27-Jul-2025 18:08:12 Europe/Berlin] Raw input: {"action":"get_locations"}
+[27-Jul-2025 18:08:12 Europe/Berlin] Raw input: {"action":"get_transfers_with_details"}
+[27-Jul-2025 18:08:12 Europe/Berlin] Processing action: get_locations
+[27-Jul-2025 18:08:12 Europe/Berlin] Raw input: {"action":"get_transfers_with_details"}
+[27-Jul-2025 18:08:12 Europe/Berlin] Raw input: {"action":"get_locations"}
+[27-Jul-2025 18:08:12 Europe/Berlin] Raw input: {"action":"get_inventory_staff"}
+[27-Jul-2025 18:08:12 Europe/Berlin] Processing action: get_transfers_with_details
+[27-Jul-2025 18:08:12 Europe/Berlin] Processing action: get_transfers_with_details
+[27-Jul-2025 18:08:12 Europe/Berlin] Processing action: get_locations
+[27-Jul-2025 18:08:12 Europe/Berlin] Processing action: get_inventory_staff
+[27-Jul-2025 18:08:12 Europe/Berlin] Raw input: {"action":"get_locations"}
+[27-Jul-2025 18:08:12 Europe/Berlin] Processing action: get_locations
+[27-Jul-2025 18:08:12 Europe/Berlin] Raw input: {"action":"get_inventory_staff"}
+[27-Jul-2025 18:08:12 Europe/Berlin] Processing action: get_inventory_staff
+[27-Jul-2025 18:08:12 Europe/Berlin] Raw input: {"action":"get_locations"}
+[27-Jul-2025 18:08:12 Europe/Berlin] Processing action: get_locations
+[27-Jul-2025 18:08:13 Europe/Berlin] Raw input: {"action":"get_locations"}
+[27-Jul-2025 18:08:13 Europe/Berlin] Raw input: {"action":"get_locations"}
+[27-Jul-2025 18:08:13 Europe/Berlin] Processing action: get_locations
+[27-Jul-2025 18:08:13 Europe/Berlin] Processing action: get_locations
+[27-Jul-2025 18:08:13 Europe/Berlin] Raw input: {"action":"get_locations"}
+[27-Jul-2025 18:08:13 Europe/Berlin] Raw input: {"action":"get_products_by_location_name","location_name":"Pharmacy"}
+[27-Jul-2025 18:08:13 Europe/Berlin] Processing action: get_locations
+[27-Jul-2025 18:08:13 Europe/Berlin] Processing action: get_products_by_location_name
+[27-Jul-2025 18:08:13 Europe/Berlin] Raw input: {"action":"get_products_by_location_name","location_name":"Pharmacy"}
+[27-Jul-2025 18:08:13 Europe/Berlin] Processing action: get_products_by_location_name
+[29-Jul-2025 16:07:57 Europe/Berlin] Raw input: 
+[29-Jul-2025 16:07:57 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 16:07:57 Europe/Berlin] Raw input: {"action":"generate_captcha"}
+[29-Jul-2025 16:07:57 Europe/Berlin] Processing action: generate_captcha
+[29-Jul-2025 16:09:01 Europe/Berlin] Raw input: 
+[29-Jul-2025 16:09:01 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 16:09:02 Europe/Berlin] Raw input: {"action":"login","username":"ezay","password":"1234","captcha":"13","captchaAnswer":"13"}
+[29-Jul-2025 16:09:02 Europe/Berlin] Processing action: login
+[29-Jul-2025 16:09:02 Europe/Berlin] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in C:\xampp\htdocs\Enguio_Project\Api\backend.php on line 184
+[29-Jul-2025 16:09:06 Europe/Berlin] Raw input: {"action":"get_categories"}
+[29-Jul-2025 16:09:06 Europe/Berlin] Raw input: {"action":"get_warehouse_kpis","product":"All","location":"Warehouse"}
+[29-Jul-2025 16:09:06 Europe/Berlin] Processing action: get_categories
+[29-Jul-2025 16:09:06 Europe/Berlin] Processing action: get_warehouse_kpis
+[29-Jul-2025 16:09:06 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 16:09:06 Europe/Berlin] Raw input: {"action":"get_top_products_by_quantity","product":"All","location":"Warehouse"}
+[29-Jul-2025 16:09:06 Europe/Berlin] Processing action: get_top_products_by_quantity
+[29-Jul-2025 16:09:06 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 16:09:06 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 16:09:06 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 16:09:06 Europe/Berlin] Raw input: {"action":"get_transfers_with_details"}
+[29-Jul-2025 16:09:06 Europe/Berlin] Processing action: get_transfers_with_details
+[29-Jul-2025 16:09:06 Europe/Berlin] Raw input: {"action":"get_categories"}
+[29-Jul-2025 16:09:06 Europe/Berlin] Raw input: {"action":"get_warehouse_kpis","product":"All","location":"Warehouse"}
+[29-Jul-2025 16:09:06 Europe/Berlin] Processing action: get_categories
+[29-Jul-2025 16:09:06 Europe/Berlin] Raw input: {"action":"get_top_products_by_quantity","product":"All","location":"Warehouse"}
+[29-Jul-2025 16:09:06 Europe/Berlin] Processing action: get_warehouse_kpis
+[29-Jul-2025 16:09:06 Europe/Berlin] Processing action: get_top_products_by_quantity
+[29-Jul-2025 16:09:06 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 16:09:06 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 16:09:06 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 16:09:06 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 16:09:06 Europe/Berlin] Raw input: {"action":"get_transfers_with_details"}
+[29-Jul-2025 16:09:06 Europe/Berlin] Processing action: get_transfers_with_details
+[29-Jul-2025 16:09:06 Europe/Berlin] Raw input: {"action":"get_warehouse_supply_by_product","product":"All","location":"Warehouse"}
+[29-Jul-2025 16:09:06 Europe/Berlin] Processing action: get_warehouse_supply_by_product
+[29-Jul-2025 16:09:06 Europe/Berlin] Raw input: {"action":"get_stock_distribution_by_category","product":"All","location":"Warehouse"}
+[29-Jul-2025 16:09:06 Europe/Berlin] Processing action: get_stock_distribution_by_category
+[29-Jul-2025 16:09:06 Europe/Berlin] Raw input: {"action":"get_products_by_location_name","location_name":"Convenience"}
+[29-Jul-2025 16:09:06 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 16:09:06 Europe/Berlin] Processing action: get_products_by_location_name
+[29-Jul-2025 16:09:06 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 16:09:06 Europe/Berlin] Raw input: {"action":"get_products_by_location_name","location_name":"Pharmacy"}
+[29-Jul-2025 16:09:06 Europe/Berlin] Processing action: get_products_by_location_name
+[29-Jul-2025 16:09:06 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 16:09:06 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 16:09:06 Europe/Berlin] Raw input: {"action":"get_warehouse_supply_by_product","product":"All","location":"Warehouse"}
+[29-Jul-2025 16:09:06 Europe/Berlin] Processing action: get_warehouse_supply_by_product
+[29-Jul-2025 16:09:06 Europe/Berlin] Raw input: {"action":"get_stock_distribution_by_category","product":"All","location":"Warehouse"}
+[29-Jul-2025 16:09:06 Europe/Berlin] Processing action: get_stock_distribution_by_category
+[29-Jul-2025 16:09:06 Europe/Berlin] Raw input: {"action":"get_products_by_location_name","location_name":"Convenience"}
+[29-Jul-2025 16:09:06 Europe/Berlin] Processing action: get_products_by_location_name
+[29-Jul-2025 16:09:06 Europe/Berlin] Raw input: {"action":"get_products_by_location_name","location_name":"Pharmacy"}
+[29-Jul-2025 16:09:06 Europe/Berlin] Processing action: get_products_by_location_name
+[29-Jul-2025 16:09:06 Europe/Berlin] Raw input: {"action":"get_warehouse_supply_by_location","product":"All","location":"Warehouse"}
+[29-Jul-2025 16:09:06 Europe/Berlin] Processing action: get_warehouse_supply_by_location
+[29-Jul-2025 16:09:06 Europe/Berlin] Raw input: {"action":"get_fast_moving_items_trend","product":"All","location":"Warehouse"}
+[29-Jul-2025 16:09:06 Europe/Berlin] Processing action: get_fast_moving_items_trend
+[29-Jul-2025 16:09:06 Europe/Berlin] Raw input: {"action":"get_warehouse_supply_by_location","product":"All","location":"Warehouse"}
+[29-Jul-2025 16:09:06 Europe/Berlin] Processing action: get_warehouse_supply_by_location
+[29-Jul-2025 16:09:06 Europe/Berlin] Raw input: {"action":"get_fast_moving_items_trend","product":"All","location":"Warehouse"}
+[29-Jul-2025 16:09:06 Europe/Berlin] Processing action: get_fast_moving_items_trend
+[29-Jul-2025 16:09:06 Europe/Berlin] Raw input: {"action":"get_warehouse_stockout_items","product":"All","location":"Warehouse"}
+[29-Jul-2025 16:09:06 Europe/Berlin] Raw input: {"action":"get_critical_stock_alerts","product":"All","location":"Warehouse"}
+[29-Jul-2025 16:09:06 Europe/Berlin] Processing action: get_warehouse_stockout_items
+[29-Jul-2025 16:09:06 Europe/Berlin] Processing action: get_critical_stock_alerts
+[29-Jul-2025 16:09:06 Europe/Berlin] Raw input: {"action":"get_warehouse_stockout_items","product":"All","location":"Warehouse"}
+[29-Jul-2025 16:09:06 Europe/Berlin] Processing action: get_warehouse_stockout_items
+[29-Jul-2025 16:09:06 Europe/Berlin] Raw input: {"action":"get_inventory_by_branch_category","product":"All","location":"Warehouse"}
+[29-Jul-2025 16:09:06 Europe/Berlin] Raw input: {"action":"get_critical_stock_alerts","product":"All","location":"Warehouse"}
+[29-Jul-2025 16:09:06 Europe/Berlin] Raw input: {"action":"get_warehouse_product_kpis","product":"All","location":"Warehouse"}
+[29-Jul-2025 16:09:06 Europe/Berlin] Processing action: get_inventory_by_branch_category
+[29-Jul-2025 16:09:06 Europe/Berlin] Processing action: get_critical_stock_alerts
+[29-Jul-2025 16:09:06 Europe/Berlin] Processing action: get_warehouse_product_kpis
+[29-Jul-2025 16:09:06 Europe/Berlin] Raw input: {"action":"get_warehouse_product_kpis","product":"All","location":"Warehouse"}
+[29-Jul-2025 16:09:06 Europe/Berlin] Processing action: get_warehouse_product_kpis
+[29-Jul-2025 16:09:06 Europe/Berlin] Raw input: {"action":"get_inventory_by_branch_category","product":"All","location":"Warehouse"}
+[29-Jul-2025 16:09:06 Europe/Berlin] Processing action: get_inventory_by_branch_category
+[29-Jul-2025 16:10:02 Europe/Berlin] Raw input: 
+[29-Jul-2025 16:10:02 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 16:10:02 Europe/Berlin] Raw input: 
+[29-Jul-2025 16:10:02 Europe/Berlin] Raw input: 
+[29-Jul-2025 16:10:02 Europe/Berlin] Raw input: 
+[29-Jul-2025 16:10:02 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 16:10:02 Europe/Berlin] Raw input: 
+[29-Jul-2025 16:10:02 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 16:10:02 Europe/Berlin] Raw input: 
+[29-Jul-2025 16:10:02 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 16:10:02 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 16:10:02 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 16:10:02 Europe/Berlin] Raw input: 
+[29-Jul-2025 16:10:02 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 16:10:02 Europe/Berlin] Raw input: 
+[29-Jul-2025 16:10:02 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 16:10:02 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 16:10:02 Europe/Berlin] Raw input: {"action":"get_inventory_staff"}
+[29-Jul-2025 16:10:02 Europe/Berlin] Raw input: {"action":"get_transfers_with_details"}
+[29-Jul-2025 16:10:02 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 16:10:02 Europe/Berlin] Processing action: get_transfers_with_details
+[29-Jul-2025 16:10:02 Europe/Berlin] Processing action: get_inventory_staff
+[29-Jul-2025 16:10:02 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 16:10:02 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 16:10:02 Europe/Berlin] Raw input: {"action":"get_transfers_with_details"}
+[29-Jul-2025 16:10:02 Europe/Berlin] Processing action: get_transfers_with_details
+[29-Jul-2025 16:10:02 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 16:10:02 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 16:10:02 Europe/Berlin] Raw input: {"action":"get_inventory_staff"}
+[29-Jul-2025 16:10:02 Europe/Berlin] Processing action: get_inventory_staff
+[29-Jul-2025 16:10:02 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 16:10:02 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 16:10:02 Europe/Berlin] Raw input: {"action":"get_suppliers"}
+[29-Jul-2025 16:10:02 Europe/Berlin] Raw input: {"action":"get_warehouse_kpis","location":"warehouse"}
+[29-Jul-2025 16:10:02 Europe/Berlin] Processing action: get_suppliers
+[29-Jul-2025 16:10:02 Europe/Berlin] Raw input: {"action":"get_products"}
+[29-Jul-2025 16:10:02 Europe/Berlin] Processing action: get_warehouse_kpis
+[29-Jul-2025 16:10:02 Europe/Berlin] Raw input: {"action":"get_categories"}
+[29-Jul-2025 16:10:02 Europe/Berlin] Raw input: {"action":"get_batches"}
+[29-Jul-2025 16:10:02 Europe/Berlin] Raw input: {"action":"get_brands"}
+[29-Jul-2025 16:10:02 Europe/Berlin] Processing action: get_products
+[29-Jul-2025 16:10:02 Europe/Berlin] Processing action: get_categories
+[29-Jul-2025 16:10:02 Europe/Berlin] Processing action: get_batches
+[29-Jul-2025 16:10:02 Europe/Berlin] Processing action: get_brands
+[29-Jul-2025 16:10:02 Europe/Berlin] Raw input: {"action":"get_warehouse_kpis","location":"warehouse"}
+[29-Jul-2025 16:10:02 Europe/Berlin] Processing action: get_warehouse_kpis
+[29-Jul-2025 16:10:02 Europe/Berlin] Raw input: {"action":"get_suppliers"}
+[29-Jul-2025 16:10:02 Europe/Berlin] Processing action: get_suppliers
+[29-Jul-2025 16:10:02 Europe/Berlin] Raw input: {"action":"get_products"}
+[29-Jul-2025 16:10:02 Europe/Berlin] Processing action: get_products
+[29-Jul-2025 16:10:02 Europe/Berlin] Raw input: {"action":"get_batches"}
+[29-Jul-2025 16:10:02 Europe/Berlin] Processing action: get_batches
+[29-Jul-2025 16:10:02 Europe/Berlin] Raw input: {"action":"get_brands"}
+[29-Jul-2025 16:10:02 Europe/Berlin] Raw input: {"action":"get_categories"}
+[29-Jul-2025 16:10:02 Europe/Berlin] Processing action: get_categories
+[29-Jul-2025 16:10:02 Europe/Berlin] Processing action: get_brands
+[29-Jul-2025 16:12:34 Europe/Berlin] Raw input: 
+[29-Jul-2025 16:12:34 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 16:12:34 Europe/Berlin] Raw input: 
+[29-Jul-2025 16:12:34 Europe/Berlin] Raw input: 
+[29-Jul-2025 16:12:34 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 16:12:34 Europe/Berlin] Raw input: 
+[29-Jul-2025 16:12:34 Europe/Berlin] Raw input: 
+[29-Jul-2025 16:12:34 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 16:12:34 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 16:12:34 Europe/Berlin] Raw input: 
+[29-Jul-2025 16:12:34 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 16:12:34 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 16:12:34 Europe/Berlin] Raw input: {"action":"get_warehouse_kpis","location":"warehouse"}
+[29-Jul-2025 16:12:34 Europe/Berlin] Processing action: get_warehouse_kpis
+[29-Jul-2025 16:12:34 Europe/Berlin] Raw input: {"action":"get_suppliers"}
+[29-Jul-2025 16:12:34 Europe/Berlin] Processing action: get_suppliers
+[29-Jul-2025 16:12:34 Europe/Berlin] Raw input: {"action":"get_batches"}
+[29-Jul-2025 16:12:34 Europe/Berlin] Raw input: {"action":"get_products"}
+[29-Jul-2025 16:12:34 Europe/Berlin] Processing action: get_batches
+[29-Jul-2025 16:12:34 Europe/Berlin] Processing action: get_products
+[29-Jul-2025 16:12:34 Europe/Berlin] Raw input: {"action":"get_brands"}
+[29-Jul-2025 16:12:34 Europe/Berlin] Raw input: {"action":"get_categories"}
+[29-Jul-2025 16:12:34 Europe/Berlin] Processing action: get_brands
+[29-Jul-2025 16:12:34 Europe/Berlin] Processing action: get_categories
+[29-Jul-2025 16:23:25 Europe/Berlin] Raw input: 
+[29-Jul-2025 16:23:25 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 16:23:25 Europe/Berlin] Raw input: {"action":"check_barcode","barcode":"020357122682"}
+[29-Jul-2025 16:23:25 Europe/Berlin] Processing action: check_barcode
+[29-Jul-2025 16:24:50 Europe/Berlin] Raw input: 
+[29-Jul-2025 16:24:50 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 16:24:50 Europe/Berlin] Raw input: 
+[29-Jul-2025 16:24:50 Europe/Berlin] Raw input: 
+[29-Jul-2025 16:24:50 Europe/Berlin] Raw input: 
+[29-Jul-2025 16:24:50 Europe/Berlin] Raw input: 
+[29-Jul-2025 16:24:50 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 16:24:50 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 16:24:50 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 16:24:50 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 16:24:50 Europe/Berlin] Raw input: 
+[29-Jul-2025 16:24:50 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 16:24:50 Europe/Berlin] Raw input: {"action":"get_warehouse_kpis","location":"warehouse"}
+[29-Jul-2025 16:24:50 Europe/Berlin] Processing action: get_warehouse_kpis
+[29-Jul-2025 16:24:50 Europe/Berlin] Raw input: {"action":"get_products"}
+[29-Jul-2025 16:24:50 Europe/Berlin] Processing action: get_products
+[29-Jul-2025 16:24:50 Europe/Berlin] Raw input: {"action":"get_brands"}
+[29-Jul-2025 16:24:50 Europe/Berlin] Raw input: {"action":"get_batches"}
+[29-Jul-2025 16:24:50 Europe/Berlin] Processing action: get_brands
+[29-Jul-2025 16:24:50 Europe/Berlin] Processing action: get_batches
+[29-Jul-2025 16:24:50 Europe/Berlin] Raw input: {"action":"get_categories"}
+[29-Jul-2025 16:24:50 Europe/Berlin] Raw input: {"action":"get_suppliers"}
+[29-Jul-2025 16:24:50 Europe/Berlin] Processing action: get_categories
+[29-Jul-2025 16:24:50 Europe/Berlin] Processing action: get_suppliers
+[29-Jul-2025 16:25:00 Europe/Berlin] Raw input: 
+[29-Jul-2025 16:25:00 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 16:25:00 Europe/Berlin] Raw input: {"action":"check_barcode","barcode":"020357122682"}
+[29-Jul-2025 16:25:00 Europe/Berlin] Processing action: check_barcode
+[29-Jul-2025 16:28:47 Europe/Berlin] Raw input: 
+[29-Jul-2025 16:28:47 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 16:28:47 Europe/Berlin] Raw input: {"action":"add_product","product_name":"Mang Juan","category":"Dairy","barcode":"020357122682","description":"Chichirya","unit_price":80,"srp":10,"brand_id":178,"quantity":9,"supplier_id":"13","expiration":"2026-07-29","prescription":0,"bulk":1,"location":"Warehouse","status":"active","stock_status":"in stock","reference":"BR-20250729-222501","order_no":"24"}
+[29-Jul-2025 16:28:47 Europe/Berlin] Processing action: add_product
+[29-Jul-2025 16:28:47 Europe/Berlin] Raw input: {"action":"get_products"}
+[29-Jul-2025 16:28:47 Europe/Berlin] Processing action: get_products
+[29-Jul-2025 16:30:03 Europe/Berlin] Raw input: 
+[29-Jul-2025 16:30:03 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 16:30:03 Europe/Berlin] Raw input: 
+[29-Jul-2025 16:30:03 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 16:30:03 Europe/Berlin] Raw input: 
+[29-Jul-2025 16:30:03 Europe/Berlin] Raw input: 
+[29-Jul-2025 16:30:03 Europe/Berlin] Raw input: 
+[29-Jul-2025 16:30:03 Europe/Berlin] Raw input: 
+[29-Jul-2025 16:30:03 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 16:30:03 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 16:30:03 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 16:30:03 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 16:30:03 Europe/Berlin] Raw input: 
+[29-Jul-2025 16:30:03 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 16:30:03 Europe/Berlin] Raw input: 
+[29-Jul-2025 16:30:03 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 16:30:03 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 16:30:03 Europe/Berlin] Raw input: {"action":"get_transfers_with_details"}
+[29-Jul-2025 16:30:03 Europe/Berlin] Raw input: {"action":"get_inventory_staff"}
+[29-Jul-2025 16:30:03 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 16:30:03 Europe/Berlin] Processing action: get_transfers_with_details
+[29-Jul-2025 16:30:03 Europe/Berlin] Processing action: get_inventory_staff
+[29-Jul-2025 16:30:03 Europe/Berlin] Raw input: {"action":"get_transfers_with_details"}
+[29-Jul-2025 16:30:03 Europe/Berlin] Processing action: get_transfers_with_details
+[29-Jul-2025 16:30:03 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 16:30:03 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 16:30:03 Europe/Berlin] Raw input: {"action":"get_inventory_staff"}
+[29-Jul-2025 16:30:03 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 16:30:03 Europe/Berlin] Processing action: get_inventory_staff
+[29-Jul-2025 16:30:03 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 16:30:03 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 16:30:03 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 16:30:09 Europe/Berlin] Raw input: 
+[29-Jul-2025 16:30:09 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 16:30:09 Europe/Berlin] Raw input: {"action":"get_products","location_id":2}
+[29-Jul-2025 16:30:09 Europe/Berlin] Processing action: get_products
+[29-Jul-2025 16:32:17 Europe/Berlin] Raw input: 
+[29-Jul-2025 16:32:17 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 16:32:17 Europe/Berlin] Raw input: {"action":"create_transfer","source_location_id":2,"destination_location_id":4,"employee_id":19,"status":"approved","delivery_date":"2025-07-29","products":[{"product_id":183,"quantity":20}]}
+[29-Jul-2025 16:32:17 Europe/Berlin] Processing action: create_transfer
+[29-Jul-2025 16:32:17 Europe/Berlin] [TRANSFER] Source: 2, Destination: 4 (Convenience)
+[29-Jul-2025 16:32:17 Europe/Berlin] [TRANSFER VALIDATION] Product ID: 183, Name: C2 Apple, Available: 80, Requested: 20
+[29-Jul-2025 16:32:17 Europe/Berlin] Updated existing product with same barcode in destination - Product ID: 204, Added Qty: 20
+[29-Jul-2025 16:32:17 Europe/Berlin] Transfer completed - Product ID: 183, Quantity: 20, From: 2, To: 4
+[29-Jul-2025 16:32:17 Europe/Berlin] Transfer completed successfully - Transfer ID: 44, Products: 1
+[29-Jul-2025 16:32:17 Europe/Berlin] Raw input: {"action":"get_transfers_with_details"}
+[29-Jul-2025 16:32:17 Europe/Berlin] Processing action: get_transfers_with_details
+[29-Jul-2025 16:32:17 Europe/Berlin] Raw input: {"action":"get_products","location_id":2}
+[29-Jul-2025 16:32:17 Europe/Berlin] Processing action: get_products
+[29-Jul-2025 16:32:51 Europe/Berlin] Raw input: 
+[29-Jul-2025 16:32:51 Europe/Berlin] Raw input: 
+[29-Jul-2025 16:32:51 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 16:32:51 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 16:32:51 Europe/Berlin] Raw input: {"action":"get_reports_data"}
+[29-Jul-2025 16:32:51 Europe/Berlin] Raw input: {"action":"get_reports_data"}
+[29-Jul-2025 16:32:51 Europe/Berlin] Processing action: get_reports_data
+[29-Jul-2025 16:32:51 Europe/Berlin] Processing action: get_reports_data
+[29-Jul-2025 16:32:54 Europe/Berlin] Raw input: {"action":"get_movement_history","search":"","movement_type":"all","location":"all","date_range":"all"}
+[29-Jul-2025 16:32:54 Europe/Berlin] Raw input: {"action":"get_locations_for_filter"}
+[29-Jul-2025 16:32:54 Europe/Berlin] Processing action: get_movement_history
+[29-Jul-2025 16:32:54 Europe/Berlin] Raw input: {"action":"get_movement_history","search":"","movement_type":"all","location":"all","date_range":"all"}
+[29-Jul-2025 16:32:54 Europe/Berlin] Raw input: {"action":"get_locations_for_filter"}
+[29-Jul-2025 16:32:54 Europe/Berlin] Processing action: get_locations_for_filter
+[29-Jul-2025 16:32:54 Europe/Berlin] Processing action: get_movement_history
+[29-Jul-2025 16:32:54 Europe/Berlin] Processing action: get_locations_for_filter
+[29-Jul-2025 16:32:55 Europe/Berlin] Raw input: {"action":"get_movement_history","search":"","movement_type":"all","location":"all","date_range":"all"}
+[29-Jul-2025 16:32:55 Europe/Berlin] Processing action: get_movement_history
+[29-Jul-2025 16:33:46 Europe/Berlin] Raw input: 
+[29-Jul-2025 16:33:46 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 16:33:46 Europe/Berlin] Raw input: 
+[29-Jul-2025 16:33:46 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 16:33:46 Europe/Berlin] Raw input: 
+[29-Jul-2025 16:33:46 Europe/Berlin] Raw input: 
+[29-Jul-2025 16:33:46 Europe/Berlin] Raw input: 
+[29-Jul-2025 16:33:46 Europe/Berlin] Raw input: 
+[29-Jul-2025 16:33:46 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 16:33:46 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 16:33:46 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 16:33:46 Europe/Berlin] Raw input: 
+[29-Jul-2025 16:33:46 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 16:33:46 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 16:33:46 Europe/Berlin] Raw input: 
+[29-Jul-2025 16:33:46 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 16:33:46 Europe/Berlin] Raw input: {"action":"get_transfers_with_details"}
+[29-Jul-2025 16:33:46 Europe/Berlin] Processing action: get_transfers_with_details
+[29-Jul-2025 16:33:46 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 16:33:46 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 16:33:46 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 16:33:46 Europe/Berlin] Raw input: {"action":"get_inventory_staff"}
+[29-Jul-2025 16:33:46 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 16:33:46 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 16:33:46 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 16:33:46 Europe/Berlin] Raw input: {"action":"get_transfers_with_details"}
+[29-Jul-2025 16:33:46 Europe/Berlin] Processing action: get_inventory_staff
+[29-Jul-2025 16:33:46 Europe/Berlin] Processing action: get_transfers_with_details
+[29-Jul-2025 16:33:46 Europe/Berlin] Raw input: {"action":"get_inventory_staff"}
+[29-Jul-2025 16:33:46 Europe/Berlin] Processing action: get_inventory_staff
+[29-Jul-2025 16:33:46 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 16:33:46 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 16:33:49 Europe/Berlin] Raw input: {"action":"get_categories"}
+[29-Jul-2025 16:33:49 Europe/Berlin] Processing action: get_categories
+[29-Jul-2025 16:33:49 Europe/Berlin] Raw input: {"action":"get_top_products_by_quantity","product":"All","location":"Warehouse"}
+[29-Jul-2025 16:33:49 Europe/Berlin] Raw input: {"action":"get_warehouse_kpis","product":"All","location":"Warehouse"}
+[29-Jul-2025 16:33:49 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 16:33:49 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 16:33:49 Europe/Berlin] Raw input: {"action":"get_transfers_with_details"}
+[29-Jul-2025 16:33:49 Europe/Berlin] Processing action: get_top_products_by_quantity
+[29-Jul-2025 16:33:49 Europe/Berlin] Processing action: get_warehouse_kpis
+[29-Jul-2025 16:33:49 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 16:33:49 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 16:33:49 Europe/Berlin] Processing action: get_transfers_with_details
+[29-Jul-2025 16:33:49 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 16:33:49 Europe/Berlin] Raw input: {"action":"get_warehouse_supply_by_product","product":"All","location":"Warehouse"}
+[29-Jul-2025 16:33:49 Europe/Berlin] Raw input: {"action":"get_stock_distribution_by_category","product":"All","location":"Warehouse"}
+[29-Jul-2025 16:33:49 Europe/Berlin] Raw input: {"action":"get_products_by_location_name","location_name":"Convenience"}
+[29-Jul-2025 16:33:49 Europe/Berlin] Raw input: {"action":"get_products_by_location_name","location_name":"Pharmacy"}
+[29-Jul-2025 16:33:49 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 16:33:49 Europe/Berlin] Processing action: get_warehouse_supply_by_product
+[29-Jul-2025 16:33:49 Europe/Berlin] Processing action: get_products_by_location_name
+[29-Jul-2025 16:33:49 Europe/Berlin] Processing action: get_stock_distribution_by_category
+[29-Jul-2025 16:33:49 Europe/Berlin] Processing action: get_products_by_location_name
+[29-Jul-2025 16:33:49 Europe/Berlin] Raw input: {"action":"get_fast_moving_items_trend","product":"All","location":"Warehouse"}
+[29-Jul-2025 16:33:49 Europe/Berlin] Raw input: {"action":"get_warehouse_supply_by_location","product":"All","location":"Warehouse"}
+[29-Jul-2025 16:33:49 Europe/Berlin] Processing action: get_warehouse_supply_by_location
+[29-Jul-2025 16:33:49 Europe/Berlin] Processing action: get_fast_moving_items_trend
+[29-Jul-2025 16:33:49 Europe/Berlin] Raw input: {"action":"get_warehouse_stockout_items","product":"All","location":"Warehouse"}
+[29-Jul-2025 16:33:49 Europe/Berlin] Processing action: get_warehouse_stockout_items
+[29-Jul-2025 16:33:49 Europe/Berlin] Raw input: {"action":"get_critical_stock_alerts","product":"All","location":"Warehouse"}
+[29-Jul-2025 16:33:49 Europe/Berlin] Processing action: get_critical_stock_alerts
+[29-Jul-2025 16:33:49 Europe/Berlin] Raw input: {"action":"get_warehouse_product_kpis","product":"All","location":"Warehouse"}
+[29-Jul-2025 16:33:49 Europe/Berlin] Processing action: get_warehouse_product_kpis
+[29-Jul-2025 16:33:49 Europe/Berlin] Raw input: {"action":"get_inventory_by_branch_category","product":"All","location":"Warehouse"}
+[29-Jul-2025 16:33:49 Europe/Berlin] Processing action: get_inventory_by_branch_category
+[29-Jul-2025 16:33:50 Europe/Berlin] Raw input: {"action":"get_transfers_with_details"}
+[29-Jul-2025 16:33:50 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 16:33:50 Europe/Berlin] Raw input: {"action":"get_inventory_staff"}
+[29-Jul-2025 16:33:50 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 16:33:50 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 16:33:50 Europe/Berlin] Raw input: {"action":"get_transfers_with_details"}
+[29-Jul-2025 16:33:50 Europe/Berlin] Processing action: get_transfers_with_details
+[29-Jul-2025 16:33:50 Europe/Berlin] Processing action: get_inventory_staff
+[29-Jul-2025 16:33:50 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 16:33:50 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 16:33:50 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 16:33:50 Europe/Berlin] Processing action: get_transfers_with_details
+[29-Jul-2025 16:33:50 Europe/Berlin] Raw input: {"action":"get_inventory_staff"}
+[29-Jul-2025 16:33:50 Europe/Berlin] Processing action: get_inventory_staff
+[29-Jul-2025 16:33:50 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 16:33:50 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 16:36:04 Europe/Berlin] Raw input: 
+[29-Jul-2025 16:36:04 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 16:36:04 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 16:36:04 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 16:36:04 Europe/Berlin] Raw input: {"action":"get_transfers_with_details"}
+[29-Jul-2025 16:36:04 Europe/Berlin] Processing action: get_transfers_with_details
+[29-Jul-2025 16:36:05 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 16:36:05 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 16:36:05 Europe/Berlin] Raw input: {"action":"get_transfers_with_details"}
+[29-Jul-2025 16:36:05 Europe/Berlin] Processing action: get_transfers_with_details
+[29-Jul-2025 16:36:13 Europe/Berlin] Raw input: 
+[29-Jul-2025 16:36:13 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 16:36:13 Europe/Berlin] Raw input: {"action":"get_products","location_id":2}
+[29-Jul-2025 16:36:13 Europe/Berlin] Processing action: get_products
+[29-Jul-2025 16:36:36 Europe/Berlin] Raw input: 
+[29-Jul-2025 16:36:36 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 16:36:36 Europe/Berlin] Raw input: {"action":"create_transfer","source_location_id":2,"destination_location_id":3,"employee_id":20,"status":"approved","delivery_date":"2025-07-29","products":[{"product_id":184,"quantity":10}]}
+[29-Jul-2025 16:36:36 Europe/Berlin] Processing action: create_transfer
+[29-Jul-2025 16:36:36 Europe/Berlin] [TRANSFER] Source: 2, Destination: 3 (Pharmacy)
+[29-Jul-2025 16:36:36 Europe/Berlin] [TRANSFER VALIDATION] Product ID: 184, Name: Vitamin C 500mg, Available: 60, Requested: 10
+[29-Jul-2025 16:36:36 Europe/Berlin] Created new product in destination - Product ID: 184, Barcode: 1000000000016, Qty: 10
+[29-Jul-2025 16:36:36 Europe/Berlin] Transfer completed - Product ID: 184, Quantity: 10, From: 2, To: 3
+[29-Jul-2025 16:36:36 Europe/Berlin] Transfer completed successfully - Transfer ID: 45, Products: 1
+[29-Jul-2025 16:36:36 Europe/Berlin] Raw input: {"action":"get_transfers_with_details"}
+[29-Jul-2025 16:36:36 Europe/Berlin] Processing action: get_transfers_with_details
+[29-Jul-2025 16:36:36 Europe/Berlin] Raw input: {"action":"get_products","location_id":2}
+[29-Jul-2025 16:36:36 Europe/Berlin] Processing action: get_products
+[29-Jul-2025 16:36:40 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 16:36:40 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 16:36:40 Europe/Berlin] Raw input: {"action":"get_transfers_with_details"}
+[29-Jul-2025 16:36:40 Europe/Berlin] Processing action: get_transfers_with_details
+[29-Jul-2025 16:36:41 Europe/Berlin] Raw input: 
+[29-Jul-2025 16:36:41 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 16:36:41 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 16:36:41 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 16:36:41 Europe/Berlin] Raw input: {"action":"get_transfers_with_details"}
+[29-Jul-2025 16:36:41 Europe/Berlin] Processing action: get_transfers_with_details
+[29-Jul-2025 16:36:42 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 16:36:42 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 16:36:42 Europe/Berlin] Raw input: {"action":"get_transfers_with_details"}
+[29-Jul-2025 16:36:42 Europe/Berlin] Processing action: get_transfers_with_details
+[29-Jul-2025 16:36:42 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 16:36:42 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 16:36:42 Europe/Berlin] Raw input: {"action":"get_transfers_with_details"}
+[29-Jul-2025 16:36:42 Europe/Berlin] Processing action: get_transfers_with_details
+[29-Jul-2025 16:36:46 Europe/Berlin] Raw input: {"action":"get_categories"}
+[29-Jul-2025 16:36:46 Europe/Berlin] Processing action: get_categories
+[29-Jul-2025 16:36:46 Europe/Berlin] Raw input: {"action":"get_warehouse_kpis","product":"All","location":"Warehouse"}
+[29-Jul-2025 16:36:46 Europe/Berlin] Processing action: get_warehouse_kpis
+[29-Jul-2025 16:36:46 Europe/Berlin] Raw input: {"action":"get_top_products_by_quantity","product":"All","location":"Warehouse"}
+[29-Jul-2025 16:36:46 Europe/Berlin] Processing action: get_top_products_by_quantity
+[29-Jul-2025 16:36:46 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 16:36:46 Europe/Berlin] Raw input: {"action":"get_transfers_with_details"}
+[29-Jul-2025 16:36:46 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 16:36:46 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 16:36:46 Europe/Berlin] Processing action: get_transfers_with_details
+[29-Jul-2025 16:36:46 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 16:36:46 Europe/Berlin] Raw input: {"action":"get_warehouse_supply_by_product","product":"All","location":"Warehouse"}
+[29-Jul-2025 16:36:46 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 16:36:46 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 16:36:46 Europe/Berlin] Processing action: get_warehouse_supply_by_product
+[29-Jul-2025 16:36:46 Europe/Berlin] Raw input: {"action":"get_stock_distribution_by_category","product":"All","location":"Warehouse"}
+[29-Jul-2025 16:36:46 Europe/Berlin] Raw input: {"action":"get_products_by_location_name","location_name":"Convenience"}
+[29-Jul-2025 16:36:46 Europe/Berlin] Processing action: get_stock_distribution_by_category
+[29-Jul-2025 16:36:46 Europe/Berlin] Processing action: get_products_by_location_name
+[29-Jul-2025 16:36:46 Europe/Berlin] Raw input: {"action":"get_products_by_location_name","location_name":"Pharmacy"}
+[29-Jul-2025 16:36:46 Europe/Berlin] Processing action: get_products_by_location_name
+[29-Jul-2025 16:36:46 Europe/Berlin] Raw input: {"action":"get_warehouse_supply_by_location","product":"All","location":"Warehouse"}
+[29-Jul-2025 16:36:46 Europe/Berlin] Raw input: {"action":"get_fast_moving_items_trend","product":"All","location":"Warehouse"}
+[29-Jul-2025 16:36:46 Europe/Berlin] Processing action: get_fast_moving_items_trend
+[29-Jul-2025 16:36:46 Europe/Berlin] Processing action: get_warehouse_supply_by_location
+[29-Jul-2025 16:36:46 Europe/Berlin] Raw input: {"action":"get_warehouse_stockout_items","product":"All","location":"Warehouse"}
+[29-Jul-2025 16:36:46 Europe/Berlin] Raw input: {"action":"get_critical_stock_alerts","product":"All","location":"Warehouse"}
+[29-Jul-2025 16:36:46 Europe/Berlin] Processing action: get_warehouse_stockout_items
+[29-Jul-2025 16:36:46 Europe/Berlin] Processing action: get_critical_stock_alerts
+[29-Jul-2025 16:36:46 Europe/Berlin] Raw input: {"action":"get_inventory_by_branch_category","product":"All","location":"Warehouse"}
+[29-Jul-2025 16:36:46 Europe/Berlin] Processing action: get_inventory_by_branch_category
+[29-Jul-2025 16:36:46 Europe/Berlin] Raw input: {"action":"get_warehouse_product_kpis","product":"All","location":"Warehouse"}
+[29-Jul-2025 16:36:46 Europe/Berlin] Processing action: get_warehouse_product_kpis
+[29-Jul-2025 16:36:49 Europe/Berlin] Raw input: 
+[29-Jul-2025 16:36:49 Europe/Berlin] Raw input: 
+[29-Jul-2025 16:36:49 Europe/Berlin] Raw input: 
+[29-Jul-2025 16:36:49 Europe/Berlin] Raw input: 
+[29-Jul-2025 16:36:49 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 16:36:49 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 16:36:49 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 16:36:49 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 16:36:49 Europe/Berlin] Raw input: 
+[29-Jul-2025 16:36:49 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 16:36:49 Europe/Berlin] Raw input: 
+[29-Jul-2025 16:36:49 Europe/Berlin] Raw input: {"action":"get_transfers_with_details"}
+[29-Jul-2025 16:36:49 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 16:36:49 Europe/Berlin] Raw input: 
+[29-Jul-2025 16:36:49 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 16:36:49 Europe/Berlin] Processing action: get_transfers_with_details
+[29-Jul-2025 16:36:49 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 16:36:49 Europe/Berlin] Raw input: 
+[29-Jul-2025 16:36:49 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 16:36:49 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 16:36:49 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 16:36:49 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 16:36:49 Europe/Berlin] Raw input: {"action":"get_inventory_staff"}
+[29-Jul-2025 16:36:49 Europe/Berlin] Raw input: {"action":"get_transfers_with_details"}
+[29-Jul-2025 16:36:49 Europe/Berlin] Processing action: get_inventory_staff
+[29-Jul-2025 16:36:49 Europe/Berlin] Processing action: get_transfers_with_details
+[29-Jul-2025 16:36:49 Europe/Berlin] Raw input: {"action":"get_inventory_staff"}
+[29-Jul-2025 16:36:49 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 16:36:49 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 16:36:49 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 16:36:49 Europe/Berlin] Processing action: get_inventory_staff
+[29-Jul-2025 16:36:49 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 16:36:49 Europe/Berlin] Raw input: {"action":"get_transfers_with_details"}
+[29-Jul-2025 16:36:49 Europe/Berlin] Processing action: get_transfers_with_details
+[29-Jul-2025 16:36:49 Europe/Berlin] Raw input: {"action":"get_transfers_with_details"}
+[29-Jul-2025 16:36:49 Europe/Berlin] Processing action: get_transfers_with_details
+[29-Jul-2025 16:36:50 Europe/Berlin] Raw input: {"action":"get_warehouse_kpis","location":"warehouse"}
+[29-Jul-2025 16:36:50 Europe/Berlin] Raw input: {"action":"get_suppliers"}
+[29-Jul-2025 16:36:50 Europe/Berlin] Processing action: get_warehouse_kpis
+[29-Jul-2025 16:36:50 Europe/Berlin] Processing action: get_suppliers
+[29-Jul-2025 16:36:50 Europe/Berlin] Raw input: {"action":"get_products"}
+[29-Jul-2025 16:36:50 Europe/Berlin] Raw input: {"action":"get_batches"}
+[29-Jul-2025 16:36:50 Europe/Berlin] Raw input: {"action":"get_brands"}
+[29-Jul-2025 16:36:50 Europe/Berlin] Processing action: get_products
+[29-Jul-2025 16:36:50 Europe/Berlin] Processing action: get_batches
+[29-Jul-2025 16:36:50 Europe/Berlin] Processing action: get_brands
+[29-Jul-2025 16:36:50 Europe/Berlin] Raw input: {"action":"get_categories"}
+[29-Jul-2025 16:36:50 Europe/Berlin] Processing action: get_categories
+[29-Jul-2025 16:36:50 Europe/Berlin] Raw input: {"action":"get_warehouse_kpis","location":"warehouse"}
+[29-Jul-2025 16:36:50 Europe/Berlin] Raw input: {"action":"get_batches"}
+[29-Jul-2025 16:36:50 Europe/Berlin] Raw input: {"action":"get_suppliers"}
+[29-Jul-2025 16:36:50 Europe/Berlin] Raw input: {"action":"get_products"}
+[29-Jul-2025 16:36:50 Europe/Berlin] Processing action: get_warehouse_kpis
+[29-Jul-2025 16:36:50 Europe/Berlin] Raw input: {"action":"get_categories"}
+[29-Jul-2025 16:36:50 Europe/Berlin] Processing action: get_batches
+[29-Jul-2025 16:36:50 Europe/Berlin] Processing action: get_suppliers
+[29-Jul-2025 16:36:50 Europe/Berlin] Processing action: get_products
+[29-Jul-2025 16:36:50 Europe/Berlin] Processing action: get_categories
+[29-Jul-2025 16:36:50 Europe/Berlin] Raw input: {"action":"get_brands"}
+[29-Jul-2025 16:36:50 Europe/Berlin] Processing action: get_brands
+[29-Jul-2025 16:36:50 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 16:36:50 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 16:36:50 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 16:36:50 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 16:36:51 Europe/Berlin] Raw input: {"action":"get_location_products","location_id":4,"search":"","category":"all"}
+[29-Jul-2025 16:36:51 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 16:36:51 Europe/Berlin] Processing action: get_location_products
+[29-Jul-2025 16:36:51 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 16:36:51 Europe/Berlin] Raw input: {"action":"get_products_by_location_name","location_name":"Convenience"}
+[29-Jul-2025 16:36:51 Europe/Berlin] Processing action: get_products_by_location_name
+[29-Jul-2025 16:36:51 Europe/Berlin] Raw input: {"action":"get_location_products","location_id":4,"search":"","category":"all"}
+[29-Jul-2025 16:36:51 Europe/Berlin] Processing action: get_location_products
+[29-Jul-2025 16:36:51 Europe/Berlin] Raw input: {"action":"get_products_by_location_name","location_name":"Convenience"}
+[29-Jul-2025 16:36:51 Europe/Berlin] Processing action: get_products_by_location_name
+[29-Jul-2025 16:36:52 Europe/Berlin] Raw input: {"action":"get_warehouse_kpis","location":"warehouse"}
+[29-Jul-2025 16:36:52 Europe/Berlin] Processing action: get_warehouse_kpis
+[29-Jul-2025 16:36:52 Europe/Berlin] Raw input: {"action":"get_suppliers"}
+[29-Jul-2025 16:36:52 Europe/Berlin] Raw input: {"action":"get_batches"}
+[29-Jul-2025 16:36:52 Europe/Berlin] Raw input: {"action":"get_products"}
+[29-Jul-2025 16:36:52 Europe/Berlin] Processing action: get_suppliers
+[29-Jul-2025 16:36:52 Europe/Berlin] Processing action: get_products
+[29-Jul-2025 16:36:52 Europe/Berlin] Processing action: get_batches
+[29-Jul-2025 16:36:52 Europe/Berlin] Raw input: {"action":"get_categories"}
+[29-Jul-2025 16:36:52 Europe/Berlin] Raw input: {"action":"get_brands"}
+[29-Jul-2025 16:36:52 Europe/Berlin] Processing action: get_categories
+[29-Jul-2025 16:36:52 Europe/Berlin] Processing action: get_brands
+[29-Jul-2025 16:36:52 Europe/Berlin] Raw input: {"action":"get_suppliers"}
+[29-Jul-2025 16:36:52 Europe/Berlin] Raw input: {"action":"get_batches"}
+[29-Jul-2025 16:36:52 Europe/Berlin] Processing action: get_suppliers
+[29-Jul-2025 16:36:52 Europe/Berlin] Raw input: {"action":"get_warehouse_kpis","location":"warehouse"}
+[29-Jul-2025 16:36:52 Europe/Berlin] Processing action: get_batches
+[29-Jul-2025 16:36:52 Europe/Berlin] Processing action: get_warehouse_kpis
+[29-Jul-2025 16:36:52 Europe/Berlin] Raw input: {"action":"get_products"}
+[29-Jul-2025 16:36:52 Europe/Berlin] Processing action: get_products
+[29-Jul-2025 16:36:52 Europe/Berlin] Raw input: {"action":"get_brands"}
+[29-Jul-2025 16:36:52 Europe/Berlin] Raw input: {"action":"get_categories"}
+[29-Jul-2025 16:36:52 Europe/Berlin] Processing action: get_brands
+[29-Jul-2025 16:36:52 Europe/Berlin] Processing action: get_categories
+[29-Jul-2025 16:36:52 Europe/Berlin] Raw input: {"action":"get_transfers_with_details"}
+[29-Jul-2025 16:36:52 Europe/Berlin] Processing action: get_transfers_with_details
+[29-Jul-2025 16:36:52 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 16:36:52 Europe/Berlin] Raw input: {"action":"get_inventory_staff"}
+[29-Jul-2025 16:36:52 Europe/Berlin] Processing action: get_inventory_staff
+[29-Jul-2025 16:36:52 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 16:36:52 Europe/Berlin] Raw input: {"action":"get_transfers_with_details"}
+[29-Jul-2025 16:36:52 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 16:36:52 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 16:36:52 Europe/Berlin] Processing action: get_transfers_with_details
+[29-Jul-2025 16:36:52 Europe/Berlin] Raw input: {"action":"get_inventory_staff"}
+[29-Jul-2025 16:36:52 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 16:36:52 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 16:36:52 Europe/Berlin] Processing action: get_inventory_staff
+[29-Jul-2025 16:36:52 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 16:36:52 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 16:36:52 Europe/Berlin] Raw input: {"action":"get_transfers_with_details"}
+[29-Jul-2025 16:36:52 Europe/Berlin] Processing action: get_transfers_with_details
+[29-Jul-2025 16:36:52 Europe/Berlin] Raw input: {"action":"get_transfers_with_details"}
+[29-Jul-2025 16:36:52 Europe/Berlin] Processing action: get_transfers_with_details
+[29-Jul-2025 16:36:53 Europe/Berlin] Raw input: {"action":"get_warehouse_kpis","location":"warehouse"}
+[29-Jul-2025 16:36:53 Europe/Berlin] Processing action: get_warehouse_kpis
+[29-Jul-2025 16:36:53 Europe/Berlin] Raw input: {"action":"get_suppliers"}
+[29-Jul-2025 16:36:53 Europe/Berlin] Raw input: {"action":"get_batches"}
+[29-Jul-2025 16:36:53 Europe/Berlin] Processing action: get_suppliers
+[29-Jul-2025 16:36:53 Europe/Berlin] Raw input: {"action":"get_products"}
+[29-Jul-2025 16:36:53 Europe/Berlin] Raw input: {"action":"get_brands"}
+[29-Jul-2025 16:36:53 Europe/Berlin] Processing action: get_batches
+[29-Jul-2025 16:36:53 Europe/Berlin] Processing action: get_products
+[29-Jul-2025 16:36:53 Europe/Berlin] Processing action: get_brands
+[29-Jul-2025 16:36:53 Europe/Berlin] Raw input: {"action":"get_categories"}
+[29-Jul-2025 16:36:53 Europe/Berlin] Processing action: get_categories
+[29-Jul-2025 16:36:53 Europe/Berlin] Raw input: {"action":"get_warehouse_kpis","location":"warehouse"}
+[29-Jul-2025 16:36:53 Europe/Berlin] Raw input: {"action":"get_products"}
+[29-Jul-2025 16:36:53 Europe/Berlin] Raw input: {"action":"get_suppliers"}
+[29-Jul-2025 16:36:53 Europe/Berlin] Processing action: get_warehouse_kpis
+[29-Jul-2025 16:36:53 Europe/Berlin] Processing action: get_products
+[29-Jul-2025 16:36:53 Europe/Berlin] Processing action: get_suppliers
+[29-Jul-2025 16:36:53 Europe/Berlin] Raw input: {"action":"get_batches"}
+[29-Jul-2025 16:36:53 Europe/Berlin] Processing action: get_batches
+[29-Jul-2025 16:36:53 Europe/Berlin] Raw input: {"action":"get_brands"}
+[29-Jul-2025 16:36:53 Europe/Berlin] Processing action: get_brands
+[29-Jul-2025 16:36:53 Europe/Berlin] Raw input: {"action":"get_categories"}
+[29-Jul-2025 16:36:53 Europe/Berlin] Processing action: get_categories
+[29-Jul-2025 16:36:54 Europe/Berlin] Raw input: {"action":"get_transfers_with_details"}
+[29-Jul-2025 16:36:54 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 16:36:54 Europe/Berlin] Raw input: {"action":"get_inventory_staff"}
+[29-Jul-2025 16:36:54 Europe/Berlin] Processing action: get_transfers_with_details
+[29-Jul-2025 16:36:54 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 16:36:54 Europe/Berlin] Processing action: get_inventory_staff
+[29-Jul-2025 16:36:54 Europe/Berlin] Raw input: {"action":"get_transfers_with_details"}
+[29-Jul-2025 16:36:54 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 16:36:54 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 16:36:54 Europe/Berlin] Processing action: get_transfers_with_details
+[29-Jul-2025 16:36:54 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 16:36:54 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 16:36:54 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 16:36:54 Europe/Berlin] Raw input: {"action":"get_inventory_staff"}
+[29-Jul-2025 16:36:54 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 16:36:54 Europe/Berlin] Processing action: get_inventory_staff
+[29-Jul-2025 16:36:54 Europe/Berlin] Raw input: {"action":"get_transfers_with_details"}
+[29-Jul-2025 16:36:54 Europe/Berlin] Processing action: get_transfers_with_details
+[29-Jul-2025 16:36:54 Europe/Berlin] Raw input: {"action":"get_transfers_with_details"}
+[29-Jul-2025 16:36:54 Europe/Berlin] Processing action: get_transfers_with_details
+[29-Jul-2025 16:51:21 Europe/Berlin] Raw input: 
+[29-Jul-2025 16:51:21 Europe/Berlin] Raw input: 
+[29-Jul-2025 16:51:21 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 16:51:21 Europe/Berlin] Raw input: 
+[29-Jul-2025 16:51:21 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 16:51:21 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 16:51:21 Europe/Berlin] Raw input: 
+[29-Jul-2025 16:51:21 Europe/Berlin] Raw input: 
+[29-Jul-2025 16:51:21 Europe/Berlin] Raw input: 
+[29-Jul-2025 16:51:21 Europe/Berlin] Raw input: {"action":"get_categories"}
+[29-Jul-2025 16:51:21 Europe/Berlin] Raw input: {"action":"get_top_products_by_quantity","product":"All","location":"Warehouse"}
+[29-Jul-2025 16:51:21 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 16:51:21 Europe/Berlin] Raw input: {"action":"get_warehouse_kpis","product":"All","location":"Warehouse"}
+[29-Jul-2025 16:51:21 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 16:51:21 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 16:51:21 Europe/Berlin] Processing action: get_categories
+[29-Jul-2025 16:51:21 Europe/Berlin] Processing action: get_top_products_by_quantity
+[29-Jul-2025 16:51:21 Europe/Berlin] Processing action: get_warehouse_kpis
+[29-Jul-2025 16:51:21 Europe/Berlin] Raw input: {"action":"get_transfers_with_details"}
+[29-Jul-2025 16:51:21 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 16:51:21 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 16:51:21 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 16:51:21 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 16:51:21 Europe/Berlin] Processing action: get_transfers_with_details
+[29-Jul-2025 16:51:21 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 16:51:21 Europe/Berlin] Raw input: {"action":"get_warehouse_supply_by_product","product":"All","location":"Warehouse"}
+[29-Jul-2025 16:51:21 Europe/Berlin] Raw input: {"action":"get_stock_distribution_by_category","product":"All","location":"Warehouse"}
+[29-Jul-2025 16:51:21 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 16:51:21 Europe/Berlin] Processing action: get_warehouse_supply_by_product
+[29-Jul-2025 16:51:21 Europe/Berlin] Processing action: get_stock_distribution_by_category
+[29-Jul-2025 16:51:21 Europe/Berlin] Raw input: {"action":"get_products_by_location_name","location_name":"Pharmacy"}
+[29-Jul-2025 16:51:21 Europe/Berlin] Processing action: get_products_by_location_name
+[29-Jul-2025 16:51:21 Europe/Berlin] Raw input: {"action":"get_products_by_location_name","location_name":"Convenience"}
+[29-Jul-2025 16:51:21 Europe/Berlin] Processing action: get_products_by_location_name
+[29-Jul-2025 16:51:21 Europe/Berlin] Raw input: {"action":"get_fast_moving_items_trend","product":"All","location":"Warehouse"}
+[29-Jul-2025 16:51:21 Europe/Berlin] Processing action: get_fast_moving_items_trend
+[29-Jul-2025 16:51:21 Europe/Berlin] Raw input: {"action":"get_warehouse_supply_by_location","product":"All","location":"Warehouse"}
+[29-Jul-2025 16:51:21 Europe/Berlin] Processing action: get_warehouse_supply_by_location
+[29-Jul-2025 16:51:21 Europe/Berlin] Raw input: {"action":"get_critical_stock_alerts","product":"All","location":"Warehouse"}
+[29-Jul-2025 16:51:21 Europe/Berlin] Processing action: get_critical_stock_alerts
+[29-Jul-2025 16:51:21 Europe/Berlin] Raw input: {"action":"get_warehouse_stockout_items","product":"All","location":"Warehouse"}
+[29-Jul-2025 16:51:21 Europe/Berlin] Processing action: get_warehouse_stockout_items
+[29-Jul-2025 16:51:21 Europe/Berlin] Raw input: {"action":"get_inventory_by_branch_category","product":"All","location":"Warehouse"}
+[29-Jul-2025 16:51:21 Europe/Berlin] Processing action: get_inventory_by_branch_category
+[29-Jul-2025 16:51:21 Europe/Berlin] Raw input: {"action":"get_warehouse_product_kpis","product":"All","location":"Warehouse"}
+[29-Jul-2025 16:51:21 Europe/Berlin] Processing action: get_warehouse_product_kpis
+[29-Jul-2025 17:00:04 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:00:04 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:00:04 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:00:04 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:00:04 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:00:04 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:00:04 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:00:04 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:00:04 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:00:04 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:00:04 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:00:04 Europe/Berlin] Raw input: {"action":"get_categories"}
+[29-Jul-2025 17:00:04 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:00:04 Europe/Berlin] Processing action: get_categories
+[29-Jul-2025 17:00:04 Europe/Berlin] Raw input: {"action":"get_warehouse_kpis","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:00:04 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 17:00:04 Europe/Berlin] Raw input: {"action":"get_top_products_by_quantity","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:00:04 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 17:00:04 Europe/Berlin] Processing action: get_warehouse_kpis
+[29-Jul-2025 17:00:04 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 17:00:04 Europe/Berlin] Raw input: {"action":"get_transfers_with_details"}
+[29-Jul-2025 17:00:04 Europe/Berlin] Processing action: get_top_products_by_quantity
+[29-Jul-2025 17:00:04 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 17:00:04 Europe/Berlin] Processing action: get_transfers_with_details
+[29-Jul-2025 17:00:04 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 17:00:04 Europe/Berlin] Raw input: {"action":"get_warehouse_supply_by_product","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:00:04 Europe/Berlin] Raw input: {"action":"get_products_by_location_name","location_name":"Convenience"}
+[29-Jul-2025 17:00:04 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 17:00:04 Europe/Berlin] Raw input: {"action":"get_stock_distribution_by_category","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:00:04 Europe/Berlin] Processing action: get_warehouse_supply_by_product
+[29-Jul-2025 17:00:04 Europe/Berlin] Raw input: {"action":"get_products_by_location_name","location_name":"Pharmacy"}
+[29-Jul-2025 17:00:04 Europe/Berlin] Processing action: get_products_by_location_name
+[29-Jul-2025 17:00:04 Europe/Berlin] Processing action: get_stock_distribution_by_category
+[29-Jul-2025 17:00:04 Europe/Berlin] Processing action: get_products_by_location_name
+[29-Jul-2025 17:00:04 Europe/Berlin] Raw input: {"action":"get_warehouse_supply_by_location","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:00:04 Europe/Berlin] Processing action: get_warehouse_supply_by_location
+[29-Jul-2025 17:00:04 Europe/Berlin] Raw input: {"action":"get_fast_moving_items_trend","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:00:04 Europe/Berlin] Processing action: get_fast_moving_items_trend
+[29-Jul-2025 17:00:04 Europe/Berlin] Raw input: {"action":"get_warehouse_stockout_items","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:00:04 Europe/Berlin] Processing action: get_warehouse_stockout_items
+[29-Jul-2025 17:00:04 Europe/Berlin] Raw input: {"action":"get_critical_stock_alerts","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:00:04 Europe/Berlin] Processing action: get_critical_stock_alerts
+[29-Jul-2025 17:00:04 Europe/Berlin] Raw input: {"action":"get_warehouse_product_kpis","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:00:04 Europe/Berlin] Processing action: get_warehouse_product_kpis
+[29-Jul-2025 17:00:04 Europe/Berlin] Raw input: {"action":"get_inventory_by_branch_category","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:00:04 Europe/Berlin] Processing action: get_inventory_by_branch_category
+[29-Jul-2025 17:00:06 Europe/Berlin] Raw input: {"action":"get_warehouse_kpis","location":"warehouse"}
+[29-Jul-2025 17:00:06 Europe/Berlin] Processing action: get_warehouse_kpis
+[29-Jul-2025 17:00:06 Europe/Berlin] Raw input: {"action":"get_suppliers"}
+[29-Jul-2025 17:00:06 Europe/Berlin] Raw input: {"action":"get_products"}
+[29-Jul-2025 17:00:06 Europe/Berlin] Processing action: get_suppliers
+[29-Jul-2025 17:00:06 Europe/Berlin] Processing action: get_products
+[29-Jul-2025 17:00:06 Europe/Berlin] Raw input: {"action":"get_categories"}
+[29-Jul-2025 17:00:06 Europe/Berlin] Raw input: {"action":"get_brands"}
+[29-Jul-2025 17:00:06 Europe/Berlin] Processing action: get_categories
+[29-Jul-2025 17:00:06 Europe/Berlin] Processing action: get_brands
+[29-Jul-2025 17:00:06 Europe/Berlin] Raw input: {"action":"get_warehouse_kpis","location":"warehouse"}
+[29-Jul-2025 17:00:06 Europe/Berlin] Raw input: {"action":"get_suppliers"}
+[29-Jul-2025 17:00:06 Europe/Berlin] Processing action: get_warehouse_kpis
+[29-Jul-2025 17:00:06 Europe/Berlin] Processing action: get_suppliers
+[29-Jul-2025 17:00:06 Europe/Berlin] Raw input: {"action":"get_products"}
+[29-Jul-2025 17:00:06 Europe/Berlin] Processing action: get_products
+[29-Jul-2025 17:00:06 Europe/Berlin] Raw input: {"action":"get_brands"}
+[29-Jul-2025 17:00:06 Europe/Berlin] Raw input: {"action":"get_batches"}
+[29-Jul-2025 17:00:06 Europe/Berlin] Raw input: {"action":"get_batches"}
+[29-Jul-2025 17:00:06 Europe/Berlin] Processing action: get_brands
+[29-Jul-2025 17:00:06 Europe/Berlin] Processing action: get_batches
+[29-Jul-2025 17:00:06 Europe/Berlin] Processing action: get_batches
+[29-Jul-2025 17:00:06 Europe/Berlin] Raw input: {"action":"get_categories"}
+[29-Jul-2025 17:00:06 Europe/Berlin] Processing action: get_categories
+[29-Jul-2025 17:28:38 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:28:38 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:28:38 Europe/Berlin] Raw input: {"action":"generate_captcha"}
+[29-Jul-2025 17:28:38 Europe/Berlin] Processing action: generate_captcha
+[29-Jul-2025 17:29:17 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:29:17 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:29:17 Europe/Berlin] Raw input: {"action":"login","username":"ezay","password":"1234","captcha":"10","captchaAnswer":"10"}
+[29-Jul-2025 17:29:17 Europe/Berlin] Processing action: login
+[29-Jul-2025 17:29:17 Europe/Berlin] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in C:\xampp\htdocs\Enguio_Project\Api\backend.php on line 184
+[29-Jul-2025 17:29:21 Europe/Berlin] Raw input: {"action":"login","username":"ezay","password":"1234","captcha":"10","captchaAnswer":"10"}
+[29-Jul-2025 17:29:21 Europe/Berlin] Processing action: login
+[29-Jul-2025 17:29:21 Europe/Berlin] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in C:\xampp\htdocs\Enguio_Project\Api\backend.php on line 184
+[29-Jul-2025 17:29:24 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:29:24 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:29:24 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:29:24 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:29:24 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:29:24 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:29:24 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:29:24 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:29:24 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:29:24 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:29:24 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:29:24 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:29:24 Europe/Berlin] Raw input: {"action":"get_categories"}
+[29-Jul-2025 17:29:24 Europe/Berlin] Processing action: get_categories
+[29-Jul-2025 17:29:24 Europe/Berlin] Raw input: {"action":"get_warehouse_kpis","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:29:24 Europe/Berlin] Raw input: {"action":"get_top_products_by_quantity","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:29:24 Europe/Berlin] Processing action: get_top_products_by_quantity
+[29-Jul-2025 17:29:24 Europe/Berlin] Processing action: get_warehouse_kpis
+[29-Jul-2025 17:29:24 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 17:29:24 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 17:29:24 Europe/Berlin] Raw input: {"action":"get_transfers_with_details"}
+[29-Jul-2025 17:29:24 Europe/Berlin] Processing action: get_transfers_with_details
+[29-Jul-2025 17:29:24 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 17:29:24 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 17:29:24 Europe/Berlin] Raw input: {"action":"get_top_products_by_quantity","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:29:24 Europe/Berlin] Raw input: {"action":"get_warehouse_kpis","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:29:24 Europe/Berlin] Processing action: get_top_products_by_quantity
+[29-Jul-2025 17:29:24 Europe/Berlin] Processing action: get_warehouse_kpis
+[29-Jul-2025 17:29:24 Europe/Berlin] Raw input: {"action":"get_categories"}
+[29-Jul-2025 17:29:24 Europe/Berlin] Processing action: get_categories
+[29-Jul-2025 17:29:24 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 17:29:24 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 17:29:24 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 17:29:24 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 17:29:24 Europe/Berlin] Raw input: {"action":"get_transfers_with_details"}
+[29-Jul-2025 17:29:24 Europe/Berlin] Processing action: get_transfers_with_details
+[29-Jul-2025 17:29:24 Europe/Berlin] Raw input: {"action":"get_stock_distribution_by_category","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:29:24 Europe/Berlin] Raw input: {"action":"get_warehouse_supply_by_product","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:29:24 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 17:29:24 Europe/Berlin] Processing action: get_stock_distribution_by_category
+[29-Jul-2025 17:29:24 Europe/Berlin] Processing action: get_warehouse_supply_by_product
+[29-Jul-2025 17:29:24 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 17:29:24 Europe/Berlin] Raw input: {"action":"get_products_by_location_name","location_name":"Convenience"}
+[29-Jul-2025 17:29:24 Europe/Berlin] Raw input: {"action":"get_products_by_location_name","location_name":"Pharmacy"}
+[29-Jul-2025 17:29:24 Europe/Berlin] Processing action: get_products_by_location_name
+[29-Jul-2025 17:29:24 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 17:29:24 Europe/Berlin] Raw input: {"action":"get_stock_distribution_by_category","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:29:24 Europe/Berlin] Processing action: get_products_by_location_name
+[29-Jul-2025 17:29:24 Europe/Berlin] Processing action: get_stock_distribution_by_category
+[29-Jul-2025 17:29:24 Europe/Berlin] Raw input: {"action":"get_warehouse_supply_by_product","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:29:24 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 17:29:24 Europe/Berlin] Processing action: get_warehouse_supply_by_product
+[29-Jul-2025 17:29:24 Europe/Berlin] Raw input: {"action":"get_products_by_location_name","location_name":"Convenience"}
+[29-Jul-2025 17:29:24 Europe/Berlin] Processing action: get_products_by_location_name
+[29-Jul-2025 17:29:24 Europe/Berlin] Raw input: {"action":"get_products_by_location_name","location_name":"Pharmacy"}
+[29-Jul-2025 17:29:24 Europe/Berlin] Processing action: get_products_by_location_name
+[29-Jul-2025 17:29:24 Europe/Berlin] Raw input: {"action":"get_warehouse_supply_by_location","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:29:24 Europe/Berlin] Raw input: {"action":"get_fast_moving_items_trend","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:29:24 Europe/Berlin] Processing action: get_warehouse_supply_by_location
+[29-Jul-2025 17:29:24 Europe/Berlin] Processing action: get_fast_moving_items_trend
+[29-Jul-2025 17:29:24 Europe/Berlin] Raw input: {"action":"get_fast_moving_items_trend","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:29:24 Europe/Berlin] Processing action: get_fast_moving_items_trend
+[29-Jul-2025 17:29:24 Europe/Berlin] Raw input: {"action":"get_warehouse_supply_by_location","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:29:24 Europe/Berlin] Processing action: get_warehouse_supply_by_location
+[29-Jul-2025 17:29:24 Europe/Berlin] Raw input: {"action":"get_warehouse_stockout_items","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:29:24 Europe/Berlin] Raw input: {"action":"get_critical_stock_alerts","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:29:24 Europe/Berlin] Processing action: get_warehouse_stockout_items
+[29-Jul-2025 17:29:24 Europe/Berlin] Processing action: get_critical_stock_alerts
+[29-Jul-2025 17:29:24 Europe/Berlin] Raw input: {"action":"get_critical_stock_alerts","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:29:24 Europe/Berlin] Processing action: get_critical_stock_alerts
+[29-Jul-2025 17:29:24 Europe/Berlin] Raw input: {"action":"get_warehouse_stockout_items","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:29:24 Europe/Berlin] Processing action: get_warehouse_stockout_items
+[29-Jul-2025 17:29:24 Europe/Berlin] Raw input: {"action":"get_warehouse_product_kpis","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:29:24 Europe/Berlin] Processing action: get_warehouse_product_kpis
+[29-Jul-2025 17:29:24 Europe/Berlin] Raw input: {"action":"get_inventory_by_branch_category","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:29:24 Europe/Berlin] Processing action: get_inventory_by_branch_category
+[29-Jul-2025 17:29:24 Europe/Berlin] Raw input: {"action":"get_inventory_by_branch_category","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:29:24 Europe/Berlin] Processing action: get_inventory_by_branch_category
+[29-Jul-2025 17:29:24 Europe/Berlin] Raw input: {"action":"get_warehouse_product_kpis","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:29:24 Europe/Berlin] Processing action: get_warehouse_product_kpis
+[29-Jul-2025 17:29:43 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:29:43 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:29:43 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:29:43 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:29:43 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:29:43 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:29:43 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:29:43 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:29:43 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:29:43 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:29:43 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:29:43 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:29:43 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:29:43 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:29:43 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:29:43 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:29:43 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:29:43 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:29:43 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:29:43 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:29:43 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:29:43 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:29:43 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:29:43 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:29:43 Europe/Berlin] Raw input: {"action":"get_suppliers"}
+[29-Jul-2025 17:29:43 Europe/Berlin] Processing action: get_suppliers
+[29-Jul-2025 17:29:43 Europe/Berlin] Raw input: {"action":"get_products"}
+[29-Jul-2025 17:29:43 Europe/Berlin] Raw input: {"action":"get_warehouse_kpis","location":"warehouse"}
+[29-Jul-2025 17:29:43 Europe/Berlin] Processing action: get_products
+[29-Jul-2025 17:29:43 Europe/Berlin] Processing action: get_warehouse_kpis
+[29-Jul-2025 17:29:43 Europe/Berlin] Raw input: {"action":"get_batches"}
+[29-Jul-2025 17:29:43 Europe/Berlin] Raw input: {"action":"get_brands"}
+[29-Jul-2025 17:29:43 Europe/Berlin] Raw input: {"action":"get_categories"}
+[29-Jul-2025 17:29:43 Europe/Berlin] Processing action: get_batches
+[29-Jul-2025 17:29:43 Europe/Berlin] Processing action: get_brands
+[29-Jul-2025 17:29:43 Europe/Berlin] Processing action: get_categories
+[29-Jul-2025 17:29:43 Europe/Berlin] Raw input: {"action":"get_warehouse_kpis","location":"warehouse"}
+[29-Jul-2025 17:29:43 Europe/Berlin] Processing action: get_warehouse_kpis
+[29-Jul-2025 17:29:43 Europe/Berlin] Raw input: {"action":"get_batches"}
+[29-Jul-2025 17:29:43 Europe/Berlin] Processing action: get_batches
+[29-Jul-2025 17:29:43 Europe/Berlin] Raw input: {"action":"get_brands"}
+[29-Jul-2025 17:29:43 Europe/Berlin] Raw input: {"action":"get_suppliers"}
+[29-Jul-2025 17:29:43 Europe/Berlin] Raw input: {"action":"get_products"}
+[29-Jul-2025 17:29:43 Europe/Berlin] Processing action: get_suppliers
+[29-Jul-2025 17:29:43 Europe/Berlin] Processing action: get_products
+[29-Jul-2025 17:29:43 Europe/Berlin] Processing action: get_brands
+[29-Jul-2025 17:29:43 Europe/Berlin] Raw input: {"action":"get_categories"}
+[29-Jul-2025 17:29:43 Europe/Berlin] Processing action: get_categories
+[29-Jul-2025 17:30:39 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:30:39 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:30:39 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 17:30:39 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 17:30:39 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:30:39 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:30:39 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 17:30:39 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 17:30:39 Europe/Berlin] Raw input: {"action":"get_location_products","location_id":4,"search":"","category":"all"}
+[29-Jul-2025 17:30:39 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 17:30:39 Europe/Berlin] Processing action: get_location_products
+[29-Jul-2025 17:30:39 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 17:30:39 Europe/Berlin] Raw input: {"action":"get_location_products","location_id":4,"search":"","category":"all"}
+[29-Jul-2025 17:30:39 Europe/Berlin] Raw input: {"action":"get_products_by_location_name","location_name":"Convenience"}
+[29-Jul-2025 17:30:39 Europe/Berlin] Processing action: get_location_products
+[29-Jul-2025 17:30:39 Europe/Berlin] Processing action: get_products_by_location_name
+[29-Jul-2025 17:30:39 Europe/Berlin] Raw input: {"action":"get_products_by_location_name","location_name":"Convenience"}
+[29-Jul-2025 17:30:39 Europe/Berlin] Processing action: get_products_by_location_name
+[29-Jul-2025 17:30:40 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 17:30:40 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 17:30:40 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 17:30:40 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 17:30:40 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 17:30:40 Europe/Berlin] Raw input: {"action":"get_products_by_location_name","location_name":"Pharmacy"}
+[29-Jul-2025 17:30:40 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 17:30:40 Europe/Berlin] Processing action: get_products_by_location_name
+[29-Jul-2025 17:30:40 Europe/Berlin] Raw input: {"action":"get_products_by_location_name","location_name":"Pharmacy"}
+[29-Jul-2025 17:30:40 Europe/Berlin] Processing action: get_products_by_location_name
+[29-Jul-2025 17:30:41 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 17:30:41 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 17:30:41 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 17:30:41 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 17:30:41 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 17:30:41 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 17:30:41 Europe/Berlin] Raw input: {"action":"get_location_products","location_id":4,"search":"","category":"all"}
+[29-Jul-2025 17:30:41 Europe/Berlin] Processing action: get_location_products
+[29-Jul-2025 17:30:41 Europe/Berlin] Raw input: {"action":"get_location_products","location_id":4,"search":"","category":"all"}
+[29-Jul-2025 17:30:41 Europe/Berlin] Raw input: {"action":"get_products_by_location_name","location_name":"Convenience"}
+[29-Jul-2025 17:30:41 Europe/Berlin] Processing action: get_products_by_location_name
+[29-Jul-2025 17:30:41 Europe/Berlin] Processing action: get_location_products
+[29-Jul-2025 17:30:41 Europe/Berlin] Raw input: {"action":"get_products_by_location_name","location_name":"Convenience"}
+[29-Jul-2025 17:30:41 Europe/Berlin] Processing action: get_products_by_location_name
+[29-Jul-2025 17:30:42 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 17:30:42 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 17:30:42 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 17:30:42 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 17:30:42 Europe/Berlin] Raw input: {"action":"get_products_by_location_name","location_name":"Pharmacy"}
+[29-Jul-2025 17:30:42 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 17:30:42 Europe/Berlin] Processing action: get_products_by_location_name
+[29-Jul-2025 17:30:42 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 17:30:42 Europe/Berlin] Raw input: {"action":"get_products_by_location_name","location_name":"Pharmacy"}
+[29-Jul-2025 17:30:42 Europe/Berlin] Processing action: get_products_by_location_name
+[29-Jul-2025 17:30:45 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:30:45 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:30:45 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:30:45 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:30:45 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 17:30:45 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 17:30:45 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 17:30:45 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 17:30:45 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 17:30:45 Europe/Berlin] Raw input: {"action":"get_products_by_location_name","location_name":"Pharmacy"}
+[29-Jul-2025 17:30:45 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 17:30:45 Europe/Berlin] Processing action: get_products_by_location_name
+[29-Jul-2025 17:30:45 Europe/Berlin] Raw input: {"action":"get_products_by_location_name","location_name":"Pharmacy"}
+[29-Jul-2025 17:30:45 Europe/Berlin] Processing action: get_products_by_location_name
+[29-Jul-2025 17:30:56 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:30:56 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:30:56 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:30:56 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:30:56 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:30:56 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:30:56 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:30:56 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:30:56 Europe/Berlin] Raw input: {"action":"get_locations_for_filter"}
+[29-Jul-2025 17:30:56 Europe/Berlin] Raw input: {"action":"get_movement_history","search":"","movement_type":"all","location":"all","date_range":"all"}
+[29-Jul-2025 17:30:56 Europe/Berlin] Raw input: {"action":"get_movement_history","search":"","movement_type":"all","location":"all","date_range":"all"}
+[29-Jul-2025 17:30:56 Europe/Berlin] Processing action: get_locations_for_filter
+[29-Jul-2025 17:30:56 Europe/Berlin] Processing action: get_movement_history
+[29-Jul-2025 17:30:56 Europe/Berlin] Processing action: get_movement_history
+[29-Jul-2025 17:30:56 Europe/Berlin] Raw input: {"action":"get_locations_for_filter"}
+[29-Jul-2025 17:30:56 Europe/Berlin] Processing action: get_locations_for_filter
+[29-Jul-2025 17:30:56 Europe/Berlin] Raw input: {"action":"get_movement_history","search":"","movement_type":"all","location":"all","date_range":"all"}
+[29-Jul-2025 17:30:56 Europe/Berlin] Processing action: get_movement_history
+[29-Jul-2025 17:32:50 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:32:50 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:32:50 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:32:50 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:32:50 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:32:50 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:32:50 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:32:50 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:32:50 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:32:50 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:32:50 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:32:50 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:32:50 Europe/Berlin] Raw input: {"action":"get_categories"}
+[29-Jul-2025 17:32:50 Europe/Berlin] Raw input: {"action":"get_top_products_by_quantity","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:32:50 Europe/Berlin] Raw input: {"action":"get_warehouse_kpis","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:32:50 Europe/Berlin] Raw input: {"action":"get_transfers_with_details"}
+[29-Jul-2025 17:32:50 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 17:32:50 Europe/Berlin] Processing action: get_categories
+[29-Jul-2025 17:32:50 Europe/Berlin] Processing action: get_top_products_by_quantity
+[29-Jul-2025 17:32:50 Europe/Berlin] Processing action: get_transfers_with_details
+[29-Jul-2025 17:32:50 Europe/Berlin] Processing action: get_warehouse_kpis
+[29-Jul-2025 17:32:50 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 17:32:50 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 17:32:50 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 17:32:50 Europe/Berlin] Raw input: {"action":"get_stock_distribution_by_category","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:32:50 Europe/Berlin] Processing action: get_stock_distribution_by_category
+[29-Jul-2025 17:32:50 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 17:32:50 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 17:32:50 Europe/Berlin] Raw input: {"action":"get_products_by_location_name","location_name":"Convenience"}
+[29-Jul-2025 17:32:50 Europe/Berlin] Processing action: get_products_by_location_name
+[29-Jul-2025 17:32:50 Europe/Berlin] Raw input: {"action":"get_products_by_location_name","location_name":"Pharmacy"}
+[29-Jul-2025 17:32:50 Europe/Berlin] Raw input: {"action":"get_warehouse_supply_by_product","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:32:50 Europe/Berlin] Processing action: get_warehouse_supply_by_product
+[29-Jul-2025 17:32:50 Europe/Berlin] Processing action: get_products_by_location_name
+[29-Jul-2025 17:32:50 Europe/Berlin] Raw input: {"action":"get_fast_moving_items_trend","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:32:50 Europe/Berlin] Processing action: get_fast_moving_items_trend
+[29-Jul-2025 17:32:50 Europe/Berlin] Raw input: {"action":"get_warehouse_supply_by_location","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:32:50 Europe/Berlin] Processing action: get_warehouse_supply_by_location
+[29-Jul-2025 17:32:50 Europe/Berlin] Raw input: {"action":"get_critical_stock_alerts","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:32:50 Europe/Berlin] Processing action: get_critical_stock_alerts
+[29-Jul-2025 17:32:50 Europe/Berlin] Raw input: {"action":"get_warehouse_stockout_items","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:32:50 Europe/Berlin] Processing action: get_warehouse_stockout_items
+[29-Jul-2025 17:32:50 Europe/Berlin] Raw input: {"action":"get_inventory_by_branch_category","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:32:50 Europe/Berlin] Processing action: get_inventory_by_branch_category
+[29-Jul-2025 17:32:50 Europe/Berlin] Raw input: {"action":"get_warehouse_product_kpis","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:32:50 Europe/Berlin] Processing action: get_warehouse_product_kpis
+[29-Jul-2025 17:32:57 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:32:57 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:32:57 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:32:57 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:32:57 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:32:57 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:32:57 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:32:57 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:32:57 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:32:57 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:32:57 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:32:57 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:32:57 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:32:57 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:32:57 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:32:57 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:32:57 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:32:57 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:32:57 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:32:57 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:32:57 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:32:57 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:32:57 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:32:57 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:32:57 Europe/Berlin] Raw input: {"action":"get_categories"}
+[29-Jul-2025 17:32:57 Europe/Berlin] Processing action: get_categories
+[29-Jul-2025 17:32:57 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 17:32:57 Europe/Berlin] Raw input: {"action":"get_warehouse_kpis","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:32:57 Europe/Berlin] Raw input: {"action":"get_transfers_with_details"}
+[29-Jul-2025 17:32:57 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 17:32:57 Europe/Berlin] Processing action: get_warehouse_kpis
+[29-Jul-2025 17:32:57 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 17:32:57 Europe/Berlin] Processing action: get_transfers_with_details
+[29-Jul-2025 17:32:57 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 17:32:57 Europe/Berlin] Raw input: {"action":"get_categories"}
+[29-Jul-2025 17:32:57 Europe/Berlin] Raw input: {"action":"get_warehouse_kpis","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:32:57 Europe/Berlin] Processing action: get_categories
+[29-Jul-2025 17:32:57 Europe/Berlin] Processing action: get_warehouse_kpis
+[29-Jul-2025 17:32:57 Europe/Berlin] Raw input: {"action":"get_top_products_by_quantity","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:32:57 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 17:32:57 Europe/Berlin] Processing action: get_top_products_by_quantity
+[29-Jul-2025 17:32:57 Europe/Berlin] Raw input: {"action":"get_top_products_by_quantity","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:32:57 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 17:32:57 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 17:32:57 Europe/Berlin] Raw input: {"action":"get_transfers_with_details"}
+[29-Jul-2025 17:32:57 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 17:32:57 Europe/Berlin] Processing action: get_top_products_by_quantity
+[29-Jul-2025 17:32:57 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 17:32:57 Europe/Berlin] Processing action: get_transfers_with_details
+[29-Jul-2025 17:32:57 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 17:32:57 Europe/Berlin] Raw input: {"action":"get_products_by_location_name","location_name":"Convenience"}
+[29-Jul-2025 17:32:57 Europe/Berlin] Processing action: get_products_by_location_name
+[29-Jul-2025 17:32:57 Europe/Berlin] Raw input: {"action":"get_products_by_location_name","location_name":"Pharmacy"}
+[29-Jul-2025 17:32:57 Europe/Berlin] Raw input: {"action":"get_warehouse_supply_by_product","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:32:57 Europe/Berlin] Raw input: {"action":"get_products_by_location_name","location_name":"Pharmacy"}
+[29-Jul-2025 17:32:57 Europe/Berlin] Processing action: get_products_by_location_name
+[29-Jul-2025 17:32:57 Europe/Berlin] Raw input: {"action":"get_warehouse_supply_by_product","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:32:57 Europe/Berlin] Processing action: get_warehouse_supply_by_product
+[29-Jul-2025 17:32:57 Europe/Berlin] Processing action: get_products_by_location_name
+[29-Jul-2025 17:32:57 Europe/Berlin] Processing action: get_warehouse_supply_by_product
+[29-Jul-2025 17:32:57 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 17:32:57 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 17:32:57 Europe/Berlin] Raw input: {"action":"get_stock_distribution_by_category","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:32:57 Europe/Berlin] Raw input: {"action":"get_stock_distribution_by_category","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:32:57 Europe/Berlin] Processing action: get_stock_distribution_by_category
+[29-Jul-2025 17:32:57 Europe/Berlin] Raw input: {"action":"get_products_by_location_name","location_name":"Convenience"}
+[29-Jul-2025 17:32:57 Europe/Berlin] Processing action: get_stock_distribution_by_category
+[29-Jul-2025 17:32:57 Europe/Berlin] Processing action: get_products_by_location_name
+[29-Jul-2025 17:32:57 Europe/Berlin] Raw input: {"action":"get_warehouse_supply_by_location","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:32:57 Europe/Berlin] Processing action: get_warehouse_supply_by_location
+[29-Jul-2025 17:32:57 Europe/Berlin] Raw input: {"action":"get_warehouse_supply_by_location","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:32:57 Europe/Berlin] Processing action: get_warehouse_supply_by_location
+[29-Jul-2025 17:32:57 Europe/Berlin] Raw input: {"action":"get_fast_moving_items_trend","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:32:57 Europe/Berlin] Processing action: get_fast_moving_items_trend
+[29-Jul-2025 17:32:57 Europe/Berlin] Raw input: {"action":"get_fast_moving_items_trend","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:32:57 Europe/Berlin] Processing action: get_fast_moving_items_trend
+[29-Jul-2025 17:32:57 Europe/Berlin] Raw input: {"action":"get_warehouse_stockout_items","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:32:57 Europe/Berlin] Processing action: get_warehouse_stockout_items
+[29-Jul-2025 17:32:57 Europe/Berlin] Raw input: {"action":"get_warehouse_stockout_items","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:32:57 Europe/Berlin] Processing action: get_warehouse_stockout_items
+[29-Jul-2025 17:32:57 Europe/Berlin] Raw input: {"action":"get_critical_stock_alerts","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:32:57 Europe/Berlin] Processing action: get_critical_stock_alerts
+[29-Jul-2025 17:32:57 Europe/Berlin] Raw input: {"action":"get_critical_stock_alerts","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:32:57 Europe/Berlin] Processing action: get_critical_stock_alerts
+[29-Jul-2025 17:32:57 Europe/Berlin] Raw input: {"action":"get_warehouse_product_kpis","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:32:57 Europe/Berlin] Processing action: get_warehouse_product_kpis
+[29-Jul-2025 17:32:57 Europe/Berlin] Raw input: {"action":"get_warehouse_product_kpis","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:32:57 Europe/Berlin] Processing action: get_warehouse_product_kpis
+[29-Jul-2025 17:32:57 Europe/Berlin] Raw input: {"action":"get_inventory_by_branch_category","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:32:57 Europe/Berlin] Processing action: get_inventory_by_branch_category
+[29-Jul-2025 17:32:57 Europe/Berlin] Raw input: {"action":"get_inventory_by_branch_category","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:32:57 Europe/Berlin] Processing action: get_inventory_by_branch_category
+[29-Jul-2025 17:33:01 Europe/Berlin] Raw input: {"action":"get_products"}
+[29-Jul-2025 17:33:01 Europe/Berlin] Raw input: {"action":"get_warehouse_kpis","location":"warehouse"}
+[29-Jul-2025 17:33:01 Europe/Berlin] Raw input: {"action":"get_suppliers"}
+[29-Jul-2025 17:33:01 Europe/Berlin] Raw input: {"action":"get_batches"}
+[29-Jul-2025 17:33:01 Europe/Berlin] Processing action: get_products
+[29-Jul-2025 17:33:01 Europe/Berlin] Processing action: get_warehouse_kpis
+[29-Jul-2025 17:33:01 Europe/Berlin] Processing action: get_batches
+[29-Jul-2025 17:33:01 Europe/Berlin] Processing action: get_suppliers
+[29-Jul-2025 17:33:01 Europe/Berlin] Raw input: {"action":"get_brands"}
+[29-Jul-2025 17:33:01 Europe/Berlin] Processing action: get_brands
+[29-Jul-2025 17:33:01 Europe/Berlin] Raw input: {"action":"get_categories"}
+[29-Jul-2025 17:33:01 Europe/Berlin] Processing action: get_categories
+[29-Jul-2025 17:33:01 Europe/Berlin] Raw input: {"action":"get_products"}
+[29-Jul-2025 17:33:01 Europe/Berlin] Raw input: {"action":"get_batches"}
+[29-Jul-2025 17:33:01 Europe/Berlin] Raw input: {"action":"get_warehouse_kpis","location":"warehouse"}
+[29-Jul-2025 17:33:01 Europe/Berlin] Raw input: {"action":"get_suppliers"}
+[29-Jul-2025 17:33:01 Europe/Berlin] Processing action: get_products
+[29-Jul-2025 17:33:01 Europe/Berlin] Processing action: get_batches
+[29-Jul-2025 17:33:01 Europe/Berlin] Processing action: get_warehouse_kpis
+[29-Jul-2025 17:33:01 Europe/Berlin] Processing action: get_suppliers
+[29-Jul-2025 17:33:01 Europe/Berlin] Raw input: {"action":"get_brands"}
+[29-Jul-2025 17:33:01 Europe/Berlin] Raw input: {"action":"get_categories"}
+[29-Jul-2025 17:33:01 Europe/Berlin] Processing action: get_brands
+[29-Jul-2025 17:33:01 Europe/Berlin] Processing action: get_categories
+[29-Jul-2025 17:33:03 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:33:03 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:33:03 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:33:03 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:33:03 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:33:03 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:33:03 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:33:03 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:33:03 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:33:03 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:33:03 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:33:03 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:33:03 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:33:03 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:33:03 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:33:03 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:33:03 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:33:03 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:33:03 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:33:03 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:33:03 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:33:03 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:33:03 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:33:03 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:33:03 Europe/Berlin] Raw input: {"action":"get_warehouse_kpis","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:33:03 Europe/Berlin] Processing action: get_warehouse_kpis
+[29-Jul-2025 17:33:03 Europe/Berlin] Raw input: {"action":"get_transfers_with_details"}
+[29-Jul-2025 17:33:03 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 17:33:03 Europe/Berlin] Raw input: {"action":"get_categories"}
+[29-Jul-2025 17:33:03 Europe/Berlin] Processing action: get_transfers_with_details
+[29-Jul-2025 17:33:03 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 17:33:03 Europe/Berlin] Processing action: get_categories
+[29-Jul-2025 17:33:03 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 17:33:03 Europe/Berlin] Raw input: {"action":"get_top_products_by_quantity","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:33:03 Europe/Berlin] Processing action: get_top_products_by_quantity
+[29-Jul-2025 17:33:03 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 17:33:03 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 17:33:03 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 17:33:03 Europe/Berlin] Raw input: {"action":"get_categories"}
+[29-Jul-2025 17:33:03 Europe/Berlin] Raw input: {"action":"get_transfers_with_details"}
+[29-Jul-2025 17:33:03 Europe/Berlin] Processing action: get_transfers_with_details
+[29-Jul-2025 17:33:03 Europe/Berlin] Processing action: get_categories
+[29-Jul-2025 17:33:03 Europe/Berlin] Raw input: {"action":"get_top_products_by_quantity","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:33:03 Europe/Berlin] Raw input: {"action":"get_warehouse_kpis","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:33:03 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 17:33:03 Europe/Berlin] Processing action: get_top_products_by_quantity
+[29-Jul-2025 17:33:03 Europe/Berlin] Processing action: get_warehouse_kpis
+[29-Jul-2025 17:33:03 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 17:33:03 Europe/Berlin] Raw input: {"action":"get_warehouse_supply_by_product","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:33:03 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 17:33:03 Europe/Berlin] Processing action: get_warehouse_supply_by_product
+[29-Jul-2025 17:33:03 Europe/Berlin] Raw input: {"action":"get_products_by_location_name","location_name":"Convenience"}
+[29-Jul-2025 17:33:03 Europe/Berlin] Raw input: {"action":"get_products_by_location_name","location_name":"Pharmacy"}
+[29-Jul-2025 17:33:03 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 17:33:03 Europe/Berlin] Processing action: get_products_by_location_name
+[29-Jul-2025 17:33:03 Europe/Berlin] Processing action: get_products_by_location_name
+[29-Jul-2025 17:33:03 Europe/Berlin] Raw input: {"action":"get_products_by_location_name","location_name":"Pharmacy"}
+[29-Jul-2025 17:33:03 Europe/Berlin] Raw input: {"action":"get_stock_distribution_by_category","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:33:03 Europe/Berlin] Processing action: get_products_by_location_name
+[29-Jul-2025 17:33:03 Europe/Berlin] Processing action: get_stock_distribution_by_category
+[29-Jul-2025 17:33:03 Europe/Berlin] Raw input: {"action":"get_products_by_location_name","location_name":"Convenience"}
+[29-Jul-2025 17:33:03 Europe/Berlin] Raw input: {"action":"get_stock_distribution_by_category","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:33:03 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 17:33:03 Europe/Berlin] Processing action: get_products_by_location_name
+[29-Jul-2025 17:33:03 Europe/Berlin] Processing action: get_stock_distribution_by_category
+[29-Jul-2025 17:33:03 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 17:33:03 Europe/Berlin] Raw input: {"action":"get_fast_moving_items_trend","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:33:03 Europe/Berlin] Raw input: {"action":"get_warehouse_supply_by_product","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:33:03 Europe/Berlin] Raw input: {"action":"get_warehouse_supply_by_location","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:33:03 Europe/Berlin] Processing action: get_fast_moving_items_trend
+[29-Jul-2025 17:33:03 Europe/Berlin] Processing action: get_warehouse_supply_by_product
+[29-Jul-2025 17:33:03 Europe/Berlin] Processing action: get_warehouse_supply_by_location
+[29-Jul-2025 17:33:03 Europe/Berlin] Raw input: {"action":"get_fast_moving_items_trend","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:33:03 Europe/Berlin] Processing action: get_fast_moving_items_trend
+[29-Jul-2025 17:33:04 Europe/Berlin] Raw input: {"action":"get_critical_stock_alerts","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:33:04 Europe/Berlin] Raw input: {"action":"get_warehouse_supply_by_location","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:33:04 Europe/Berlin] Processing action: get_warehouse_supply_by_location
+[29-Jul-2025 17:33:04 Europe/Berlin] Processing action: get_critical_stock_alerts
+[29-Jul-2025 17:33:04 Europe/Berlin] Raw input: {"action":"get_warehouse_stockout_items","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:33:04 Europe/Berlin] Raw input: {"action":"get_critical_stock_alerts","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:33:04 Europe/Berlin] Processing action: get_warehouse_stockout_items
+[29-Jul-2025 17:33:04 Europe/Berlin] Processing action: get_critical_stock_alerts
+[29-Jul-2025 17:33:04 Europe/Berlin] Raw input: {"action":"get_warehouse_stockout_items","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:33:04 Europe/Berlin] Processing action: get_warehouse_stockout_items
+[29-Jul-2025 17:33:04 Europe/Berlin] Raw input: {"action":"get_inventory_by_branch_category","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:33:04 Europe/Berlin] Processing action: get_inventory_by_branch_category
+[29-Jul-2025 17:33:04 Europe/Berlin] Raw input: {"action":"get_warehouse_product_kpis","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:33:04 Europe/Berlin] Processing action: get_warehouse_product_kpis
+[29-Jul-2025 17:33:04 Europe/Berlin] Raw input: {"action":"get_inventory_by_branch_category","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:33:04 Europe/Berlin] Processing action: get_inventory_by_branch_category
+[29-Jul-2025 17:33:04 Europe/Berlin] Raw input: {"action":"get_warehouse_product_kpis","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:33:04 Europe/Berlin] Processing action: get_warehouse_product_kpis
+[29-Jul-2025 17:33:55 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:33:55 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:33:55 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:33:55 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:33:55 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:33:55 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:33:55 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:33:55 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:33:55 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:33:55 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:33:55 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:33:55 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:33:55 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:33:55 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:33:55 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:33:55 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:33:55 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:33:55 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:33:55 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:33:55 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:33:55 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:33:55 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:33:55 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:33:55 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:33:55 Europe/Berlin] Raw input: {"action":"get_products"}
+[29-Jul-2025 17:33:55 Europe/Berlin] Processing action: get_products
+[29-Jul-2025 17:33:55 Europe/Berlin] Raw input: {"action":"get_warehouse_kpis","location":"warehouse"}
+[29-Jul-2025 17:33:55 Europe/Berlin] Processing action: get_warehouse_kpis
+[29-Jul-2025 17:33:55 Europe/Berlin] Raw input: {"action":"get_suppliers"}
+[29-Jul-2025 17:33:55 Europe/Berlin] Processing action: get_suppliers
+[29-Jul-2025 17:33:55 Europe/Berlin] Raw input: {"action":"get_batches"}
+[29-Jul-2025 17:33:55 Europe/Berlin] Raw input: {"action":"get_categories"}
+[29-Jul-2025 17:33:55 Europe/Berlin] Processing action: get_batches
+[29-Jul-2025 17:33:55 Europe/Berlin] Processing action: get_categories
+[29-Jul-2025 17:33:55 Europe/Berlin] Raw input: {"action":"get_warehouse_kpis","location":"warehouse"}
+[29-Jul-2025 17:33:55 Europe/Berlin] Processing action: get_warehouse_kpis
+[29-Jul-2025 17:33:55 Europe/Berlin] Raw input: {"action":"get_suppliers"}
+[29-Jul-2025 17:33:55 Europe/Berlin] Processing action: get_suppliers
+[29-Jul-2025 17:33:55 Europe/Berlin] Raw input: {"action":"get_products"}
+[29-Jul-2025 17:33:55 Europe/Berlin] Processing action: get_products
+[29-Jul-2025 17:33:55 Europe/Berlin] Raw input: {"action":"get_brands"}
+[29-Jul-2025 17:33:55 Europe/Berlin] Raw input: {"action":"get_categories"}
+[29-Jul-2025 17:33:55 Europe/Berlin] Processing action: get_brands
+[29-Jul-2025 17:33:55 Europe/Berlin] Processing action: get_categories
+[29-Jul-2025 17:33:55 Europe/Berlin] Raw input: {"action":"get_brands"}
+[29-Jul-2025 17:33:55 Europe/Berlin] Raw input: {"action":"get_batches"}
+[29-Jul-2025 17:33:55 Europe/Berlin] Processing action: get_brands
+[29-Jul-2025 17:33:55 Europe/Berlin] Processing action: get_batches
+[29-Jul-2025 17:35:36 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:35:36 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:35:36 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:35:36 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:35:36 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:35:36 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:35:36 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:35:36 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:35:36 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:35:36 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:35:36 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:35:36 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:35:36 Europe/Berlin] Raw input: {"action":"get_warehouse_kpis","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:35:36 Europe/Berlin] Processing action: get_warehouse_kpis
+[29-Jul-2025 17:35:36 Europe/Berlin] Raw input: {"action":"get_categories"}
+[29-Jul-2025 17:35:36 Europe/Berlin] Processing action: get_categories
+[29-Jul-2025 17:35:36 Europe/Berlin] Raw input: {"action":"get_transfers_with_details"}
+[29-Jul-2025 17:35:36 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 17:35:36 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 17:35:36 Europe/Berlin] Processing action: get_transfers_with_details
+[29-Jul-2025 17:35:36 Europe/Berlin] Raw input: {"action":"get_top_products_by_quantity","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:35:36 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 17:35:36 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 17:35:36 Europe/Berlin] Processing action: get_top_products_by_quantity
+[29-Jul-2025 17:35:36 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 17:35:36 Europe/Berlin] Raw input: {"action":"get_warehouse_supply_by_product","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:35:36 Europe/Berlin] Raw input: {"action":"get_products_by_location_name","location_name":"Convenience"}
+[29-Jul-2025 17:35:36 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 17:35:36 Europe/Berlin] Raw input: {"action":"get_stock_distribution_by_category","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:35:36 Europe/Berlin] Processing action: get_warehouse_supply_by_product
+[29-Jul-2025 17:35:36 Europe/Berlin] Processing action: get_products_by_location_name
+[29-Jul-2025 17:35:36 Europe/Berlin] Processing action: get_stock_distribution_by_category
+[29-Jul-2025 17:35:36 Europe/Berlin] Raw input: {"action":"get_products_by_location_name","location_name":"Pharmacy"}
+[29-Jul-2025 17:35:36 Europe/Berlin] Processing action: get_products_by_location_name
+[29-Jul-2025 17:35:36 Europe/Berlin] Raw input: {"action":"get_warehouse_supply_by_location","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:35:36 Europe/Berlin] Processing action: get_warehouse_supply_by_location
+[29-Jul-2025 17:35:36 Europe/Berlin] Raw input: {"action":"get_warehouse_stockout_items","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:35:36 Europe/Berlin] Processing action: get_warehouse_stockout_items
+[29-Jul-2025 17:35:36 Europe/Berlin] Raw input: {"action":"get_fast_moving_items_trend","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:35:36 Europe/Berlin] Processing action: get_fast_moving_items_trend
+[29-Jul-2025 17:35:36 Europe/Berlin] Raw input: {"action":"get_warehouse_product_kpis","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:35:36 Europe/Berlin] Processing action: get_warehouse_product_kpis
+[29-Jul-2025 17:35:36 Europe/Berlin] Raw input: {"action":"get_critical_stock_alerts","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:35:36 Europe/Berlin] Processing action: get_critical_stock_alerts
+[29-Jul-2025 17:35:36 Europe/Berlin] Raw input: {"action":"get_inventory_by_branch_category","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:35:36 Europe/Berlin] Processing action: get_inventory_by_branch_category
+[29-Jul-2025 17:36:39 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:36:39 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:36:39 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:36:39 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:36:39 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:36:39 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:36:39 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:36:39 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:36:39 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:36:39 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:36:39 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:36:39 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:36:39 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:36:39 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:36:39 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:36:39 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:36:39 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:36:39 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:36:39 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:36:39 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:36:39 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:36:39 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:36:39 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:36:39 Europe/Berlin] Raw input: {"action":"get_warehouse_kpis","location":"warehouse"}
+[29-Jul-2025 17:36:39 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:36:39 Europe/Berlin] Processing action: get_warehouse_kpis
+[29-Jul-2025 17:36:39 Europe/Berlin] Raw input: {"action":"get_products"}
+[29-Jul-2025 17:36:39 Europe/Berlin] Processing action: get_products
+[29-Jul-2025 17:36:39 Europe/Berlin] Raw input: {"action":"get_suppliers"}
+[29-Jul-2025 17:36:39 Europe/Berlin] Raw input: {"action":"get_batches"}
+[29-Jul-2025 17:36:39 Europe/Berlin] Raw input: {"action":"get_brands"}
+[29-Jul-2025 17:36:39 Europe/Berlin] Raw input: {"action":"get_categories"}
+[29-Jul-2025 17:36:39 Europe/Berlin] Raw input: {"action":"get_warehouse_kpis","location":"warehouse"}
+[29-Jul-2025 17:36:39 Europe/Berlin] Processing action: get_suppliers
+[29-Jul-2025 17:36:39 Europe/Berlin] Processing action: get_batches
+[29-Jul-2025 17:36:39 Europe/Berlin] Processing action: get_categories
+[29-Jul-2025 17:36:39 Europe/Berlin] Processing action: get_brands
+[29-Jul-2025 17:36:39 Europe/Berlin] Processing action: get_warehouse_kpis
+[29-Jul-2025 17:36:39 Europe/Berlin] Raw input: {"action":"get_products"}
+[29-Jul-2025 17:36:39 Europe/Berlin] Raw input: {"action":"get_batches"}
+[29-Jul-2025 17:36:39 Europe/Berlin] Raw input: {"action":"get_suppliers"}
+[29-Jul-2025 17:36:39 Europe/Berlin] Processing action: get_products
+[29-Jul-2025 17:36:39 Europe/Berlin] Processing action: get_batches
+[29-Jul-2025 17:36:39 Europe/Berlin] Processing action: get_suppliers
+[29-Jul-2025 17:36:39 Europe/Berlin] Raw input: {"action":"get_brands"}
+[29-Jul-2025 17:36:39 Europe/Berlin] Processing action: get_brands
+[29-Jul-2025 17:36:39 Europe/Berlin] Raw input: {"action":"get_categories"}
+[29-Jul-2025 17:36:39 Europe/Berlin] Processing action: get_categories
+[29-Jul-2025 17:36:39 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 17:36:39 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 17:36:39 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 17:36:39 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 17:36:39 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 17:36:39 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 17:36:39 Europe/Berlin] Raw input: {"action":"get_location_products","location_id":4,"search":"","category":"all"}
+[29-Jul-2025 17:36:39 Europe/Berlin] Processing action: get_location_products
+[29-Jul-2025 17:36:39 Europe/Berlin] Raw input: {"action":"get_location_products","location_id":4,"search":"","category":"all"}
+[29-Jul-2025 17:36:39 Europe/Berlin] Processing action: get_location_products
+[29-Jul-2025 17:36:39 Europe/Berlin] Raw input: {"action":"get_products_by_location_name","location_name":"Convenience"}
+[29-Jul-2025 17:36:39 Europe/Berlin] Processing action: get_products_by_location_name
+[29-Jul-2025 17:36:39 Europe/Berlin] Raw input: {"action":"get_products_by_location_name","location_name":"Convenience"}
+[29-Jul-2025 17:36:39 Europe/Berlin] Processing action: get_products_by_location_name
+[29-Jul-2025 17:36:40 Europe/Berlin] Raw input: {"action":"get_warehouse_kpis","location":"warehouse"}
+[29-Jul-2025 17:36:40 Europe/Berlin] Raw input: {"action":"get_suppliers"}
+[29-Jul-2025 17:36:40 Europe/Berlin] Processing action: get_warehouse_kpis
+[29-Jul-2025 17:36:40 Europe/Berlin] Raw input: {"action":"get_products"}
+[29-Jul-2025 17:36:40 Europe/Berlin] Raw input: {"action":"get_batches"}
+[29-Jul-2025 17:36:40 Europe/Berlin] Processing action: get_suppliers
+[29-Jul-2025 17:36:40 Europe/Berlin] Raw input: {"action":"get_brands"}
+[29-Jul-2025 17:36:40 Europe/Berlin] Processing action: get_products
+[29-Jul-2025 17:36:40 Europe/Berlin] Processing action: get_batches
+[29-Jul-2025 17:36:40 Europe/Berlin] Processing action: get_brands
+[29-Jul-2025 17:36:40 Europe/Berlin] Raw input: {"action":"get_categories"}
+[29-Jul-2025 17:36:40 Europe/Berlin] Processing action: get_categories
+[29-Jul-2025 17:36:40 Europe/Berlin] Raw input: {"action":"get_warehouse_kpis","location":"warehouse"}
+[29-Jul-2025 17:36:40 Europe/Berlin] Raw input: {"action":"get_products"}
+[29-Jul-2025 17:36:40 Europe/Berlin] Processing action: get_warehouse_kpis
+[29-Jul-2025 17:36:40 Europe/Berlin] Processing action: get_products
+[29-Jul-2025 17:36:40 Europe/Berlin] Raw input: {"action":"get_brands"}
+[29-Jul-2025 17:36:40 Europe/Berlin] Raw input: {"action":"get_batches"}
+[29-Jul-2025 17:36:40 Europe/Berlin] Processing action: get_batches
+[29-Jul-2025 17:36:40 Europe/Berlin] Processing action: get_brands
+[29-Jul-2025 17:36:40 Europe/Berlin] Raw input: {"action":"get_suppliers"}
+[29-Jul-2025 17:36:40 Europe/Berlin] Processing action: get_suppliers
+[29-Jul-2025 17:36:40 Europe/Berlin] Raw input: {"action":"get_categories"}
+[29-Jul-2025 17:36:40 Europe/Berlin] Processing action: get_categories
+[29-Jul-2025 17:36:41 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 17:36:41 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 17:36:41 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 17:36:41 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 17:36:41 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 17:36:41 Europe/Berlin] Raw input: {"action":"get_location_products","location_id":4,"search":"","category":"all"}
+[29-Jul-2025 17:36:41 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 17:36:41 Europe/Berlin] Processing action: get_location_products
+[29-Jul-2025 17:36:41 Europe/Berlin] Raw input: {"action":"get_location_products","location_id":4,"search":"","category":"all"}
+[29-Jul-2025 17:36:41 Europe/Berlin] Processing action: get_location_products
+[29-Jul-2025 17:36:41 Europe/Berlin] Raw input: {"action":"get_products_by_location_name","location_name":"Convenience"}
+[29-Jul-2025 17:36:41 Europe/Berlin] Processing action: get_products_by_location_name
+[29-Jul-2025 17:36:41 Europe/Berlin] Raw input: {"action":"get_products_by_location_name","location_name":"Convenience"}
+[29-Jul-2025 17:36:41 Europe/Berlin] Processing action: get_products_by_location_name
+[29-Jul-2025 17:36:43 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 17:36:43 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 17:36:43 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 17:36:43 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 17:36:43 Europe/Berlin] Raw input: {"action":"get_products_by_location_name","location_name":"Pharmacy"}
+[29-Jul-2025 17:36:43 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 17:36:43 Europe/Berlin] Processing action: get_products_by_location_name
+[29-Jul-2025 17:36:43 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 17:36:43 Europe/Berlin] Raw input: {"action":"get_products_by_location_name","location_name":"Pharmacy"}
+[29-Jul-2025 17:36:43 Europe/Berlin] Processing action: get_products_by_location_name
+[29-Jul-2025 17:37:11 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:37:11 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:37:11 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:37:11 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:37:11 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:37:11 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:37:11 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:37:11 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:37:11 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:37:11 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:37:11 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:37:11 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:37:11 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:37:11 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:37:11 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:37:11 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:37:11 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:37:11 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:37:11 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:37:11 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:37:11 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:37:11 Europe/Berlin] Raw input: {"action":"get_warehouse_kpis","location":"warehouse"}
+[29-Jul-2025 17:37:11 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:37:11 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:37:11 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:37:11 Europe/Berlin] Processing action: get_warehouse_kpis
+[29-Jul-2025 17:37:11 Europe/Berlin] Raw input: {"action":"get_products"}
+[29-Jul-2025 17:37:11 Europe/Berlin] Processing action: get_products
+[29-Jul-2025 17:37:11 Europe/Berlin] Raw input: {"action":"get_batches"}
+[29-Jul-2025 17:37:11 Europe/Berlin] Raw input: {"action":"get_suppliers"}
+[29-Jul-2025 17:37:11 Europe/Berlin] Processing action: get_batches
+[29-Jul-2025 17:37:11 Europe/Berlin] Raw input: {"action":"get_warehouse_kpis","location":"warehouse"}
+[29-Jul-2025 17:37:11 Europe/Berlin] Raw input: {"action":"get_categories"}
+[29-Jul-2025 17:37:11 Europe/Berlin] Raw input: {"action":"get_brands"}
+[29-Jul-2025 17:37:11 Europe/Berlin] Processing action: get_suppliers
+[29-Jul-2025 17:37:11 Europe/Berlin] Processing action: get_warehouse_kpis
+[29-Jul-2025 17:37:11 Europe/Berlin] Processing action: get_categories
+[29-Jul-2025 17:37:11 Europe/Berlin] Processing action: get_brands
+[29-Jul-2025 17:37:11 Europe/Berlin] Raw input: {"action":"get_batches"}
+[29-Jul-2025 17:37:11 Europe/Berlin] Processing action: get_batches
+[29-Jul-2025 17:37:11 Europe/Berlin] Raw input: {"action":"get_products"}
+[29-Jul-2025 17:37:11 Europe/Berlin] Processing action: get_products
+[29-Jul-2025 17:37:11 Europe/Berlin] Raw input: {"action":"get_categories"}
+[29-Jul-2025 17:37:11 Europe/Berlin] Processing action: get_categories
+[29-Jul-2025 17:37:11 Europe/Berlin] Raw input: {"action":"get_suppliers"}
+[29-Jul-2025 17:37:11 Europe/Berlin] Raw input: {"action":"get_brands"}
+[29-Jul-2025 17:37:11 Europe/Berlin] Processing action: get_suppliers
+[29-Jul-2025 17:37:11 Europe/Berlin] Processing action: get_brands
+[29-Jul-2025 17:44:31 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:44:31 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:44:31 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:44:31 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:44:31 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:44:31 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:44:31 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:44:31 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:44:31 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:44:31 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:44:31 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:44:31 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:44:31 Europe/Berlin] Raw input: {"action":"get_categories"}
+[29-Jul-2025 17:44:31 Europe/Berlin] Processing action: get_categories
+[29-Jul-2025 17:44:31 Europe/Berlin] Raw input: {"action":"get_top_products_by_quantity","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:44:31 Europe/Berlin] Raw input: {"action":"get_transfers_with_details"}
+[29-Jul-2025 17:44:31 Europe/Berlin] Processing action: get_top_products_by_quantity
+[29-Jul-2025 17:44:31 Europe/Berlin] Raw input: {"action":"get_warehouse_kpis","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:44:31 Europe/Berlin] Processing action: get_transfers_with_details
+[29-Jul-2025 17:44:31 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 17:44:31 Europe/Berlin] Processing action: get_warehouse_kpis
+[29-Jul-2025 17:44:31 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 17:44:31 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 17:44:31 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 17:44:31 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 17:44:31 Europe/Berlin] Raw input: {"action":"get_warehouse_supply_by_product","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:44:31 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 17:44:31 Europe/Berlin] Processing action: get_warehouse_supply_by_product
+[29-Jul-2025 17:44:31 Europe/Berlin] Raw input: {"action":"get_products_by_location_name","location_name":"Convenience"}
+[29-Jul-2025 17:44:31 Europe/Berlin] Raw input: {"action":"get_stock_distribution_by_category","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:44:31 Europe/Berlin] Raw input: {"action":"get_products_by_location_name","location_name":"Pharmacy"}
+[29-Jul-2025 17:44:31 Europe/Berlin] Processing action: get_products_by_location_name
+[29-Jul-2025 17:44:31 Europe/Berlin] Processing action: get_stock_distribution_by_category
+[29-Jul-2025 17:44:31 Europe/Berlin] Processing action: get_products_by_location_name
+[29-Jul-2025 17:44:31 Europe/Berlin] Raw input: {"action":"get_warehouse_supply_by_location","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:44:31 Europe/Berlin] Raw input: {"action":"get_fast_moving_items_trend","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:44:31 Europe/Berlin] Processing action: get_warehouse_supply_by_location
+[29-Jul-2025 17:44:31 Europe/Berlin] Processing action: get_fast_moving_items_trend
+[29-Jul-2025 17:44:31 Europe/Berlin] Raw input: {"action":"get_warehouse_stockout_items","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:44:31 Europe/Berlin] Raw input: {"action":"get_critical_stock_alerts","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:44:31 Europe/Berlin] Processing action: get_warehouse_stockout_items
+[29-Jul-2025 17:44:31 Europe/Berlin] Processing action: get_critical_stock_alerts
+[29-Jul-2025 17:44:31 Europe/Berlin] Raw input: {"action":"get_warehouse_product_kpis","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:44:31 Europe/Berlin] Raw input: {"action":"get_inventory_by_branch_category","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:44:31 Europe/Berlin] Processing action: get_inventory_by_branch_category
+[29-Jul-2025 17:44:31 Europe/Berlin] Processing action: get_warehouse_product_kpis
+[29-Jul-2025 17:46:12 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:46:12 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:46:12 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:46:12 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:46:12 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:46:12 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:46:12 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:46:12 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:46:12 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:46:12 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:46:12 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:46:12 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:46:12 Europe/Berlin] Raw input: {"action":"get_categories"}
+[29-Jul-2025 17:46:12 Europe/Berlin] Processing action: get_categories
+[29-Jul-2025 17:46:12 Europe/Berlin] Raw input: {"action":"get_transfers_with_details"}
+[29-Jul-2025 17:46:12 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 17:46:12 Europe/Berlin] Raw input: {"action":"get_warehouse_kpis","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:46:12 Europe/Berlin] Raw input: {"action":"get_top_products_by_quantity","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:46:12 Europe/Berlin] Processing action: get_transfers_with_details
+[29-Jul-2025 17:46:12 Europe/Berlin] Processing action: get_top_products_by_quantity
+[29-Jul-2025 17:46:12 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 17:46:12 Europe/Berlin] Processing action: get_warehouse_kpis
+[29-Jul-2025 17:46:12 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 17:46:12 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 17:46:12 Europe/Berlin] Raw input: {"action":"get_warehouse_supply_by_product","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:46:12 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 17:46:12 Europe/Berlin] Raw input: {"action":"get_stock_distribution_by_category","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:46:12 Europe/Berlin] Processing action: get_warehouse_supply_by_product
+[29-Jul-2025 17:46:12 Europe/Berlin] Raw input: {"action":"get_products_by_location_name","location_name":"Convenience"}
+[29-Jul-2025 17:46:12 Europe/Berlin] Raw input: {"action":"get_products_by_location_name","location_name":"Pharmacy"}
+[29-Jul-2025 17:46:12 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 17:46:12 Europe/Berlin] Processing action: get_stock_distribution_by_category
+[29-Jul-2025 17:46:12 Europe/Berlin] Processing action: get_products_by_location_name
+[29-Jul-2025 17:46:12 Europe/Berlin] Processing action: get_products_by_location_name
+[29-Jul-2025 17:46:12 Europe/Berlin] Raw input: {"action":"get_warehouse_supply_by_location","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:46:12 Europe/Berlin] Processing action: get_warehouse_supply_by_location
+[29-Jul-2025 17:46:12 Europe/Berlin] Raw input: {"action":"get_fast_moving_items_trend","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:46:12 Europe/Berlin] Processing action: get_fast_moving_items_trend
+[29-Jul-2025 17:46:12 Europe/Berlin] Raw input: {"action":"get_warehouse_stockout_items","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:46:12 Europe/Berlin] Processing action: get_warehouse_stockout_items
+[29-Jul-2025 17:46:12 Europe/Berlin] Raw input: {"action":"get_critical_stock_alerts","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:46:12 Europe/Berlin] Processing action: get_critical_stock_alerts
+[29-Jul-2025 17:46:12 Europe/Berlin] Raw input: {"action":"get_warehouse_product_kpis","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:46:12 Europe/Berlin] Processing action: get_warehouse_product_kpis
+[29-Jul-2025 17:46:12 Europe/Berlin] Raw input: {"action":"get_inventory_by_branch_category","product":"All","location":"Warehouse"}
+[29-Jul-2025 17:46:12 Europe/Berlin] Processing action: get_inventory_by_branch_category
+[29-Jul-2025 17:57:31 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:57:31 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:57:31 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:57:31 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:57:31 Europe/Berlin] Raw input: {"action":"get_reports_data"}
+[29-Jul-2025 17:57:31 Europe/Berlin] Processing action: get_reports_data
+[29-Jul-2025 17:57:31 Europe/Berlin] Raw input: {"action":"get_reports_data"}
+[29-Jul-2025 17:57:31 Europe/Berlin] Processing action: get_reports_data
+[29-Jul-2025 17:57:32 Europe/Berlin] Raw input: {"action":"get_archived_items"}
+[29-Jul-2025 17:57:32 Europe/Berlin] Raw input: {"action":"get_archived_items"}
+[29-Jul-2025 17:57:32 Europe/Berlin] Processing action: get_archived_items
+[29-Jul-2025 17:57:32 Europe/Berlin] Processing action: get_archived_items
+[29-Jul-2025 17:57:34 Europe/Berlin] Raw input: {"action":"get_reports_data"}
+[29-Jul-2025 17:57:34 Europe/Berlin] Raw input: {"action":"get_reports_data"}
+[29-Jul-2025 17:57:34 Europe/Berlin] Processing action: get_reports_data
+[29-Jul-2025 17:57:34 Europe/Berlin] Processing action: get_reports_data
+[29-Jul-2025 17:57:35 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 17:57:35 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 17:57:35 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 17:57:35 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 17:57:35 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 17:57:35 Europe/Berlin] Raw input: {"action":"get_location_products","location_id":4,"search":"","category":"all"}
+[29-Jul-2025 17:57:35 Europe/Berlin] Processing action: get_location_products
+[29-Jul-2025 17:57:35 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 17:57:35 Europe/Berlin] Raw input: {"action":"get_products_by_location_name","location_name":"Convenience"}
+[29-Jul-2025 17:57:35 Europe/Berlin] Raw input: {"action":"get_location_products","location_id":4,"search":"","category":"all"}
+[29-Jul-2025 17:57:35 Europe/Berlin] Processing action: get_products_by_location_name
+[29-Jul-2025 17:57:35 Europe/Berlin] Processing action: get_location_products
+[29-Jul-2025 17:57:35 Europe/Berlin] Raw input: {"action":"get_products_by_location_name","location_name":"Convenience"}
+[29-Jul-2025 17:57:35 Europe/Berlin] Processing action: get_products_by_location_name
+[29-Jul-2025 17:57:37 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:57:37 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:57:37 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:57:37 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:57:37 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:57:37 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:57:37 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:57:37 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:57:37 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:57:37 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:57:37 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:57:37 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:57:37 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:57:37 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:57:37 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:57:37 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:57:37 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:57:37 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:57:37 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:57:37 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:57:37 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:57:37 Europe/Berlin] Raw input: {"action":"get_warehouse_kpis","location":"warehouse"}
+[29-Jul-2025 17:57:37 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:57:37 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:57:37 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:57:37 Europe/Berlin] Processing action: get_warehouse_kpis
+[29-Jul-2025 17:57:37 Europe/Berlin] Raw input: {"action":"get_suppliers"}
+[29-Jul-2025 17:57:37 Europe/Berlin] Raw input: {"action":"get_products"}
+[29-Jul-2025 17:57:37 Europe/Berlin] Processing action: get_suppliers
+[29-Jul-2025 17:57:37 Europe/Berlin] Processing action: get_products
+[29-Jul-2025 17:57:37 Europe/Berlin] Raw input: {"action":"get_brands"}
+[29-Jul-2025 17:57:37 Europe/Berlin] Processing action: get_brands
+[29-Jul-2025 17:57:37 Europe/Berlin] Raw input: {"action":"get_categories"}
+[29-Jul-2025 17:57:37 Europe/Berlin] Raw input: {"action":"get_suppliers"}
+[29-Jul-2025 17:57:37 Europe/Berlin] Raw input: {"action":"get_warehouse_kpis","location":"warehouse"}
+[29-Jul-2025 17:57:37 Europe/Berlin] Processing action: get_categories
+[29-Jul-2025 17:57:37 Europe/Berlin] Processing action: get_suppliers
+[29-Jul-2025 17:57:37 Europe/Berlin] Processing action: get_warehouse_kpis
+[29-Jul-2025 17:57:37 Europe/Berlin] Raw input: {"action":"get_batches"}
+[29-Jul-2025 17:57:37 Europe/Berlin] Raw input: {"action":"get_products"}
+[29-Jul-2025 17:57:37 Europe/Berlin] Processing action: get_batches
+[29-Jul-2025 17:57:37 Europe/Berlin] Processing action: get_products
+[29-Jul-2025 17:57:37 Europe/Berlin] Raw input: {"action":"get_batches"}
+[29-Jul-2025 17:57:37 Europe/Berlin] Processing action: get_batches
+[29-Jul-2025 17:57:37 Europe/Berlin] Raw input: {"action":"get_brands"}
+[29-Jul-2025 17:57:37 Europe/Berlin] Processing action: get_brands
+[29-Jul-2025 17:57:39 Europe/Berlin] Raw input: {"action":"get_categories"}
+[29-Jul-2025 17:57:39 Europe/Berlin] Processing action: get_categories
+[29-Jul-2025 17:57:47 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:57:47 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:57:47 Europe/Berlin] Raw input: {"action":"get_fifo_stock","product_id":189}
+[29-Jul-2025 17:57:47 Europe/Berlin] Processing action: get_fifo_stock
+[29-Jul-2025 17:57:51 Europe/Berlin] Raw input: {"action":"get_fifo_stock","product_id":183}
+[29-Jul-2025 17:57:51 Europe/Berlin] Processing action: get_fifo_stock
+[29-Jul-2025 17:59:25 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:59:25 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:59:25 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:59:25 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:59:25 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:59:25 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:59:25 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:59:25 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:59:25 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:59:25 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:59:25 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:59:25 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:59:25 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:59:25 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:59:25 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:59:25 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:59:25 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:59:25 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:59:25 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:59:25 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:59:25 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:59:25 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:59:25 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:59:25 Europe/Berlin] Raw input: {"action":"get_batches"}
+[29-Jul-2025 17:59:25 Europe/Berlin] Raw input: {"action":"get_warehouse_kpis","location":"warehouse"}
+[29-Jul-2025 17:59:25 Europe/Berlin] Raw input: {"action":"get_suppliers"}
+[29-Jul-2025 17:59:25 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:59:25 Europe/Berlin] Raw input: {"action":"get_brands"}
+[29-Jul-2025 17:59:25 Europe/Berlin] Raw input: {"action":"get_products"}
+[29-Jul-2025 17:59:25 Europe/Berlin] Processing action: get_batches
+[29-Jul-2025 17:59:25 Europe/Berlin] Processing action: get_warehouse_kpis
+[29-Jul-2025 17:59:25 Europe/Berlin] Processing action: get_suppliers
+[29-Jul-2025 17:59:25 Europe/Berlin] Processing action: get_brands
+[29-Jul-2025 17:59:25 Europe/Berlin] Processing action: get_products
+[29-Jul-2025 17:59:25 Europe/Berlin] Raw input: {"action":"get_warehouse_kpis","location":"warehouse"}
+[29-Jul-2025 17:59:25 Europe/Berlin] Raw input: {"action":"get_categories"}
+[29-Jul-2025 17:59:25 Europe/Berlin] Raw input: {"action":"get_products"}
+[29-Jul-2025 17:59:25 Europe/Berlin] Raw input: {"action":"get_suppliers"}
+[29-Jul-2025 17:59:25 Europe/Berlin] Raw input: {"action":"get_batches"}
+[29-Jul-2025 17:59:25 Europe/Berlin] Processing action: get_warehouse_kpis
+[29-Jul-2025 17:59:25 Europe/Berlin] Raw input: {"action":"get_brands"}
+[29-Jul-2025 17:59:25 Europe/Berlin] Processing action: get_categories
+[29-Jul-2025 17:59:25 Europe/Berlin] Processing action: get_products
+[29-Jul-2025 17:59:25 Europe/Berlin] Processing action: get_suppliers
+[29-Jul-2025 17:59:25 Europe/Berlin] Processing action: get_batches
+[29-Jul-2025 17:59:25 Europe/Berlin] Processing action: get_brands
+[29-Jul-2025 17:59:25 Europe/Berlin] Raw input: {"action":"get_categories"}
+[29-Jul-2025 17:59:25 Europe/Berlin] Processing action: get_categories
+[29-Jul-2025 17:59:28 Europe/Berlin] Raw input: {"action":"get_warehouse_kpis","location":"warehouse"}
+[29-Jul-2025 17:59:28 Europe/Berlin] Raw input: {"action":"get_suppliers"}
+[29-Jul-2025 17:59:28 Europe/Berlin] Raw input: {"action":"get_brands"}
+[29-Jul-2025 17:59:28 Europe/Berlin] Raw input: {"action":"get_products"}
+[29-Jul-2025 17:59:28 Europe/Berlin] Processing action: get_warehouse_kpis
+[29-Jul-2025 17:59:28 Europe/Berlin] Raw input: {"action":"get_categories"}
+[29-Jul-2025 17:59:28 Europe/Berlin] Raw input: {"action":"get_batches"}
+[29-Jul-2025 17:59:28 Europe/Berlin] Processing action: get_suppliers
+[29-Jul-2025 17:59:28 Europe/Berlin] Processing action: get_brands
+[29-Jul-2025 17:59:28 Europe/Berlin] Processing action: get_products
+[29-Jul-2025 17:59:28 Europe/Berlin] Processing action: get_categories
+[29-Jul-2025 17:59:28 Europe/Berlin] Processing action: get_batches
+[29-Jul-2025 17:59:28 Europe/Berlin] Raw input: {"action":"get_warehouse_kpis","location":"warehouse"}
+[29-Jul-2025 17:59:28 Europe/Berlin] Raw input: {"action":"get_products"}
+[29-Jul-2025 17:59:28 Europe/Berlin] Processing action: get_products
+[29-Jul-2025 17:59:28 Europe/Berlin] Processing action: get_warehouse_kpis
+[29-Jul-2025 17:59:28 Europe/Berlin] Raw input: {"action":"get_suppliers"}
+[29-Jul-2025 17:59:28 Europe/Berlin] Raw input: {"action":"get_batches"}
+[29-Jul-2025 17:59:28 Europe/Berlin] Raw input: {"action":"get_brands"}
+[29-Jul-2025 17:59:28 Europe/Berlin] Raw input: {"action":"get_categories"}
+[29-Jul-2025 17:59:28 Europe/Berlin] Processing action: get_suppliers
+[29-Jul-2025 17:59:28 Europe/Berlin] Processing action: get_batches
+[29-Jul-2025 17:59:28 Europe/Berlin] Processing action: get_brands
+[29-Jul-2025 17:59:28 Europe/Berlin] Processing action: get_categories
+[29-Jul-2025 17:59:33 Europe/Berlin] Raw input: 
+[29-Jul-2025 17:59:33 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 17:59:33 Europe/Berlin] Raw input: {"action":"check_barcode","barcode":"020357122682"}
+[29-Jul-2025 17:59:33 Europe/Berlin] Processing action: check_barcode
+[29-Jul-2025 18:01:12 Europe/Berlin] Raw input: 
+[29-Jul-2025 18:01:12 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 18:01:12 Europe/Berlin] Raw input: 
+[29-Jul-2025 18:01:12 Europe/Berlin] Raw input: 
+[29-Jul-2025 18:01:12 Europe/Berlin] Raw input: 
+[29-Jul-2025 18:01:12 Europe/Berlin] Raw input: 
+[29-Jul-2025 18:01:12 Europe/Berlin] Raw input: 
+[29-Jul-2025 18:01:12 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 18:01:12 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 18:01:12 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 18:01:12 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 18:01:12 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 18:01:12 Europe/Berlin] Raw input: {"action":"get_categories"}
+[29-Jul-2025 18:01:12 Europe/Berlin] Raw input: {"action":"get_warehouse_kpis","product":"All","location":"Warehouse"}
+[29-Jul-2025 18:01:12 Europe/Berlin] Processing action: get_warehouse_kpis
+[29-Jul-2025 18:01:12 Europe/Berlin] Processing action: get_categories
+[29-Jul-2025 18:01:12 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 18:01:12 Europe/Berlin] Raw input: {"action":"get_top_products_by_quantity","product":"All","location":"Warehouse"}
+[29-Jul-2025 18:01:12 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 18:01:12 Europe/Berlin] Raw input: {"action":"get_transfers_with_details"}
+[29-Jul-2025 18:01:12 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 18:01:12 Europe/Berlin] Processing action: get_top_products_by_quantity
+[29-Jul-2025 18:01:12 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 18:01:12 Europe/Berlin] Processing action: get_transfers_with_details
+[29-Jul-2025 18:01:12 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 18:01:12 Europe/Berlin] Raw input: {"action":"get_stock_distribution_by_category","product":"All","location":"Warehouse"}
+[29-Jul-2025 18:01:12 Europe/Berlin] Processing action: get_stock_distribution_by_category
+[29-Jul-2025 18:01:12 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 18:01:12 Europe/Berlin] Raw input: {"action":"get_products_by_location_name","location_name":"Convenience"}
+[29-Jul-2025 18:01:12 Europe/Berlin] Raw input: {"action":"get_warehouse_supply_by_product","product":"All","location":"Warehouse"}
+[29-Jul-2025 18:01:12 Europe/Berlin] Raw input: {"action":"get_products_by_location_name","location_name":"Pharmacy"}
+[29-Jul-2025 18:01:12 Europe/Berlin] Processing action: get_products_by_location_name
+[29-Jul-2025 18:01:12 Europe/Berlin] Processing action: get_warehouse_supply_by_product
+[29-Jul-2025 18:01:12 Europe/Berlin] Processing action: get_products_by_location_name
+[29-Jul-2025 18:01:12 Europe/Berlin] Raw input: {"action":"get_warehouse_supply_by_location","product":"All","location":"Warehouse"}
+[29-Jul-2025 18:01:12 Europe/Berlin] Raw input: {"action":"get_fast_moving_items_trend","product":"All","location":"Warehouse"}
+[29-Jul-2025 18:01:12 Europe/Berlin] Processing action: get_warehouse_supply_by_location
+[29-Jul-2025 18:01:12 Europe/Berlin] Processing action: get_fast_moving_items_trend
+[29-Jul-2025 18:01:12 Europe/Berlin] Raw input: {"action":"get_warehouse_stockout_items","product":"All","location":"Warehouse"}
+[29-Jul-2025 18:01:12 Europe/Berlin] Processing action: get_warehouse_stockout_items
+[29-Jul-2025 18:01:12 Europe/Berlin] Raw input: {"action":"get_critical_stock_alerts","product":"All","location":"Warehouse"}
+[29-Jul-2025 18:01:12 Europe/Berlin] Processing action: get_critical_stock_alerts
+[29-Jul-2025 18:01:12 Europe/Berlin] Raw input: {"action":"get_warehouse_product_kpis","product":"All","location":"Warehouse"}
+[29-Jul-2025 18:01:12 Europe/Berlin] Raw input: {"action":"get_inventory_by_branch_category","product":"All","location":"Warehouse"}
+[29-Jul-2025 18:01:12 Europe/Berlin] Processing action: get_warehouse_product_kpis
+[29-Jul-2025 18:01:12 Europe/Berlin] Processing action: get_inventory_by_branch_category
+[29-Jul-2025 18:01:39 Europe/Berlin] Raw input: 
+[29-Jul-2025 18:01:39 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 18:01:39 Europe/Berlin] Raw input: 
+[29-Jul-2025 18:01:39 Europe/Berlin] Raw input: 
+[29-Jul-2025 18:01:39 Europe/Berlin] Raw input: 
+[29-Jul-2025 18:01:39 Europe/Berlin] Raw input: 
+[29-Jul-2025 18:01:39 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 18:01:39 Europe/Berlin] Raw input: 
+[29-Jul-2025 18:01:39 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 18:01:39 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 18:01:39 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 18:01:39 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 18:01:39 Europe/Berlin] Raw input: 
+[29-Jul-2025 18:01:39 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 18:01:39 Europe/Berlin] Raw input: 
+[29-Jul-2025 18:01:39 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 18:01:39 Europe/Berlin] Raw input: 
+[29-Jul-2025 18:01:39 Europe/Berlin] Raw input: 
+[29-Jul-2025 18:01:39 Europe/Berlin] Raw input: 
+[29-Jul-2025 18:01:39 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 18:01:39 Europe/Berlin] Raw input: {"action":"get_warehouse_kpis","location":"warehouse"}
+[29-Jul-2025 18:01:39 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 18:01:39 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 18:01:39 Europe/Berlin] Raw input: 
+[29-Jul-2025 18:01:39 Europe/Berlin] Processing action: get_warehouse_kpis
+[29-Jul-2025 18:01:39 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 18:01:39 Europe/Berlin] Raw input: {"action":"get_products"}
+[29-Jul-2025 18:01:39 Europe/Berlin] Processing action: get_products
+[29-Jul-2025 18:01:39 Europe/Berlin] Raw input: {"action":"get_brands"}
+[29-Jul-2025 18:01:39 Europe/Berlin] Raw input: {"action":"get_suppliers"}
+[29-Jul-2025 18:01:39 Europe/Berlin] Raw input: {"action":"get_categories"}
+[29-Jul-2025 18:01:39 Europe/Berlin] Processing action: get_brands
+[29-Jul-2025 18:01:39 Europe/Berlin] Raw input: {"action":"get_warehouse_kpis","location":"warehouse"}
+[29-Jul-2025 18:01:39 Europe/Berlin] Raw input: {"action":"get_batches"}
+[29-Jul-2025 18:01:39 Europe/Berlin] Processing action: get_suppliers
+[29-Jul-2025 18:01:39 Europe/Berlin] Processing action: get_categories
+[29-Jul-2025 18:01:39 Europe/Berlin] Processing action: get_warehouse_kpis
+[29-Jul-2025 18:01:39 Europe/Berlin] Processing action: get_batches
+[29-Jul-2025 18:01:39 Europe/Berlin] Raw input: {"action":"get_suppliers"}
+[29-Jul-2025 18:01:40 Europe/Berlin] Processing action: get_suppliers
+[29-Jul-2025 18:01:40 Europe/Berlin] Raw input: {"action":"get_brands"}
+[29-Jul-2025 18:01:40 Europe/Berlin] Raw input: {"action":"get_batches"}
+[29-Jul-2025 18:01:40 Europe/Berlin] Raw input: {"action":"get_products"}
+[29-Jul-2025 18:01:40 Europe/Berlin] Processing action: get_batches
+[29-Jul-2025 18:01:40 Europe/Berlin] Processing action: get_products
+[29-Jul-2025 18:01:40 Europe/Berlin] Processing action: get_brands
+[29-Jul-2025 18:01:40 Europe/Berlin] Raw input: {"action":"get_categories"}
+[29-Jul-2025 18:01:40 Europe/Berlin] Processing action: get_categories
+[29-Jul-2025 18:01:44 Europe/Berlin] Raw input: {"action":"check_barcode","barcode":"020357122682"}
+[29-Jul-2025 18:01:44 Europe/Berlin] Processing action: check_barcode
+[29-Jul-2025 18:02:05 Europe/Berlin] Raw input: 
+[29-Jul-2025 18:02:05 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 18:02:05 Europe/Berlin] Raw input: {"action":"update_product_stock","product_id":215,"new_quantity":10,"batch_reference":"BR-20250730-000205","expiration_date":"2026-07-29","unit_cost":"80.00","entry_by":"admin"}
+[29-Jul-2025 18:02:05 Europe/Berlin] Processing action: update_product_stock
+[29-Jul-2025 18:05:12 Europe/Berlin] Raw input: 
+[29-Jul-2025 18:05:12 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 18:05:12 Europe/Berlin] Raw input: 
+[29-Jul-2025 18:05:12 Europe/Berlin] Raw input: 
+[29-Jul-2025 18:05:12 Europe/Berlin] Raw input: 
+[29-Jul-2025 18:05:12 Europe/Berlin] Raw input: 
+[29-Jul-2025 18:05:12 Europe/Berlin] Raw input: 
+[29-Jul-2025 18:05:12 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 18:05:12 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 18:05:12 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 18:05:12 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 18:05:12 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 18:05:12 Europe/Berlin] Raw input: {"action":"get_categories"}
+[29-Jul-2025 18:05:12 Europe/Berlin] Processing action: get_categories
+[29-Jul-2025 18:05:12 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 18:05:12 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 18:05:12 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 18:05:12 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 18:05:12 Europe/Berlin] Raw input: {"action":"get_transfers_with_details"}
+[29-Jul-2025 18:05:12 Europe/Berlin] Raw input: {"action":"get_top_products_by_quantity","product":"All","location":"Warehouse"}
+[29-Jul-2025 18:05:12 Europe/Berlin] Processing action: get_transfers_with_details
+[29-Jul-2025 18:05:12 Europe/Berlin] Raw input: {"action":"get_warehouse_kpis","product":"All","location":"Warehouse"}
+[29-Jul-2025 18:05:12 Europe/Berlin] Processing action: get_top_products_by_quantity
+[29-Jul-2025 18:05:12 Europe/Berlin] Processing action: get_warehouse_kpis
+[29-Jul-2025 18:05:12 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 18:05:12 Europe/Berlin] Raw input: {"action":"get_stock_distribution_by_category","product":"All","location":"Warehouse"}
+[29-Jul-2025 18:05:12 Europe/Berlin] Raw input: {"action":"get_products_by_location_name","location_name":"Convenience"}
+[29-Jul-2025 18:05:12 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 18:05:12 Europe/Berlin] Raw input: {"action":"get_warehouse_supply_by_product","product":"All","location":"Warehouse"}
+[29-Jul-2025 18:05:12 Europe/Berlin] Raw input: {"action":"get_products_by_location_name","location_name":"Pharmacy"}
+[29-Jul-2025 18:05:12 Europe/Berlin] Processing action: get_stock_distribution_by_category
+[29-Jul-2025 18:05:12 Europe/Berlin] Processing action: get_products_by_location_name
+[29-Jul-2025 18:05:12 Europe/Berlin] Processing action: get_warehouse_supply_by_product
+[29-Jul-2025 18:05:12 Europe/Berlin] Processing action: get_products_by_location_name
+[29-Jul-2025 18:05:12 Europe/Berlin] Raw input: {"action":"get_warehouse_supply_by_location","product":"All","location":"Warehouse"}
+[29-Jul-2025 18:05:12 Europe/Berlin] Processing action: get_warehouse_supply_by_location
+[29-Jul-2025 18:05:12 Europe/Berlin] Raw input: {"action":"get_fast_moving_items_trend","product":"All","location":"Warehouse"}
+[29-Jul-2025 18:05:12 Europe/Berlin] Processing action: get_fast_moving_items_trend
+[29-Jul-2025 18:05:12 Europe/Berlin] Raw input: {"action":"get_warehouse_stockout_items","product":"All","location":"Warehouse"}
+[29-Jul-2025 18:05:12 Europe/Berlin] Processing action: get_warehouse_stockout_items
+[29-Jul-2025 18:05:12 Europe/Berlin] Raw input: {"action":"get_critical_stock_alerts","product":"All","location":"Warehouse"}
+[29-Jul-2025 18:05:12 Europe/Berlin] Processing action: get_critical_stock_alerts
+[29-Jul-2025 18:05:12 Europe/Berlin] Raw input: {"action":"get_warehouse_product_kpis","product":"All","location":"Warehouse"}
+[29-Jul-2025 18:05:12 Europe/Berlin] Processing action: get_warehouse_product_kpis
+[29-Jul-2025 18:05:12 Europe/Berlin] Raw input: {"action":"get_inventory_by_branch_category","product":"All","location":"Warehouse"}
+[29-Jul-2025 18:05:12 Europe/Berlin] Processing action: get_inventory_by_branch_category
+[29-Jul-2025 18:05:13 Europe/Berlin] Raw input: {"action":"get_warehouse_kpis","location":"warehouse"}
+[29-Jul-2025 18:05:13 Europe/Berlin] Raw input: {"action":"get_suppliers"}
+[29-Jul-2025 18:05:13 Europe/Berlin] Processing action: get_warehouse_kpis
+[29-Jul-2025 18:05:13 Europe/Berlin] Processing action: get_suppliers
+[29-Jul-2025 18:05:13 Europe/Berlin] Raw input: {"action":"get_products"}
+[29-Jul-2025 18:05:13 Europe/Berlin] Raw input: {"action":"get_batches"}
+[29-Jul-2025 18:05:13 Europe/Berlin] Processing action: get_products
+[29-Jul-2025 18:05:13 Europe/Berlin] Raw input: {"action":"get_brands"}
+[29-Jul-2025 18:05:13 Europe/Berlin] Raw input: {"action":"get_categories"}
+[29-Jul-2025 18:05:13 Europe/Berlin] Processing action: get_batches
+[29-Jul-2025 18:05:13 Europe/Berlin] Processing action: get_brands
+[29-Jul-2025 18:05:13 Europe/Berlin] Processing action: get_categories
+[29-Jul-2025 18:05:13 Europe/Berlin] Raw input: {"action":"get_warehouse_kpis","location":"warehouse"}
+[29-Jul-2025 18:05:13 Europe/Berlin] Raw input: {"action":"get_suppliers"}
+[29-Jul-2025 18:05:13 Europe/Berlin] Processing action: get_warehouse_kpis
+[29-Jul-2025 18:05:13 Europe/Berlin] Processing action: get_suppliers
+[29-Jul-2025 18:05:13 Europe/Berlin] Raw input: {"action":"get_products"}
+[29-Jul-2025 18:05:13 Europe/Berlin] Raw input: {"action":"get_brands"}
+[29-Jul-2025 18:05:13 Europe/Berlin] Raw input: {"action":"get_batches"}
+[29-Jul-2025 18:05:13 Europe/Berlin] Processing action: get_products
+[29-Jul-2025 18:05:13 Europe/Berlin] Processing action: get_brands
+[29-Jul-2025 18:05:13 Europe/Berlin] Raw input: {"action":"get_categories"}
+[29-Jul-2025 18:05:13 Europe/Berlin] Processing action: get_batches
+[29-Jul-2025 18:05:13 Europe/Berlin] Processing action: get_categories
+[29-Jul-2025 18:05:17 Europe/Berlin] Raw input: 
+[29-Jul-2025 18:05:17 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 18:05:17 Europe/Berlin] Raw input: {"action":"check_barcode","barcode":"020357122682"}
+[29-Jul-2025 18:05:17 Europe/Berlin] Processing action: check_barcode
+[29-Jul-2025 18:05:22 Europe/Berlin] Raw input: {"action":"update_product_stock","product_id":215,"new_quantity":10,"batch_reference":"BR-20250730-000522","expiration_date":"2026-07-29","unit_cost":"80.00","entry_by":"admin"}
+[29-Jul-2025 18:05:22 Europe/Berlin] Processing action: update_product_stock
+[29-Jul-2025 18:05:22 Europe/Berlin] Raw input: {"action":"get_products"}
+[29-Jul-2025 18:05:22 Europe/Berlin] Processing action: get_products
+[29-Jul-2025 18:05:32 Europe/Berlin] Raw input: 
+[29-Jul-2025 18:05:32 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 18:05:32 Europe/Berlin] Raw input: {"action":"get_fifo_stock","product_id":215}
+[29-Jul-2025 18:05:32 Europe/Berlin] Processing action: get_fifo_stock
+[29-Jul-2025 18:05:35 Europe/Berlin] Raw input: {"action":"get_fifo_stock","product_id":211}
+[29-Jul-2025 18:05:35 Europe/Berlin] Processing action: get_fifo_stock
+[29-Jul-2025 18:05:45 Europe/Berlin] Raw input: 
+[29-Jul-2025 18:05:45 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 18:05:45 Europe/Berlin] Raw input: {"action":"get_fifo_stock","product_id":215}
+[29-Jul-2025 18:05:45 Europe/Berlin] Processing action: get_fifo_stock
+[29-Jul-2025 18:11:23 Europe/Berlin] Raw input: 
+[29-Jul-2025 18:11:23 Europe/Berlin] Raw input: 
+[29-Jul-2025 18:11:23 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 18:11:23 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 18:11:23 Europe/Berlin] Raw input: 
+[29-Jul-2025 18:11:23 Europe/Berlin] Raw input: 
+[29-Jul-2025 18:11:23 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 18:11:23 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 18:11:23 Europe/Berlin] Raw input: 
+[29-Jul-2025 18:11:23 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 18:11:24 Europe/Berlin] Raw input: {"action":"get_categories"}
+[29-Jul-2025 18:11:24 Europe/Berlin] Processing action: get_categories
+[29-Jul-2025 18:11:24 Europe/Berlin] Raw input: {"action":"get_warehouse_kpis","product":"All","location":"Warehouse"}
+[29-Jul-2025 18:11:24 Europe/Berlin] Processing action: get_warehouse_kpis
+[29-Jul-2025 18:11:24 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 18:11:24 Europe/Berlin] Raw input: {"action":"get_top_products_by_quantity","product":"All","location":"Warehouse"}
+[29-Jul-2025 18:11:24 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 18:11:24 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 18:11:24 Europe/Berlin] Processing action: get_top_products_by_quantity
+[29-Jul-2025 18:11:24 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 18:11:24 Europe/Berlin] Raw input: 
+[29-Jul-2025 18:11:24 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 18:11:24 Europe/Berlin] Raw input: {"action":"get_transfers_with_details"}
+[29-Jul-2025 18:11:24 Europe/Berlin] Processing action: get_transfers_with_details
+[29-Jul-2025 18:11:24 Europe/Berlin] Raw input: {"action":"get_warehouse_supply_by_product","product":"All","location":"Warehouse"}
+[29-Jul-2025 18:11:24 Europe/Berlin] Raw input: {"action":"get_products_by_location_name","location_name":"Convenience"}
+[29-Jul-2025 18:11:24 Europe/Berlin] Raw input: {"action":"get_stock_distribution_by_category","product":"All","location":"Warehouse"}
+[29-Jul-2025 18:11:24 Europe/Berlin] Processing action: get_warehouse_supply_by_product
+[29-Jul-2025 18:11:24 Europe/Berlin] Processing action: get_products_by_location_name
+[29-Jul-2025 18:11:24 Europe/Berlin] Processing action: get_stock_distribution_by_category
+[29-Jul-2025 18:11:24 Europe/Berlin] Raw input: {"action":"get_locations"}
+[29-Jul-2025 18:11:24 Europe/Berlin] Processing action: get_locations
+[29-Jul-2025 18:11:24 Europe/Berlin] Raw input: {"action":"get_products_by_location_name","location_name":"Pharmacy"}
+[29-Jul-2025 18:11:24 Europe/Berlin] Processing action: get_products_by_location_name
+[29-Jul-2025 18:11:24 Europe/Berlin] Raw input: {"action":"get_warehouse_supply_by_location","product":"All","location":"Warehouse"}
+[29-Jul-2025 18:11:24 Europe/Berlin] Raw input: {"action":"get_fast_moving_items_trend","product":"All","location":"Warehouse"}
+[29-Jul-2025 18:11:24 Europe/Berlin] Processing action: get_warehouse_supply_by_location
+[29-Jul-2025 18:11:24 Europe/Berlin] Processing action: get_fast_moving_items_trend
+[29-Jul-2025 18:11:24 Europe/Berlin] Raw input: {"action":"get_warehouse_stockout_items","product":"All","location":"Warehouse"}
+[29-Jul-2025 18:11:24 Europe/Berlin] Processing action: get_warehouse_stockout_items
+[29-Jul-2025 18:11:24 Europe/Berlin] Raw input: {"action":"get_critical_stock_alerts","product":"All","location":"Warehouse"}
+[29-Jul-2025 18:11:24 Europe/Berlin] Processing action: get_critical_stock_alerts
+[29-Jul-2025 18:11:24 Europe/Berlin] Raw input: {"action":"get_warehouse_product_kpis","product":"All","location":"Warehouse"}
+[29-Jul-2025 18:11:24 Europe/Berlin] Processing action: get_warehouse_product_kpis
+[29-Jul-2025 18:11:24 Europe/Berlin] Raw input: {"action":"get_inventory_by_branch_category","product":"All","location":"Warehouse"}
+[29-Jul-2025 18:11:24 Europe/Berlin] Processing action: get_inventory_by_branch_category
+[29-Jul-2025 18:11:24 Europe/Berlin] Raw input: {"action":"get_warehouse_kpis","location":"warehouse"}
+[29-Jul-2025 18:11:24 Europe/Berlin] Processing action: get_warehouse_kpis
+[29-Jul-2025 18:11:24 Europe/Berlin] Raw input: {"action":"get_suppliers"}
+[29-Jul-2025 18:11:24 Europe/Berlin] Raw input: {"action":"get_batches"}
+[29-Jul-2025 18:11:24 Europe/Berlin] Raw input: {"action":"get_products"}
+[29-Jul-2025 18:11:24 Europe/Berlin] Processing action: get_suppliers
+[29-Jul-2025 18:11:24 Europe/Berlin] Raw input: {"action":"get_brands"}
+[29-Jul-2025 18:11:24 Europe/Berlin] Raw input: {"action":"get_categories"}
+[29-Jul-2025 18:11:24 Europe/Berlin] Processing action: get_batches
+[29-Jul-2025 18:11:24 Europe/Berlin] Processing action: get_products
+[29-Jul-2025 18:11:24 Europe/Berlin] Processing action: get_brands
+[29-Jul-2025 18:11:24 Europe/Berlin] Processing action: get_categories
+[29-Jul-2025 18:11:24 Europe/Berlin] Raw input: {"action":"get_warehouse_kpis","location":"warehouse"}
+[29-Jul-2025 18:11:24 Europe/Berlin] Raw input: {"action":"get_suppliers"}
+[29-Jul-2025 18:11:24 Europe/Berlin] Processing action: get_warehouse_kpis
+[29-Jul-2025 18:11:24 Europe/Berlin] Processing action: get_suppliers
+[29-Jul-2025 18:11:24 Europe/Berlin] Raw input: {"action":"get_batches"}
+[29-Jul-2025 18:11:24 Europe/Berlin] Raw input: {"action":"get_brands"}
+[29-Jul-2025 18:11:24 Europe/Berlin] Processing action: get_batches
+[29-Jul-2025 18:11:24 Europe/Berlin] Raw input: {"action":"get_categories"}
+[29-Jul-2025 18:11:24 Europe/Berlin] Raw input: {"action":"get_products"}
+[29-Jul-2025 18:11:24 Europe/Berlin] Processing action: get_brands
+[29-Jul-2025 18:11:24 Europe/Berlin] Processing action: get_products
+[29-Jul-2025 18:11:24 Europe/Berlin] Processing action: get_categories
+[29-Jul-2025 18:11:37 Europe/Berlin] Raw input: 
+[29-Jul-2025 18:11:37 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 18:11:37 Europe/Berlin] Raw input: {"action":"check_barcode","barcode":"020357122682"}
+[29-Jul-2025 18:11:37 Europe/Berlin] Processing action: check_barcode
+[29-Jul-2025 18:11:43 Europe/Berlin] Raw input: 
+[29-Jul-2025 18:11:43 Europe/Berlin] JSON decode error: Syntax error
+[29-Jul-2025 18:11:43 Europe/Berlin] Raw input: {"action":"update_product_stock","product_id":215,"new_quantity":10,"batch_reference":"BR-20250730-001143","expiration_date":"2026-07-29","unit_cost":"80.00","entry_by":"admin"}
+[29-Jul-2025 18:11:43 Europe/Berlin] Processing action: update_product_stock
+[29-Jul-2025 18:11:43 Europe/Berlin] Raw input: {"action":"get_products"}
+[29-Jul-2025 18:11:43 Europe/Berlin] Processing action: get_products
+[29-Jul-2025 18:11:48 Europe/Berlin] Raw input: {"action":"get_fifo_stock","product_id":215}
+[29-Jul-2025 18:11:48 Europe/Berlin] Processing action: get_fifo_stock
