@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
 
 import {
   ChevronUp,
@@ -18,9 +17,28 @@ import {
   DollarSign,
   Edit,
   Archive,
+  RefreshCw,
+  History,
 } from "lucide-react";
 
 // API Configuratio
+
+// Safe toast wrapper function
+function safeToast(type, message) {
+  try {
+    if (type === 'success') {
+      toast.success(message);
+    } else if (type === 'error') {
+      toast.error(message);
+    } else if (type === 'warning') {
+      toast.warning(message);
+    } else if (type === 'info') {
+      toast.info(message);
+    }
+  } catch (error) {
+    console.log(`${type.toUpperCase()} notification: ${message}`);
+  }
+}
 
 // API function
 async function handleApiCall(action, data = {}) {
@@ -29,6 +47,7 @@ async function handleApiCall(action, data = {}) {
   console.log("🚀 API Call Payload:", payload);
 
   try {
+    console.log("📡 Making API request to:", API_BASE_URL);
     const response = await fetch(API_BASE_URL, {
       method: "POST",
       headers: {
@@ -37,12 +56,17 @@ async function handleApiCall(action, data = {}) {
       body: JSON.stringify(payload),
     });
 
+    console.log("📡 HTTP Response Status:", response.status);
+    console.log("📡 HTTP Response Headers:", response.headers);
+
     const resData = await response.json();
-    console.log("✅ API Success Response:", resData);
+    console.log("✅ API Response Data:", resData);
 
     if (resData && typeof resData === "object") {
       if (!resData.success) {
         console.warn("⚠️ API responded with failure:", resData.message || resData);
+      } else {
+        console.log("✅ API call successful for action:", action);
       }
       return resData;
     } else {
@@ -55,6 +79,11 @@ async function handleApiCall(action, data = {}) {
     }
   } catch (error) {
     console.error("❌ API Call Error:", error);
+    console.error("❌ Error details:", {
+      name: error.name,
+      message: error.message,
+      stack: error.stack
+    });
     return {
       success: false,
       message: error.message,
@@ -75,7 +104,7 @@ async function checkBarcodeExists(barcode) {
 }
 
 // New function to update product stock with FIFO tracking
-async function updateProductStock(productId, newQuantity, batchReference = "", expirationDate = null, unitCost = 0) {
+async function updateProductStock(productId, newQuantity, batchReference = "", expirationDate = null, unitCost = 0, newSrp = null) {
   try {
     const response = await handleApiCall("update_product_stock", { 
       product_id: productId, 
@@ -83,6 +112,7 @@ async function updateProductStock(productId, newQuantity, batchReference = "", e
       batch_reference: batchReference,
       expiration_date: expirationDate,
       unit_cost: unitCost,
+      new_srp: newSrp,
       entry_by: "admin"
     });
     return response;
@@ -123,9 +153,17 @@ function Warehouse() {
     const [showNewProductModal, setShowNewProductModal] = useState(false);
     const [existingProduct, setExistingProduct] = useState(null);
     const [newStockQuantity, setNewStockQuantity] = useState("");
+    const [newStockExpiration, setNewStockExpiration] = useState("");
+    const [editPriceEnabled, setEditPriceEnabled] = useState(false);
+    const [newUnitPrice, setNewUnitPrice] = useState("");
+    const [editSrpEnabled, setEditSrpEnabled] = useState(false);
+    const [newSrp, setNewSrp] = useState("");
     const [showFifoModal, setShowFifoModal] = useState(false);
     const [fifoStockData, setFifoStockData] = useState([]);
     const [selectedProductForFifo, setSelectedProductForFifo] = useState(null);
+    const [showQuantityHistoryModal, setShowQuantityHistoryModal] = useState(false);
+    const [selectedProductForHistory, setSelectedProductForHistory] = useState(null);
+    const [quantityHistoryData, setQuantityHistoryData] = useState([]);
     
 
     
@@ -280,16 +318,16 @@ function Warehouse() {
               archived_by: "admin"
             });
             if (response.success) {
-              toast.success("Product archived successfully");
+              safeToast("success", "Product archived successfully");
               setShowDeleteModal(false);
               setSelectedItem(null);
               loadData("products");
             } else {
-              toast.error(response.message || "Failed to delete product");
+              safeToast("error", response.message || "Failed to delete product");
             }
           } catch (error) {
             console.error("Error deleting product:", error);
-            toast.error("Failed to delete product");
+            safeToast("error", "Failed to delete product");
           } finally {
             setLoading(false);
           }
@@ -302,7 +340,7 @@ function Warehouse() {
             !data.supplier_contact ||
             !data.supplier_email
           ) {
-            toast.error("Supplier name, contact, and email are required");
+            safeToast("error", "Supplier name, contact, and email are required");
             setLoading(false);
             return;
           }
@@ -310,15 +348,15 @@ function Warehouse() {
           try {
             const response = await handleApiCall("add_supplier", data);
             if (response.success) {
-              toast.success(response.message || "Supplier added successfully");
+              safeToast("success", response.message || "Supplier added successfully");
               setShowSupplierModal(false);
               clearSupplierForm();
               loadData("suppliers");
             } else {
-              toast.error(response.message || "Failed to add supplier");
+              safeToast("error", response.message || "Failed to add supplier");
             }
           } catch (error) {
-            toast.error(
+            safeToast("error",
               "Failed to add supplier: " +
                 (error?.response?.data?.message || error.message)
             );
@@ -337,17 +375,17 @@ function Warehouse() {
           try {
             const response = await handleApiCall("update_supplier", updateData);
             if (response.success) {
-              toast.success("Supplier updated successfully");
+              safeToast("success", "Supplier updated successfully");
               setShowEditModal(false);
               setSelectedItem(null);
               clearEditForm();
               loadData("suppliers");
             } else {
-              toast.error(response.message || "Failed to update supplier");
+              safeToast("error", response.message || "Failed to update supplier");
             }
           } catch (error) {
             console.error("Error updating supplier:", error);
-            toast.error("Failed to update supplier");
+            safeToast("error", "Failed to update supplier");
           } finally {
             setLoading(false);
           }
@@ -362,17 +400,17 @@ function Warehouse() {
           try {
             const response = await handleApiCall("update_product", updateProductData);
             if (response.success) {
-              toast.success("Product updated successfully");
+              safeToast("success", "Product updated successfully");
               setShowEditProductModal(false);
               setSelectedItem(null);
               setEditProductFormData({});
               loadData("products");
             } else {
-              toast.error(response.message || "Failed to update product");
+              safeToast("error", response.message || "Failed to update product");
             }
           } catch (error) {
             console.error("Error updating product:", error);
-            toast.error("Failed to update product");
+            safeToast("error", "Failed to update product");
           } finally {
             setLoading(false);
           }
@@ -387,16 +425,16 @@ function Warehouse() {
               archived_by: "admin"
             });
             if (response.success) {
-              toast.success("Supplier archived successfully");
+              safeToast("success", "Supplier archived successfully");
               setShowDeleteModal(false);
               setSelectedItem(null);
               loadData("suppliers");
             } else {
-              toast.error(response.message || "Failed to delete supplier");
+              safeToast("error", response.message || "Failed to delete supplier");
             }
           } catch (error) {
             console.error("Error deleting supplier:", error);
-            toast.error("Failed to delete supplier");
+            safeToast("error", "Failed to delete supplier");
           } finally {
             setLoading(false);
           }
@@ -409,7 +447,7 @@ function Warehouse() {
     
         default:
           console.error("Unknown CRUD operation:", operation);
-          toast.error("Unknown operation: " + operation);
+          safeToast("error", "Unknown operation: " + operation);
       }
     }
     
@@ -435,7 +473,7 @@ function Warehouse() {
             })
             .catch((error) => {
               console.error("Error loading suppliers:", error)
-              toast.error("Failed to load suppliers")
+              safeToast("error", "Failed to load suppliers")
               setSuppliersData([])
             })
           break
@@ -467,23 +505,25 @@ function Warehouse() {
                     (product) => (product.status || "").toLowerCase() !== "archived"
                   );
   
-                  // Remove products that are now in Convenience store (location_id === 4)
+                  // Show only warehouse products (location_id === 2) and exclude convenience store (location_id === 4)
                   const warehouseProducts = activeProducts.filter(
-                    (product) => product.location_id !== 4
+                    (product) => product.location_id === 2 || product.location_id === 1
                   );
 
                   console.log("🔍 Active products after filtering:", warehouseProducts);
                   console.log("🔍 Active products length:", warehouseProducts.length);
+                  console.log("🔍 Location IDs in warehouse products:", warehouseProducts.map(p => p.location_id));
 
                   setInventoryData(warehouseProducts);
                   updateStats("totalProducts", warehouseProducts.length);
                   calculateWarehouseValue(warehouseProducts);
-                  calculateLowStockAndExpiring(warehouseProducts); // <-- Add this line
+                  calculateLowStockAndExpiring(warehouseProducts);
                   console.log("✅ Products loaded successfully:", warehouseProducts.length, "products");
+                  console.log("✅ Inventory data updated:", warehouseProducts.length, "products in state");
                 })
                 .catch((error) => {
                   console.error("❌ Error loading products:", error);
-                  toast.error("Failed to load products");
+                  safeToast("error", "Failed to load products");
                   setInventoryData([]);
                 });
               break;
@@ -507,7 +547,7 @@ function Warehouse() {
             })
             .catch((error) => {
               console.error("Error loading batches:", error)
-              toast.error("Failed to load batches")
+              safeToast("error", "Failed to load batches")
               setBatchData([])
             })
           break
@@ -571,7 +611,7 @@ function Warehouse() {
             })
             .catch((error) => {
               console.error("❌ Error loading categories:", error)
-              toast.error("Failed to load categories from database")
+              safeToast("error", "Failed to load categories from database")
             })
           break
   
@@ -724,7 +764,7 @@ function Warehouse() {
         } catch (error) {
           console.error("Error checking barcode:", error);
           setScannerStatusMessage("❌ Error checking barcode. Please try again.");
-          toast.error("Failed to check barcode");
+          safeToast("error", "Failed to check barcode");
         }
         break;
   
@@ -847,6 +887,11 @@ function Warehouse() {
       setShowUpdateStockModal(false);
       setExistingProduct(null);
       setNewStockQuantity("");
+      setNewStockExpiration("");
+      setEditPriceEnabled(false);
+      setNewUnitPrice("");
+      setEditSrpEnabled(false);
+      setNewSrp("");
     }
 
     function closeNewProductModal() {
@@ -939,6 +984,30 @@ function Warehouse() {
       setFifoStockData([]);
     }
 
+    function openQuantityHistoryModal(product) {
+      setSelectedProductForHistory(product);
+      setShowQuantityHistoryModal(true);
+      loadQuantityHistory(product.product_id);
+    }
+
+    function closeQuantityHistoryModal() {
+      setShowQuantityHistoryModal(false);
+      setSelectedProductForHistory(null);
+      setQuantityHistoryData([]);
+    }
+
+    async function loadQuantityHistory(productId) {
+      console.log("Loading quantity history for product ID:", productId);
+      const response = await handleApiCall("get_quantity_history", { product_id: productId });
+      console.log("Quantity history response:", response);
+      if (response.success) {
+        setQuantityHistoryData(response.data);
+      } else {
+        console.error("Quantity history error:", response.message);
+        safeToast("error", "Failed to load quantity history: " + (response.message || "Unknown error"));
+      }
+    }
+
 
 
     async function loadFifoStock(productId) {
@@ -949,14 +1018,14 @@ function Warehouse() {
         setFifoStockData(response.data);
       } else {
         console.error("FIFO stock error:", response.message);
-        toast.error("Failed to load FIFO stock data: " + (response.message || "Unknown error"));
+        safeToast("error", "Failed to load FIFO stock data: " + (response.message || "Unknown error"));
       }
     }
 
     // Handle update stock submission
     async function handleUpdateStock() {
       if (!existingProduct || !newStockQuantity || newStockQuantity <= 0) {
-        toast.error("Please enter a valid quantity");
+        safeToast("error", "Please enter a valid quantity");
         return;
       }
 
@@ -965,24 +1034,34 @@ function Warehouse() {
         // Generate batch reference for new stock
         const batchRef = generateBatchRef();
         
+        // Use new price if edit price is enabled, otherwise use existing price
+        const unitCost = editPriceEnabled && newUnitPrice ? parseFloat(newUnitPrice) : existingProduct.unit_price;
+        
+        // Use new SRP if edit SRP is enabled, otherwise use null
+        const srpValue = editSrpEnabled && newSrp ? parseFloat(newSrp) : null;
+        
         const response = await updateProductStock(
           existingProduct.product_id, 
           parseInt(newStockQuantity),
           batchRef,
-          existingProduct.expiration,
-          existingProduct.unit_price
+          newStockExpiration || existingProduct.expiration,
+          unitCost,
+          srpValue
         );
         
         if (response.success) {
-          toast.success("Stock updated successfully with FIFO tracking");
+          const expirationMsg = newStockExpiration ? ` with expiration date ${new Date(newStockExpiration).toLocaleDateString()}` : "";
+          const priceMsg = editPriceEnabled && newUnitPrice ? ` and updated price to ₱${parseFloat(newUnitPrice).toFixed(2)}` : "";
+          const srpMsg = editSrpEnabled && newSrp ? ` and updated SRP to ₱${parseFloat(newSrp).toFixed(2)}` : "";
+          safeToast("success", `Stock updated successfully with FIFO tracking${expirationMsg}${priceMsg}${srpMsg}`);
           closeUpdateStockModal();
           loadData("products"); // Reload products to show updated stock
         } else {
-          toast.error(response.message || "Failed to update stock");
+          safeToast("error", response.message || "Failed to update stock");
         }
       } catch (error) {
         console.error("Error updating stock:", error);
-        toast.error("Failed to update stock");
+        safeToast("error", "Failed to update stock");
       } finally {
         setLoading(false);
       }
@@ -992,8 +1071,12 @@ function Warehouse() {
     async function handleAddNewProduct(e) {
       e.preventDefault();
       
+      console.log("🔄 Starting add product process...");
+      console.log("📝 Form data:", newProductForm);
+      
       if (!newProductForm.product_name || !newProductForm.category || !newProductForm.unit_price || !newProductForm.quantity) {
-        toast.error("Please fill in all required fields");
+        safeToast("error", "Please fill in all required fields");
+        console.log("❌ Validation failed - missing required fields");
         return;
       }
 
@@ -1020,17 +1103,44 @@ function Warehouse() {
           order_no: newProductForm.order_number || "" // Order number
         };
 
+        console.log("🚀 Sending product data to API:", productData);
+
         const response = await handleApiCall("add_product", productData);
+        console.log("📡 API Response:", response);
+        
         if (response.success) {
-          toast.success("Product added successfully");
+          console.log("✅ Product added successfully to database");
+          safeToast("success", "Product added successfully to database!");
           closeNewProductModal();
-          loadData("products"); // Reload products
+          
+          // Reload data to show the new product
+          console.log("🔄 Reloading product data...");
+          await loadData("products");
+          
+          // Force a complete data reload
+          console.log("🔄 Force reloading all data...");
+          await loadData("all");
+          
+          // Also reload KPIs to update stats
+          const kpiResponse = await handleApiCall("get_warehouse_kpis", { location: "warehouse" });
+          if (kpiResponse && kpiResponse.success) {
+            setStats((prev) => ({
+              ...prev,
+              totalProducts: kpiResponse.totalProducts ?? prev.totalProducts,
+              totalSuppliers: kpiResponse.totalSuppliers ?? prev.totalSuppliers,
+              storageCapacity: kpiResponse.storageCapacity ?? prev.storageCapacity,
+              warehouseValue: kpiResponse.warehouseValue ?? prev.warehouseValue,
+              lowStockItems: kpiResponse.lowStockItems ?? prev.lowStockItems,
+              expiringSoon: kpiResponse.expiringSoon ?? prev.expiringSoon,
+            }));
+          }
         } else {
-          toast.error(response.message || "Failed to add product");
+          console.error("❌ API returned error:", response.message);
+          safeToast("error", response.message || "Failed to add product to database");
         }
       } catch (error) {
-        console.error("Error adding product:", error);
-        toast.error("Failed to add product");
+        console.error("❌ Error adding product:", error);
+        safeToast("error", "Failed to add product: " + error.message);
       } finally {
         setLoading(false);
       }
@@ -1146,6 +1256,17 @@ function Warehouse() {
                 >
                   <Camera className="h-4 w-4 mr-2" />
                   {scannerActive ? "Scanning..." : "Start Scanner"}
+                </button>
+                <button
+                  onClick={() => {
+                    console.log("🔄 Manual refresh triggered");
+                    loadData("all");
+                    safeToast("success", "Data refreshed!");
+                  }}
+                  className="bg-gray-600 hover:bg-gray-700 text-white px-3 py-1 rounded flex items-center"
+                >
+                  <RefreshCw className="h-4 w-4 mr-2" />
+                  Refresh
                 </button>
                 <button
                   onClick={openSupplierModal}
@@ -1271,12 +1392,18 @@ function Warehouse() {
                 <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">CATEGORY</th>
                 <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">BRAND</th>
                 <th className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">STOCK</th>
+                <th className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">QTY CHANGE</th>
                 <th className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">PRICE</th>
                 <th className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">SRP</th>
                 <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">SUPPLIER</th>
+                <th className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">FIFO ORDER</th>
                 <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">BATCH NO.</th>
                 <th className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">EXPIRY</th>
                 <th className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">BATCH DATE</th>
+                <th className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">DATE ADDED</th>
+                <th className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">BATCH TIME</th>
+                <th className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">DAYS TO EXPIRY</th>
+                <th className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">UNIT COST</th>
                 <th className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">TYPE</th>
                 <th className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">STATUS</th>
                 <th className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">STOCK STATUS</th>
@@ -1286,7 +1413,7 @@ function Warehouse() {
             <tbody className="bg-white divide-y divide-gray-200">
               {inventoryData.length === 0 ? (
                 <tr>
-                  <td colSpan="15" className="px-3 py-6 text-center">
+                  <td colSpan="20" className="px-3 py-6 text-center">
                     <div className="flex flex-col items-center space-y-3">
                       <Package className="h-12 w-12 text-gray-300" />
                       <div className="text-gray-500">
@@ -1318,7 +1445,30 @@ function Warehouse() {
                     <td className="px-3 py-2 text-center">
                       <div>
                         <div className="font-semibold">{product.quantity || 0}</div>
-                        <div className="text-xs text-gray-500">units</div>
+                        <div className="text-xs text-gray-500">total units</div>
+                        {product.current_quantity !== undefined && product.current_quantity > 0 && (
+                          <div className="text-xs text-blue-600 font-medium">
+                            {product.current_quantity} current
+                          </div>
+                        )}
+                      </div>
+                    </td>
+                    <td className="px-3 py-2 text-center text-sm text-gray-900">
+                      <div className="flex flex-col items-center">
+                        {product.quantity_change ? (
+                          <>
+                            <span className={`text-xs font-medium ${
+                              product.quantity_change > 0 ? 'text-green-600' : 'text-red-600'
+                            }`}>
+                              {product.quantity_change > 0 ? '+' : ''}{product.quantity_change}
+                            </span>
+                            <span className="text-xs text-gray-500">
+                              {product.last_updated ? new Date(product.last_updated).toLocaleDateString() : 'N/A'}
+                            </span>
+                          </>
+                        ) : (
+                          <span className="text-xs text-gray-400">No change</span>
+                        )}
                       </div>
                     </td>
                     <td className="px-3 py-2 text-center text-sm text-gray-900">
@@ -1329,6 +1479,11 @@ function Warehouse() {
                     </td>
                     <td className="px-3 py-2 text-sm text-gray-900">
                       {product.supplier_name || "N/A"}
+                    </td>
+                    <td className="px-3 py-2 text-center text-sm text-gray-900">
+                      <span className="inline-flex px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">
+                        #{product.fifo_order || 1}
+                      </span>
                     </td>
                     <td className="px-3 py-2 text-sm text-gray-900">
                       <div>
@@ -1343,6 +1498,31 @@ function Warehouse() {
                     </td>
                     <td className="px-3 py-2 text-center text-sm text-gray-900">
                       {product.entry_date ? new Date(product.entry_date).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: '2-digit' }) : <span className="text-gray-400 italic">N/A</span>}
+                    </td>
+                    <td className="px-3 py-2 text-center text-sm text-gray-900">
+                      {product.date_added ? new Date(product.date_added).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: '2-digit' }) : <span className="text-gray-400 italic">N/A</span>}
+                    </td>
+                    <td className="px-3 py-2 text-center text-sm text-gray-900">
+                      {product.entry_time ? new Date(`2000-01-01T${product.entry_time}`).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }) : <span className="text-gray-400 italic">N/A</span>}
+                    </td>
+                    <td className="px-3 py-2 text-center text-sm text-gray-900">
+                      {product.expiration ? (
+                        (() => {
+                          const daysUntilExpiry = Math.ceil((new Date(product.expiration) - new Date()) / (1000 * 60 * 60 * 24));
+                          return (
+                            <span className={`inline-block px-2 py-1 text-xs font-medium rounded-full ${
+                              daysUntilExpiry <= 7 ? 'bg-red-100 text-red-700' :
+                              daysUntilExpiry <= 30 ? 'bg-yellow-100 text-yellow-700' :
+                              'bg-green-100 text-green-700'
+                            }`}>
+                              {daysUntilExpiry} days
+                            </span>
+                          );
+                        })()
+                      ) : <span className="text-gray-400 italic">N/A</span>}
+                    </td>
+                    <td className="px-3 py-2 text-center text-sm text-gray-900">
+                      ₱{Number.parseFloat(product.unit_cost || product.unit_price || 0).toFixed(2)}
                     </td>
                     <td className="px-3 py-2 text-center">
                       {(() => {
@@ -1383,6 +1563,9 @@ function Warehouse() {
                       <div className="flex justify-center gap-1">
                         <button onClick={() => openFifoModal(product)} className="text-green-600 hover:text-green-900 p-1" title="View FIFO Stock">
                           <Package className="h-4 w-4" />
+                        </button>
+                        <button onClick={() => openQuantityHistoryModal(product)} className="text-purple-600 hover:text-purple-900 p-1" title="View Quantity History">
+                          <History className="h-4 w-4" />
                         </button>
                         <button onClick={() => openEditProductModal(product)} className="text-blue-600 hover:text-blue-900 p-1" title="Edit Product">
                           <Edit className="h-4 w-4" />
@@ -2026,18 +2209,87 @@ function Warehouse() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Unit Price</label>
-              <input
-                type="text"
-                                        value={`₱${Number.parseFloat(existingProduct.unit_price || 0).toFixed(2)}`}
-                      />
-                      <input
-                        type="text"
-                        readOnly
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-sm"
-                        placeholder="SRP"
-                        value={`₱${Number.parseFloat(existingProduct.srp || existingProduct.unit_price || 0).toFixed(2)}`}
-                      />
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-sm font-medium text-gray-700">Unit Price</label>
+                <div className="flex items-center">
+                  <input
+                    type="checkbox"
+                    id="editPrice"
+                    checked={editPriceEnabled}
+                    onChange={(e) => {
+                      setEditPriceEnabled(e.target.checked);
+                      if (e.target.checked) {
+                        setNewUnitPrice(existingProduct.unit_price || "");
+                      } else {
+                        setNewUnitPrice("");
+                      }
+                    }}
+                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  />
+                  <label htmlFor="editPrice" className="ml-2 text-sm text-gray-600">
+                    Edit Price
+                  </label>
+                </div>
+              </div>
+              {editPriceEnabled ? (
+                <input
+                  type="number"
+                  step="0.01"
+                  value={newUnitPrice || ""}
+                  onChange={(e) => setNewUnitPrice(e.target.value)}
+                  placeholder="Enter new unit price"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              ) : (
+                <input
+                  type="text"
+                  value={`₱${Number.parseFloat(existingProduct.unit_price || 0).toFixed(2)}`}
+                  readOnly
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md bg-transparent text-gray-700"
+                />
+              )}
+            </div>
+            <div>
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-sm font-medium text-gray-700">SRP</label>
+                <div className="flex items-center">
+                  <input
+                    type="checkbox"
+                    id="editSrp"
+                    checked={editSrpEnabled}
+                    onChange={(e) => {
+                      setEditSrpEnabled(e.target.checked);
+                      if (e.target.checked) {
+                        setNewSrp(existingProduct.srp || existingProduct.unit_price || "");
+                      } else {
+                        setNewSrp("");
+                      }
+                    }}
+                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  />
+                  <label htmlFor="editSrp" className="ml-2 text-sm text-gray-600">
+                    Edit SRP
+                  </label>
+                </div>
+              </div>
+              {editSrpEnabled ? (
+                <input
+                  type="number"
+                  step="0.01"
+                  value={newSrp || ""}
+                  onChange={(e) => setNewSrp(e.target.value)}
+                  placeholder="Enter new SRP"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              ) : (
+                <input
+                  type="text"
+                  readOnly
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-sm"
+                  placeholder="SRP"
+                  value={`₱${Number.parseFloat(existingProduct.srp || existingProduct.unit_price || 0).toFixed(2)}`}
+                />
+              )}
             </div>
             <div className="md:col-span-2">
               <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
@@ -2051,19 +2303,81 @@ function Warehouse() {
           </div>
 
           <div className="border-t pt-6">
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-1">New Stock to Add *</label>
-              <input
-                type="number"
-                value={newStockQuantity || ""}
-                onChange={(e) => setNewStockQuantity(e.target.value)}
-                placeholder="Enter quantity to add"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">New Stock to Add *</label>
+                <input
+                  type="number"
+                  value={newStockQuantity || ""}
+                  onChange={(e) => setNewStockQuantity(e.target.value)}
+                  placeholder="Enter quantity to add"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Expiration Date</label>
+                <input
+                  type="date"
+                  value={newStockExpiration || ""}
+                  onChange={(e) => setNewStockExpiration(e.target.value)}
+                  placeholder="Select expiration date"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <p className="text-xs text-gray-500 mt-1">Leave empty if no expiration date</p>
+              </div>
             </div>
-            <div className="text-sm text-gray-600 mb-4">
-              Current Stock: <span className="font-semibold">{existingProduct.quantity}</span> | 
-              New Total: <span className="font-semibold">{existingProduct.quantity + (parseInt(newStockQuantity) || 0)}</span>
+            <div className="bg-gray-50 p-4 rounded-lg mb-4">
+              <h4 className="font-semibold text-gray-900 mb-2">Quantity Summary</h4>
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div>
+                  <span className="text-gray-600">Total Stock:</span>
+                  <span className="font-semibold ml-2 text-blue-600">{existingProduct.quantity || 0}</span>
+                </div>
+                <div>
+                  <span className="text-gray-600">Current Stock:</span>
+                  <span className="font-semibold ml-2 text-green-600">{existingProduct.current_quantity || 0}</span>
+                </div>
+                <div>
+                  <span className="text-gray-600">Adding:</span>
+                  <span className="font-semibold ml-2 text-orange-600">+{parseInt(newStockQuantity) || 0}</span>
+                </div>
+                <div className="col-span-2 border-t pt-2">
+                  <span className="text-gray-600">New Current Stock:</span>
+                  <span className="font-semibold ml-2 text-purple-600 text-lg">
+                    {(existingProduct.current_quantity || 0) + (parseInt(newStockQuantity) || 0)}
+                  </span>
+                </div>
+                {newStockExpiration && (
+                  <div className="col-span-2 border-t pt-2">
+                    <span className="text-gray-600">Expiration Date:</span>
+                    <span className="font-semibold ml-2 text-orange-600">
+                      {new Date(newStockExpiration).toLocaleDateString()}
+                    </span>
+                  </div>
+                )}
+                {editPriceEnabled && newUnitPrice && (
+                  <div className="col-span-2 border-t pt-2">
+                    <span className="text-gray-600">New Unit Price:</span>
+                    <span className="font-semibold ml-2 text-red-600">
+                      ₱{parseFloat(newUnitPrice).toFixed(2)}
+                    </span>
+                    <span className="text-gray-500 ml-2">
+                      (was ₱{Number.parseFloat(existingProduct.unit_price || 0).toFixed(2)})
+                    </span>
+                  </div>
+                )}
+                {editSrpEnabled && newSrp && (
+                  <div className="col-span-2 border-t pt-2">
+                    <span className="text-gray-600">New SRP:</span>
+                    <span className="font-semibold ml-2 text-indigo-600">
+                      ₱{parseFloat(newSrp).toFixed(2)}
+                    </span>
+                    <span className="text-gray-500 ml-2">
+                      (was ₱{Number.parseFloat(existingProduct.srp || existingProduct.unit_price || 0).toFixed(2)})
+                    </span>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
@@ -2444,9 +2758,106 @@ function Warehouse() {
           </div>
         )}
 
+        {/* Quantity History Modal */}
+        {showQuantityHistoryModal && selectedProductForHistory && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+              <div className="flex items-center justify-between p-6 border-b border-gray-200">
+                <h3 className="text-lg font-semibold text-gray-900">
+                  Quantity History - {selectedProductForHistory.product_name}
+                </h3>
+                <button onClick={closeQuantityHistoryModal} className="text-gray-400 hover:text-gray-600">
+                  <X className="h-6 w-6" />
+                </button>
+              </div>
 
+              <div className="p-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                  <div className="bg-blue-50 p-4 rounded-lg">
+                    <h4 className="font-semibold text-blue-900">Product Info</h4>
+                    <p className="text-sm text-blue-700">Name: {selectedProductForHistory.product_name}</p>
+                    <p className="text-sm text-blue-700">Category: {selectedProductForHistory.category}</p>
+                    <p className="text-sm text-blue-700">Current Stock: {selectedProductForHistory.quantity}</p>
+                  </div>
+                  <div className="bg-green-50 p-4 rounded-lg">
+                    <h4 className="font-semibold text-green-900">Stock Status</h4>
+                    <p className="text-sm text-green-700">Status: {selectedProductForHistory.stock_status}</p>
+                    <p className="text-sm text-green-700">Unit Price: ₱{Number.parseFloat(selectedProductForHistory.unit_price || 0).toFixed(2)}</p>
+                  </div>
+                  <div className="bg-purple-50 p-4 rounded-lg">
+                    <h4 className="font-semibold text-purple-900">History Summary</h4>
+                    <p className="text-sm text-purple-700">Total Movements: {quantityHistoryData.length}</p>
+                    <p className="text-sm text-purple-700">Last Updated: {quantityHistoryData.length > 0 ? new Date(quantityHistoryData[0].movement_date).toLocaleDateString() : 'N/A'}</p>
+                  </div>
+                </div>
 
-        <ToastContainer />
+                <div className="overflow-x-auto">
+                  <table className="w-full border-collapse border border-gray-300">
+                    <thead>
+                      <tr className="bg-gray-100">
+                        <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold">Date</th>
+                        <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold">Type</th>
+                        <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold">Quantity Change</th>
+                        <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold">Remaining Qty</th>
+                        <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold">Unit Cost</th>
+                        <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold">Batch Reference</th>
+                        <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold">Notes</th>
+                        <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold">Created By</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {quantityHistoryData.map((movement, index) => (
+                        <tr key={movement.movement_id} className="hover:bg-gray-50">
+                          <td className="border border-gray-300 px-3 py-2 text-sm">
+                            {new Date(movement.movement_date).toLocaleDateString()}
+                          </td>
+                          <td className="border border-gray-300 px-3 py-2 text-center">
+                            <span className={`inline-block px-2 py-1 text-xs font-medium rounded-full ${
+                              movement.movement_type === 'IN' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                            }`}>
+                              {movement.movement_type}
+                            </span>
+                          </td>
+                          <td className="border border-gray-300 px-3 py-2 text-center">
+                            <span className={`font-medium ${
+                              movement.quantity_change > 0 ? 'text-green-600' : 'text-red-600'
+                            }`}>
+                              {movement.quantity_change > 0 ? '+' : ''}{movement.quantity_change}
+                            </span>
+                          </td>
+                          <td className="border border-gray-300 px-3 py-2 text-center font-medium">
+                            {movement.remaining_quantity}
+                          </td>
+                          <td className="border border-gray-300 px-3 py-2">
+                            ₱{Number.parseFloat(movement.unit_cost || 0).toFixed(2)}
+                          </td>
+                          <td className="border border-gray-300 px-3 py-2 font-mono text-sm">
+                            {movement.batch_reference || movement.reference_no || 'N/A'}
+                          </td>
+                          <td className="border border-gray-300 px-3 py-2 text-sm text-gray-600">
+                            {movement.notes || 'N/A'}
+                          </td>
+                          <td className="border border-gray-300 px-3 py-2 text-sm">
+                            {movement.created_by || 'System'}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                {quantityHistoryData.length === 0 && (
+                  <div className="text-center py-8">
+                    <History className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                    <p className="text-gray-500">No quantity history available for this product.</p>
+                    <p className="text-sm text-gray-400 mt-2">Quantity changes will appear here after stock updates.</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
         {loading && (
           <div className="flex justify-center items-center py-8">
             <svg className="animate-spin h-8 w-8 text-blue-600" viewBox="0 0 24 24">

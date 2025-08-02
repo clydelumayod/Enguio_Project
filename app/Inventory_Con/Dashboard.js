@@ -316,7 +316,7 @@ function Dashboard() {
       const prodRes = await fetch("http://localhost/Enguio_Project/Api/backend.php", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "get_products_by_location_name", location_name: "Convenience" })
+        body: JSON.stringify({ action: "get_products_by_location_name", location_name: "convenience" })
       });
       const prodData = await prodRes.json();
       if (prodData.success && Array.isArray(prodData.data)) {
@@ -350,7 +350,7 @@ function Dashboard() {
       const prodRes = await fetch("http://localhost/Enguio_Project/Api/backend.php", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "get_products_by_location_name", location_name: "Pharmacy" })
+        body: JSON.stringify({ action: "get_products_by_location_name", location_name: "pharmacy" })
       });
       const prodData = await prodRes.json();
       if (prodData.success && Array.isArray(prodData.data)) {

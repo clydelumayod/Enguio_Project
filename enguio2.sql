@@ -472,8 +472,8 @@ INSERT INTO `tbl_product` (`product_id`, `product_name`, `category`, `barcode`, 
 (210, 'Tuna Flakes', 'Processed Foods', 1000000000004, 'Century Tuna Flakes in Oil', '0', 0, '2026-07-21', 1, 38.00, 3, 13, 4, 35, 'active', '', 'low stock', '2025-07-21'),
 (211, 'malboro', 'Beverages', 5000289934596, 'dawdaw', '0', 1, '2025-08-19', 100, 5.00, 7, 13, 2, 56, 'active', '', 'in stock', '2025-07-21'),
 (212, 'Amoxicillin 500mg', 'Medicine (OTC, prescription)', 1000000000021, 'Antibiotic capsules', '1', 0, '2026-07-21', 10, 18.00, 12, 12, 4, 55, 'active', '', 'low stock', '2025-07-24'),
-(213, 'Hotdog Jumbo', 'Processed Foods', 1000000000002, 'Hotdog by Purefoods', '0', 0, '2026-07-21', 0, 45.00, 1, 13, 3, 35, '', '', 'out of stock', '2025-07-24'),
-(214, 'Hotdog Jumbo', 'Processed Foods', 1000000000002, 'Hotdog by Purefoods', '0', 0, '2026-07-21', 30, 45.00, 1, 13, 4, 35, '', '', 'in stock', '2025-07-24');
+(213, 'Hotdog Jumbo', 'Processed Foods', 1000000000002, 'Hotdog by Purefoods', '0', 0, '2026-07-21', 0, 45.00, 1, 13, 3, 35, '', '', 'out of stock', '2025-07-24');
+
 
 -- --------------------------------------------------------
 

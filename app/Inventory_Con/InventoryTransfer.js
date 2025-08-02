@@ -41,7 +41,7 @@ function InventoryTransfer() {
 
   // Step 1: Store Selection
   const [storeData, setStoreData] = useState({
-    originalStore: "",
+    originalStore: "Warehouse", // Automatically set to Warehouse
     destinationStore: "",
     storesConfirmed: false,
   })
@@ -50,8 +50,11 @@ function InventoryTransfer() {
   const [transferInfo, setTransferInfo] = useState({
     transferredBy: "",
     receivedBy: "",
-    deliveryDate: "",
+    deliveryDate: new Date().toISOString().split('T')[0], // Automatically set to today's date
   })
+
+  // Current user data
+  const [currentUser, setCurrentUser] = useState(null)
 
   const API_BASE_URL = "http://localhost/Enguio_Project/Api/backend_mysqli.php"
 
@@ -160,7 +163,7 @@ function InventoryTransfer() {
   const loadAvailableProducts = async (sourceLocationId = null) => {
     try {
       console.log("Loading products from source location...")
-      const response = await handleApiCall("get_products", sourceLocationId ? { location_id: sourceLocationId } : {})
+      const response = await handleApiCall("get_products", sourceLocationId ? { location_id: sourceLocationId, for_transfer: true } : { for_transfer: true })
       if (response.success && Array.isArray(response.data)) {
         console.log("✅ Loaded products from source location:", response.data.length)
         setAvailableProducts(response.data)
@@ -191,7 +194,7 @@ function InventoryTransfer() {
         
         // Check for convenience store specifically
         const convenienceStore = res.data.find(loc => 
-          loc.location_name === "Convenience"
+          loc.location_name.toLowerCase() === "convenience"
         )
         if (convenienceStore) {
           console.log("✅ Found Convenience Store:", convenienceStore.location_name, "(ID:", convenienceStore.location_id, ")")
@@ -215,6 +218,39 @@ function InventoryTransfer() {
     } catch (error) {
       console.error("❌ Failed to load locations:", error)
       setLocations([])
+    }
+  }
+
+  // Load current user data
+  const loadCurrentUser = async () => {
+    try {
+      console.log("🔍 Loading current user data...")
+      const response = await handleApiCall("get_current_user")
+      console.log("📋 Current user response:", response)
+      
+      if (response.success) {
+        setCurrentUser(response.data)
+        // Auto-fill the transferred by field with current user's name
+        setTransferInfo(prev => ({
+          ...prev,
+          transferredBy: response.data.full_name
+        }))
+        console.log("✅ Current user loaded successfully:", response.data.full_name)
+      } else {
+        console.error("❌ Failed to load current user data:", response.message)
+        // Set a default value if user data can't be loaded
+        setTransferInfo(prev => ({
+          ...prev,
+          transferredBy: "Inventory Manager"
+        }))
+      }
+    } catch (err) {
+      console.error("❌ Error loading current user:", err)
+      // Set a default value if there's an error
+      setTransferInfo(prev => ({
+        ...prev,
+        transferredBy: "Inventory Manager"
+      }))
     }
   }
 
@@ -303,6 +339,7 @@ function InventoryTransfer() {
     loadTransferLogs()
     loadLocations()
     loadStaff()
+    loadCurrentUser()
   }, [])
 
   // Fixed transfer submission function
@@ -325,8 +362,8 @@ function InventoryTransfer() {
     }
 
     // Enhanced validation for convenience store transfers
-    const isConvenienceStoreTransfer = storeData.destinationStore === "Convenience";
-    const convenience = locations.find(loc => loc.location_name === "Convenience");
+    const isConvenienceStoreTransfer = storeData.destinationStore.toLowerCase() === "convenience";
+    const convenience = locations.find(loc => loc.location_name.toLowerCase() === "convenience");
     
     if (isConvenienceStoreTransfer) {
       console.log("🏪 Special handling for Warehouse → Convenience Store transfer")
@@ -342,9 +379,9 @@ function InventoryTransfer() {
 
     setLoading(true)
     try {
-      // Find location IDs
-      const sourceLocation = locations.find((loc) => loc.location_name === storeData.originalStore)
-      const destinationLocation = locations.find((loc) => loc.location_name === storeData.destinationStore)
+      // Find location IDs with case-insensitive comparison
+      const sourceLocation = locations.find((loc) => loc.location_name.toLowerCase() === storeData.originalStore.toLowerCase())
+      const destinationLocation = locations.find((loc) => loc.location_name.toLowerCase() === storeData.destinationStore.toLowerCase())
 
       console.log("🔍 Location Debug Info:")
       console.log("Available locations:", locations.map(loc => `${loc.location_name} (ID: ${loc.location_id})`))
@@ -441,8 +478,16 @@ function InventoryTransfer() {
         // Reset form
         setShowCreateModal(false)
         setCurrentStep(1)
-        setStoreData({ originalStore: "", destinationStore: "", storesConfirmed: false })
-        setTransferInfo({ transferredBy: "", receivedBy: "", deliveryDate: "" })
+        setStoreData({ 
+          originalStore: "Warehouse", 
+          destinationStore: "", 
+          storesConfirmed: false 
+        })
+        setTransferInfo({ 
+          transferredBy: currentUser?.full_name || "", 
+          receivedBy: "", 
+          deliveryDate: new Date().toISOString().split('T')[0] 
+        })
         setSelectedProducts([])
         setCheckedProducts([])
 
@@ -483,8 +528,16 @@ function InventoryTransfer() {
 
   const handleCreateTransfer = () => {
     setCurrentStep(1)
-    setStoreData({ originalStore: "", destinationStore: "", storesConfirmed: false })
-    setTransferInfo({ transferredBy: "", receivedBy: "", deliveryDate: "" })
+    setStoreData({ 
+      originalStore: "Warehouse", // Always reset to Warehouse
+      destinationStore: "", 
+      storesConfirmed: false 
+    })
+    setTransferInfo({ 
+      transferredBy: currentUser?.full_name || "", // Auto-fill with current user
+      receivedBy: "", 
+      deliveryDate: new Date().toISOString().split('T')[0] // Auto-fill with today's date
+    })
     setSelectedProducts([])
     setCheckedProducts([])
     setShowCreateModal(true)
@@ -500,10 +553,12 @@ function InventoryTransfer() {
       return
     }
     
-    // Find the source location ID
-    const sourceLocation = locations.find((loc) => loc.location_name === storeData.originalStore)
+    // Find the source location ID with case-insensitive comparison
+    const sourceLocation = locations.find((loc) => 
+      loc.location_name.toLowerCase() === storeData.originalStore.toLowerCase()
+    )
     if (!sourceLocation) {
-      toast.error("Invalid source location selection")
+      toast.error(`Source location "${storeData.originalStore}" not found in available locations`)
       return
     }
     
@@ -682,7 +737,7 @@ function InventoryTransfer() {
           </div>
         </div>
 
-                {/* Transfer Statistics */}
+                
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="text-center p-4 bg-blue-50 rounded-lg border border-blue-200">
@@ -964,26 +1019,24 @@ function InventoryTransfer() {
                 <div className="text-sm text-blue-700 space-y-1">
                   <p>• <strong>Warehouse → Convenience Store:</strong> Move products from warehouse to convenience store for retail</p>
                   <p>• <strong>Warehouse → Pharmacy:</strong> Move products from warehouse to pharmacy for prescription sales</p>
-                  <p>• <strong>Convenience Store → Pharmacy:</strong> Move products between retail locations</p>
+                  <p>• <strong>Warehouse → Other Locations:</strong> Move products from warehouse to other store locations</p>
+                </div>
+                <div className="mt-2 p-2 bg-green-50 border border-green-200 rounded text-xs text-green-700">
+                  <div className="flex items-center">
+                    <CheckCircle className="h-3 w-3 mr-1" />
+                    <span>Warehouse is automatically set as the source location</span>
+                  </div>
                 </div>
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Original Store*</label>
-                  <select
-                    value={storeData.originalStore}
-                    onChange={(e) => setStoreData((prev) => ({ ...prev, originalStore: e.target.value }))}
-                    disabled={storeData.storesConfirmed}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="">Select Original Store</option>
-                    {locations.map((loc) => (
-                      <option key={loc.location_id} value={loc.location_name}>
-                        {loc.location_name}
-                      </option>
-                    ))}
-                  </select>
+                  <div className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-700 flex items-center">
+                    <span className="font-medium">Warehouse</span>
+                    <span className="ml-2 text-xs text-gray-500">(Automatically set)</span>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">Warehouse is automatically selected as the source location</p>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Destination Store*</label>
@@ -1077,18 +1130,11 @@ function InventoryTransfer() {
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Transferred by (Original Store)*
                   </label>
-                  <select
-                    value={transferInfo.transferredBy}
-                    onChange={(e) => setTransferInfo((prev) => ({ ...prev, transferredBy: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="">Select staff member</option>
-                    {staff.map((member) => (
-                      <option key={member.emp_id} value={member.name}>
-                        {member.name}
-                      </option>
-                    ))}
-                  </select>
+                  <div className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-700 flex items-center">
+                    <span className="font-medium">{transferInfo.transferredBy || "Loading..."}</span>
+                    <span className="ml-2 text-xs text-gray-500">(Automatically set)</span>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">Current inventory manager is automatically selected</p>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -1109,12 +1155,11 @@ function InventoryTransfer() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Delivery Date</label>
-                  <input
-                    type="date"
-                    value={transferInfo.deliveryDate}
-                    onChange={(e) => setTransferInfo((prev) => ({ ...prev, deliveryDate: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
+                  <div className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-700 flex items-center">
+                    <span className="font-medium">{transferInfo.deliveryDate}</span>
+                    <span className="ml-2 text-xs text-gray-500">(Today's date)</span>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">Today's date is automatically set</p>
                 </div>
               </div>
               <div className="flex justify-center space-x-3 mt-4">
@@ -1229,7 +1274,10 @@ function InventoryTransfer() {
                             Batch Number
                           </th>
                           <th className="border border-gray-300 px-2 py-1 text-center text-xs font-medium text-gray-700">
-                            Available Qty
+                            Old Qty
+                          </th>
+                          <th className="border border-gray-300 px-2 py-1 text-center text-xs font-medium text-gray-700">
+                            Total Qty
                           </th>
                                                   <th className="border border-gray-300 px-2 py-1 text-center text-xs font-medium text-gray-700">
                           SRP
@@ -1253,11 +1301,11 @@ function InventoryTransfer() {
                                 <input
                                   type="number"
                                   min="0"
-                                  max={product.quantity || 999}
+                                  max={product.total_quantity || 999}
                                   value={product.transfer_quantity}
                                   onChange={(e) => updateTransferQuantity(product.product_id, e.target.value)}
                                   className={`w-20 px-2 py-1 border rounded text-center focus:outline-none focus:ring-2 ${
-                                    product.transfer_quantity > (product.quantity || 0) 
+                                    product.transfer_quantity > (product.total_quantity || 0) 
                                       ? 'border-red-500 focus:ring-red-500' 
                                       : 'border-red-300 focus:ring-red-500'
                                   }`}
@@ -1265,11 +1313,11 @@ function InventoryTransfer() {
                                 {product.transfer_quantity > 0 && (
                                   <div className="text-xs mt-1">
                                     <span className={`${
-                                      product.transfer_quantity <= (product.quantity || 0) 
+                                      product.transfer_quantity <= (product.total_quantity || 0) 
                                         ? 'text-green-600' 
                                         : 'text-red-600'
                                     }`}>
-                                      {product.transfer_quantity} / {product.quantity || 0}
+                                      {product.transfer_quantity} / {product.total_quantity || 0}
                                     </span>
                                   </div>
                                 )}
@@ -1292,8 +1340,11 @@ function InventoryTransfer() {
                             <td className="border border-gray-300 px-2 py-1 text-sm text-center font-semibold">
                               {product.batch_id || 'N/A'}
                             </td>
-                            <td className="border border-gray-300 px-2 py-1 text-sm text-center font-semibold">
-                              {product.quantity || 0}
+                            <td className="border border-gray-300 px-2 py-1 text-sm text-center font-semibold text-orange-600">
+                              {product.old_quantity || 0}
+                            </td>
+                            <td className="border border-gray-300 px-2 py-1 text-sm text-center font-semibold text-green-600">
+                              {product.total_quantity || 0}
                             </td>
                             <td className="border border-gray-300 px-2 py-1 text-sm text-center">
                               ₱{Number.parseFloat(product.srp || 0).toFixed(2)}
@@ -1430,9 +1481,12 @@ function InventoryTransfer() {
                         Batch Number
                       </th>
                       <th className="border border-gray-300 px-4 py-2 text-center text-sm font-medium text-gray-700">
-                        Available Qty
+                        Old Qty
                       </th>
-                                              <th className="border border-gray-300 px-4 py-2 text-center text-sm font-medium text-gray-700">
+                      <th className="border border-gray-300 px-4 py-2 text-center text-sm font-medium text-gray-700">
+                        Total Qty
+                      </th>
+                      <th className="border border-gray-300 px-4 py-2 text-center text-sm font-medium text-gray-700">
                         SRP
                       </th>
                     </tr>
@@ -1473,8 +1527,11 @@ function InventoryTransfer() {
                         <td className="border border-gray-300 px-4 py-2 text-sm text-center font-semibold">
                           {product.batch_id || 'N/A'}
                         </td>
-                        <td className="border border-gray-300 px-4 py-2 text-sm text-center font-semibold">
-                          {product.quantity || 0}
+                        <td className="border border-gray-300 px-4 py-2 text-sm text-center font-semibold text-orange-600">
+                          {product.old_quantity || 0}
+                        </td>
+                        <td className="border border-gray-300 px-4 py-2 text-sm text-center font-semibold text-green-600">
+                          {product.total_quantity || 0}
                         </td>
                         <td className="border border-gray-300 px-4 py-2 text-sm text-center">
                           ₱{Number.parseFloat(product.srp || 0).toFixed(2)}

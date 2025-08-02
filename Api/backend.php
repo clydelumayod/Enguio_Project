@@ -893,6 +893,7 @@ try {
     case 'get_products':
     try {
         $location_id = $data['location_id'] ?? null;
+        $for_transfer = $data['for_transfer'] ?? false;
         
         $whereClause = "WHERE (p.status IS NULL OR p.status <> 'archived')";
         $params = [];
@@ -902,42 +903,112 @@ try {
             $params[] = $location_id;
         }
         
-        // Include products with quantity > 0 or when specifically filtering by location
-        if (!$location_id) {
-            $whereClause .= " AND p.quantity > 0";
+        // If for transfer, show OLD and NEW quantities separately for FIFO management
+        if ($for_transfer) {
+            $stmt = $conn->prepare("
+                SELECT 
+                    p.product_id,
+                    p.product_name,
+                    p.category,
+                    p.barcode,
+                    p.description,
+                    p.Variation,
+                    p.brand_id,
+                    p.supplier_id,
+                    p.location_id,
+                    p.unit_price,
+                    p.stock_status,
+                    s.supplier_name,
+                    b.brand,
+                    l.location_name,
+                    ss.batch_id,
+                    ss.batch_reference,
+                    b.entry_date,
+                    b.entry_by,
+                    COALESCE(p.date_added, CURDATE()) as date_added,
+                    -- Show OLD quantity (oldest batch)
+                    (SELECT ss2.available_quantity 
+                     FROM tbl_stock_summary ss2 
+                     INNER JOIN tbl_batch b2 ON ss2.batch_id = b2.batch_id 
+                     WHERE ss2.product_id = p.product_id 
+                     AND ss2.available_quantity > 0
+                     AND b2.entry_date = (
+                         SELECT MIN(b3.entry_date) 
+                         FROM tbl_batch b3 
+                         INNER JOIN tbl_stock_summary ss3 ON b3.batch_id = ss3.batch_id 
+                         WHERE ss3.product_id = p.product_id AND ss3.available_quantity > 0
+                     )
+                     LIMIT 1) as old_quantity,
+                    -- Show NEW quantity (newest batch)
+                    (SELECT ss2.available_quantity 
+                     FROM tbl_stock_summary ss2 
+                     INNER JOIN tbl_batch b2 ON ss2.batch_id = b2.batch_id 
+                     WHERE ss2.product_id = p.product_id 
+                     AND ss2.available_quantity > 0
+                     AND b2.entry_date = (
+                         SELECT MAX(b3.entry_date) 
+                         FROM tbl_batch b3 
+                         INNER JOIN tbl_stock_summary ss3 ON b3.batch_id = ss3.batch_id 
+                         WHERE ss3.product_id = p.product_id AND ss3.available_quantity > 0
+                     )
+                     LIMIT 1) as new_quantity,
+                    -- Show total quantity
+                    ss.available_quantity as total_quantity
+                FROM tbl_product p 
+                LEFT JOIN tbl_supplier s ON p.supplier_id = s.supplier_id 
+                LEFT JOIN tbl_brand b ON p.brand_id = b.brand_id 
+                LEFT JOIN tbl_location l ON p.location_id = l.location_id
+                INNER JOIN tbl_stock_summary ss ON p.product_id = ss.product_id
+                INNER JOIN tbl_batch b ON ss.batch_id = b.batch_id
+                WHERE ss.available_quantity > 0
+                AND (p.status IS NULL OR p.status <> 'archived')
+                $whereClause
+                GROUP BY p.product_id, p.product_name, p.category, p.barcode, p.description, p.Variation, 
+                         p.brand_id, p.supplier_id, p.location_id, p.unit_price, p.stock_status, 
+                         s.supplier_name, b.brand, l.location_name, ss.batch_id, ss.batch_reference, 
+                         b.entry_date, b.entry_by, ss.available_quantity
+                ORDER BY p.product_name ASC
+            ");
+        } else {
+            // Original query for regular product listing with FIFO information
+            $stmt = $conn->prepare("
+                SELECT 
+                    p.*,
+                    s.supplier_name,
+                    b.brand,
+                    l.location_name,
+                    batch.batch_id,
+                    batch.batch as batch_reference,
+                    batch.entry_date,
+                    batch.entry_time,
+                    batch.entry_by,
+                    COALESCE(p.date_added, CURDATE()) as date_added,
+                    ROW_NUMBER() OVER (PARTITION BY p.product_id ORDER BY batch.entry_date ASC, batch.batch_id ASC) as fifo_order,
+                    (SELECT quantity FROM tbl_stock_movements WHERE product_id = p.product_id ORDER BY movement_date DESC LIMIT 1) as quantity_change,
+                    (SELECT movement_date FROM tbl_stock_movements WHERE product_id = p.product_id ORDER BY movement_date DESC LIMIT 1) as last_updated
+                FROM tbl_product p 
+                LEFT JOIN tbl_supplier s ON p.supplier_id = s.supplier_id 
+                LEFT JOIN tbl_brand b ON p.brand_id = b.brand_id 
+                LEFT JOIN tbl_location l ON p.location_id = l.location_id
+                LEFT JOIN (
+                    SELECT 
+                        p2.product_id,
+                        b2.batch_id,
+                        b2.batch,
+                        b2.entry_date,
+                        b2.entry_time,
+                        b2.entry_by
+                    FROM tbl_product p2
+                    LEFT JOIN tbl_batch b2 ON p2.batch_id = b2.batch_id
+                    WHERE p2.batch_id IS NOT NULL
+                    GROUP BY p2.product_id
+                    HAVING MIN(b2.entry_date) = b2.entry_date
+                ) batch ON p.product_id = batch.product_id
+                $whereClause
+                ORDER BY p.product_name ASC, batch.entry_date ASC
+            ");
         }
         
-        $stmt = $conn->prepare("
-            SELECT 
-                p.*,
-                s.supplier_name,
-                b.brand,
-                l.location_name,
-                batch.batch_id,
-                batch.batch as batch_reference,
-                batch.entry_date,
-                batch.entry_by,
-                COALESCE(p.date_added, CURDATE()) as date_added
-            FROM tbl_product p 
-            LEFT JOIN tbl_supplier s ON p.supplier_id = s.supplier_id 
-            LEFT JOIN tbl_brand b ON p.brand_id = b.brand_id 
-            LEFT JOIN tbl_location l ON p.location_id = l.location_id
-            LEFT JOIN (
-                SELECT 
-                    p2.product_id,
-                    b2.batch_id,
-                    b2.batch,
-                    b2.entry_date,
-                    b2.entry_by
-                FROM tbl_product p2
-                LEFT JOIN tbl_batch b2 ON p2.batch_id = b2.batch_id
-                WHERE p2.batch_id IS NOT NULL
-                GROUP BY p2.product_id
-                HAVING MIN(b2.entry_date) = b2.entry_date
-            ) batch ON p.product_id = batch.product_id
-            $whereClause
-            ORDER BY p.product_name ASC
-        ");
         $stmt->execute($params);
         $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -1889,10 +1960,10 @@ try {
             // Start transaction
             $conn->beginTransaction();
             
-            // Get current product details
+            // Get current product details including current quantity
             $productStmt = $conn->prepare("
                 SELECT product_name, category, barcode, description, prescription, bulk,
-                       expiration, unit_price, brand_id, supplier_id, location_id, status, Variation
+                       expiration, unit_price, brand_id, supplier_id, location_id, status, Variation, quantity
                 FROM tbl_product 
                 WHERE product_id = ?
                 LIMIT 1
@@ -1903,6 +1974,9 @@ try {
             if (!$productDetails) {
                 throw new Exception("Product not found");
             }
+            
+            $old_quantity = $productDetails['quantity'];
+            $quantity_change = $new_quantity; // This is the amount being added
             
             // Create batch record if batch reference is provided
             $batch_id = null;
@@ -1946,6 +2020,25 @@ try {
                 ]);
             }
             
+            // Record the stock movement for tracking quantity changes
+            $movementStmt = $conn->prepare("
+                INSERT INTO tbl_stock_movements (
+                    product_id, batch_id, movement_type, quantity, remaining_quantity,
+                    unit_cost, expiration_date, reference_no, notes, created_by
+                ) VALUES (?, ?, 'IN', ?, ?, ?, ?, ?, ?, ?)
+            ");
+            $movementStmt->execute([
+                $product_id,
+                $batch_id ?: $productDetails['batch_id'],
+                $quantity_change,
+                $old_quantity + $new_quantity,
+                $unit_cost,
+                $expiration_date,
+                $batch_reference,
+                "Stock added: +{$quantity_change} units. Old: {$old_quantity}, New: " . ($old_quantity + $new_quantity),
+                $entry_by
+            ]);
+            
             $conn->commit();
             echo json_encode([
                 "success" => true,
@@ -1959,6 +2052,53 @@ try {
             echo json_encode([
                 "success" => false,
                 "message" => "Database error: " . $e->getMessage()
+            ]);
+        }
+        break;
+
+    case 'get_quantity_history':
+        try {
+            $product_id = $data['product_id'] ?? 0;
+            
+            if ($product_id <= 0) {
+                echo json_encode([
+                    "success" => false,
+                    "message" => "Invalid product ID"
+                ]);
+                break;
+            }
+            
+            $stmt = $conn->prepare("
+                SELECT 
+                    sm.movement_id,
+                    sm.movement_type,
+                    sm.quantity as quantity_change,
+                    sm.remaining_quantity,
+                    sm.unit_cost,
+                    sm.movement_date,
+                    sm.reference_no,
+                    sm.notes,
+                    sm.created_by,
+                    b.batch_reference,
+                    b.entry_date as batch_date
+                FROM tbl_stock_movements sm
+                LEFT JOIN tbl_batch b ON sm.batch_id = b.batch_id
+                WHERE sm.product_id = ?
+                ORDER BY sm.movement_date DESC
+                LIMIT 20
+            ");
+            $stmt->execute([$product_id]);
+            $history = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            echo json_encode([
+                "success" => true,
+                "data" => $history
+            ]);
+        } catch (Exception $e) {
+            echo json_encode([
+                "success" => false,
+                "message" => "Database error: " . $e->getMessage(),
+                "data" => []
             ]);
         }
         break;

@@ -122,7 +122,7 @@ function ConvenienceInventory() {
         console.warn("⚠️ Primary API failed, trying fallback...");
         // Fallback to the location name API
         const fallbackResponse = await handleApiCall("get_products_by_location_name", {
-          location_name: "Convenience"
+          location_name: "convenience"
         });
         
         if (fallbackResponse.success && Array.isArray(fallbackResponse.data)) {
@@ -383,6 +383,9 @@ function ConvenienceInventory() {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   SUPPLIER
                 </th>
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  FIFO ORDER
+                </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   BARCODE
                 </th>
@@ -391,6 +394,18 @@ function ConvenienceInventory() {
                 </th>
                 <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                   BATCH DATE
+                </th>
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  DATE ADDED
+                </th>
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  BATCH TIME
+                </th>
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  DAYS TO EXPIRY
+                </th>
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  UNIT COST
                 </th>
                 <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                   STATUS
@@ -406,7 +421,7 @@ function ConvenienceInventory() {
             <tbody className="bg-white divide-y divide-gray-200">
               {loading ? (
                 <tr>
-                  <td colSpan={12} className="px-6 py-4 text-center text-gray-500">
+                  <td colSpan={17} className="px-6 py-4 text-center text-gray-500">
                     Loading products...
                   </td>
                 </tr>
@@ -438,6 +453,11 @@ function ConvenienceInventory() {
                     <td className="px-6 py-4 text-sm text-gray-900">
                       {product.supplier_name || "N/A"}
                     </td>
+                    <td className="px-6 py-4 text-center text-sm text-gray-900">
+                      <span className="inline-flex px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">
+                        #{product.fifo_order || 1}
+                      </span>
+                    </td>
                     <td className="px-6 py-4 text-sm font-mono text-gray-900">
                       {product.barcode}
                     </td>
@@ -451,6 +471,31 @@ function ConvenienceInventory() {
                     </td>
                     <td className="px-6 py-4 text-center text-sm text-gray-900">
                       {product.entry_date ? new Date(product.entry_date).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: '2-digit' }) : <span className="text-gray-400 italic">N/A</span>}
+                    </td>
+                    <td className="px-6 py-4 text-center text-sm text-gray-900">
+                      {product.date_added ? new Date(product.date_added).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: '2-digit' }) : <span className="text-gray-400 italic">N/A</span>}
+                    </td>
+                    <td className="px-6 py-4 text-center text-sm text-gray-900">
+                      {product.entry_time ? new Date(`2000-01-01T${product.entry_time}`).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }) : <span className="text-gray-400 italic">N/A</span>}
+                    </td>
+                    <td className="px-6 py-4 text-center text-sm text-gray-900">
+                      {product.expiration ? (
+                        (() => {
+                          const daysUntilExpiry = Math.ceil((new Date(product.expiration) - new Date()) / (1000 * 60 * 60 * 24));
+                          return (
+                            <span className={`inline-block px-2 py-1 text-xs font-medium rounded-full ${
+                              daysUntilExpiry <= 7 ? 'bg-red-100 text-red-700' :
+                              daysUntilExpiry <= 30 ? 'bg-yellow-100 text-yellow-700' :
+                              'bg-green-100 text-green-700'
+                            }`}>
+                              {daysUntilExpiry} days
+                            </span>
+                          );
+                        })()
+                      ) : <span className="text-gray-400 italic">N/A</span>}
+                    </td>
+                    <td className="px-6 py-4 text-center text-sm text-gray-900">
+                      ₱{Number.parseFloat(product.unit_cost || product.unit_price || 0).toFixed(2)}
                     </td>
                     <td className="px-6 py-4 text-center">
                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
@@ -503,7 +548,7 @@ function ConvenienceInventory() {
                 ))
                               ) : (
                   <tr>
-                    <td colSpan={12} className="px-6 py-8 text-center">
+                    <td colSpan={17} className="px-6 py-8 text-center">
                       <div className="flex flex-col items-center space-y-3">
                         <Package className="h-12 w-12 text-gray-300" />
                         <div className="text-gray-500">
