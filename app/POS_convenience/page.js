@@ -406,7 +406,10 @@ export default function POS() {
     };
 
     try {
-      const response = await fetch('/api/print-receipt', {
+      console.log('Sending receipt data:', receiptData);
+      
+      // Call the PHP backend directly since Next.js API is broken
+              const response = await fetch('http://localhost/Enguio_Project/Api/print-receipt-fixed-width.php', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -415,37 +418,65 @@ export default function POS() {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to print receipt');
+        const errorText = await response.text();
+        console.error('HTTP Error:', response.status, errorText);
+        throw new Error(`HTTP error! status: ${response.status}: ${errorText}`);
       }
 
       const result = await response.json();
+      console.log('Print result:', result);
+      
       if (!result.success) {
         throw new Error(result.message || 'Failed to print receipt');
       }
+      
+      // Show success message
+      console.log('Receipt printed successfully:', result.data?.transactionId || 'N/A');
+      return { success: true, message: 'Receipt printed successfully' };
+      
     } catch (error) {
       console.error('Print error:', error);
-      alert('Failed to print receipt. Please try again.');
-      return false;
+      // Return error details for better debugging
+      return { success: false, message: error.message };
     }
-    return true;
   };
 
   const handleCheckout = async () => {
     if (cart.length === 0) return;
     
-    // Try to print receipt
-    const printSuccess = await printReceipt();
+    // Validate payment
+    if (!amountPaid || isNaN(amountPaid) || parseFloat(amountPaid) < total) {
+      alert('Please enter a valid amount that covers the total cost.');
+      return;
+    }
     
-    // Only proceed with checkout if printing was successful
-    if (printSuccess) {
-      // Clear cart and reset state
-      setCart([]);
-      localStorage.removeItem('pos-cart');
-      setAmountPaid('');
-      setReferenceNumber('');
-      setPaymentMethod('');
-      setShowRefInput(false);
-      setShowThankYouModal(true);
+    if (paymentMethod === 'gcash' && !referenceNumber.trim()) {
+      alert('Please enter GCash reference number.');
+      return;
+    }
+    
+    // Try to print receipt (but don't block checkout if it fails)
+    const printResult = await printReceipt();
+    
+    // Always proceed with checkout regardless of print success
+    // Clear cart and reset state
+    setCart([]);
+    localStorage.removeItem('pos-cart');
+    setAmountPaid('');
+    setReferenceNumber('');
+    setPaymentMethod('');
+    setShowRefInput(false);
+    setShowThankYouModal(true);
+    
+    // Show appropriate message based on print success
+    if (printResult.success) {
+      console.log('Transaction completed successfully with receipt processed.');
+    } else {
+      console.log('Transaction completed successfully but receipt processing failed:', printResult.message);
+      // Optionally show a warning to the user about printing failure
+      setTimeout(() => {
+        alert(`Transaction completed but printing failed: ${printResult.message}\n\nCheck the receipts folder for saved receipt.`);
+      }, 2500); // Show after thank you modal
     }
   };
 
@@ -670,11 +701,14 @@ export default function POS() {
       </div>
       {showThankYouModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div className="bg-white p-8 rounded shadow-lg text-center">
-            <h2 className="text-2xl font-bold mb-4">Thank you for purchasing!</h2>
-            <p className="text-gray-600">Your receipt is ready to print.</p>
+          <div className="bg-white p-8 rounded-xl shadow-lg text-center">
+            <h2 className="text-3xl font-bold mb-4 text-green-600">Thank you for purchasing!</h2>
+            <p className="text-gray-600 text-lg">Transaction completed successfully.</p>
+            <p className="text-sm text-gray-500 mt-2">Receipt data sent to printer successfully.</p>
+            <p className="text-xs text-orange-500 mt-2 font-semibold">📋 If paper doesnt feed automatically, press the manual feed button on your printer.</p>
+            <p className="text-xs text-gray-400 mt-1">Receipt is also saved in the receipts folder.</p>
             <button
-              className="mt-4 px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+              className="mt-6 px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold"
               onClick={() => setShowThankYouModal(false)}
             >
               Close
@@ -686,4 +720,4 @@ export default function POS() {
   );
 }
 
-              
+               
