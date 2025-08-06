@@ -115,7 +115,7 @@ try {
             $stmt->bindParam(":email", $email, PDO::PARAM_STR);
             $stmt->bindParam(":contact_num", $contact, PDO::PARAM_STR);
             $stmt->bindParam(":role_id", $role_id, PDO::PARAM_INT);
-            $stmt->bindParam(":shift_id", $shift_id, PDO::PARAM_INT | PDO::PARAM_NULL);
+            $stmt->bindValue(":shift_id", $shift_id, PDO::PARAM_NULL);
             $stmt->bindParam(":username", $username, PDO::PARAM_STR);
             $stmt->bindParam(":password", $hashedPassword, PDO::PARAM_STR);
             $stmt->bindParam(":age", $age, PDO::PARAM_INT);
@@ -708,6 +708,251 @@ try {
             echo json_encode([
                 "success" => false,
                 "message" => "Database error: " . $e->getMessage()
+            ]);
+        }
+        break;
+
+
+        case 'enhanced_fifo_transfer':
+    require_once '../enhanced_fifo_transfer_system.php';
+    
+    try {
+        $fifoSystem = new EnhancedFifoTransferSystem($conn);
+        $result = $fifoSystem->performEnhancedFifoTransfer($data);
+        
+        echo json_encode($result);
+        
+    } catch (Exception $e) {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Enhanced FIFO Transfer Error: ' . $e->getMessage()
+        ]);
+    }
+    break;
+
+case 'get_fifo_stock_status':
+    require_once '../enhanced_fifo_transfer_system.php';
+    
+    try {
+        $product_id = $data['product_id'] ?? 0;
+        $location_id = $data['location_id'] ?? null;
+        
+        $fifoSystem = new EnhancedFifoTransferSystem($conn);
+        $result = $fifoSystem->getFifoStockStatus($product_id, $location_id);
+        
+        echo json_encode($result);
+        
+    } catch (Exception $e) {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Error getting FIFO stock status: ' . $e->getMessage()
+        ]);
+    }
+    break;
+
+case 'check_fifo_availability':
+    try {
+        $product_id = $data['product_id'] ?? 0;
+        $location_id = $data['location_id'] ?? 0;
+        $requested_quantity = $data['requested_quantity'] ?? 0;
+        
+        // Get FIFO stock for availability check
+        $stmt = $conn->prepare("
+            SELECT 
+                ss.available_quantity,
+                ss.batch_reference,
+                b.entry_date,
+                ROW_NUMBER() OVER (ORDER BY b.entry_date ASC, ss.summary_id ASC) as fifo_rank
+            FROM tbl_stock_summary ss
+            JOIN tbl_batch b ON ss.batch_id = b.batch_id
+            WHERE ss.product_id = ? 
+            AND b.location_id = ?
+            AND ss.available_quantity > 0
+            ORDER BY b.entry_date ASC, ss.summary_id ASC
+        ");
+        
+        $stmt->execute([$product_id, $location_id]);
+        $batches = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        $total_available = 0;
+        foreach ($batches as $batch) {
+            $total_available += $batch['available_quantity'];
+        }
+        
+        $is_available = $total_available >= $requested_quantity;
+        
+        echo json_encode([
+            "success" => true,
+            "is_available" => $is_available,
+            "total_available" => $total_available,
+            "requested_quantity" => $requested_quantity,
+            "batches_count" => count($batches),
+            "next_batches" => array_slice($batches, 0, 3) // Show first 3 batches that would be used
+        ]);
+        
+    } catch (Exception $e) {
+        echo json_encode([
+            "success" => false,
+            "message" => "Error checking FIFO availability: " . $e->getMessage()
+        ]);
+    }
+    break;
+
+case 'get_products_oldest_batch_for_transfer':
+    try {
+        $location_id = $data['location_id'] ?? null;
+        
+        $whereClause = "WHERE (p.status IS NULL OR p.status <> 'archived')";
+        $params = [];
+        
+        if ($location_id) {
+            $whereClause .= " AND p.location_id = ?";
+            $params[] = $location_id;
+        }
+        
+        // Simple query to get products directly from tbl_product
+        $stmt = $conn->prepare("
+            SELECT 
+                p.product_id,
+                p.product_name,
+                p.category,
+                p.barcode,
+                p.description,
+                COALESCE(p.Variation, '') as variation,
+                COALESCE(b.brand, '') as brand,
+                COALESCE(s.supplier_name, '') as supplier_name,
+                COALESCE(p.srp, p.unit_price) as srp,
+                p.location_id,
+                l.location_name,
+                p.quantity as total_quantity,
+                p.quantity as oldest_batch_quantity,
+                p.unit_price as unit_cost,
+                'N/A' as batch_reference,
+                'N/A' as entry_date,
+                'N/A' as expiration_date,
+                1 as total_batches
+            FROM tbl_product p
+            LEFT JOIN tbl_supplier s ON p.supplier_id = s.supplier_id 
+            LEFT JOIN tbl_brand b ON p.brand_id = b.brand_id 
+            LEFT JOIN tbl_location l ON p.location_id = l.location_id
+            $whereClause
+            AND p.quantity > 0
+            ORDER BY p.product_name ASC
+        ");
+        
+        $stmt->execute($params);
+        $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        echo json_encode([
+            "success" => true,
+            "data" => $products
+        ]);
+        
+    } catch (Exception $e) {
+        echo json_encode([
+            "success" => false,
+            "message" => "Database error: " . $e->getMessage(),
+            "data" => []
+        ]);
+    }
+    break;
+
+    case 'get_products_oldest_batch':
+        try {
+            $location_id = $data['location_id'] ?? null;
+            
+            $whereClause = "WHERE (p.status IS NULL OR p.status <> 'archived')";
+            $params = [];
+            
+            if ($location_id) {
+                $whereClause .= " AND p.location_id = ?";
+                $params[] = $location_id;
+            }
+            
+            // Query to get products with oldest batch information for warehouse display
+            $stmt = $conn->prepare("
+                SELECT 
+                    p.product_id,
+                    p.product_name,
+                    p.category,
+                    p.barcode,
+                    p.description,
+                    COALESCE(p.Variation, '') as variation,
+                    COALESCE(b.brand, '') as brand,
+                    COALESCE(s.supplier_name, '') as supplier_name,
+                    COALESCE(p.srp, p.unit_price) as srp,
+                    p.unit_price,
+                    p.location_id,
+                    l.location_name,
+                    p.stock_status,
+                    p.date_added,
+                    p.status,
+                    -- Oldest batch information
+                    oldest_batch.batch_id,
+                    oldest_batch.batch_reference,
+                    oldest_batch.entry_date,
+                    oldest_batch.expiration_date,
+                    oldest_batch.quantity as oldest_batch_quantity,
+                    oldest_batch.unit_cost,
+                    oldest_batch.entry_time,
+                    oldest_batch.entry_by,
+                    -- Total quantity across all batches
+                    total_qty.total_quantity,
+                    -- Count of total batches
+                    total_qty.total_batches,
+                    -- Fallback to product quantity if no stock summary
+                    COALESCE(total_qty.total_quantity, p.quantity) as quantity
+                FROM tbl_product p
+                LEFT JOIN tbl_supplier s ON p.supplier_id = s.supplier_id 
+                LEFT JOIN tbl_brand b ON p.brand_id = b.brand_id 
+                LEFT JOIN tbl_location l ON p.location_id = l.location_id
+                -- Get oldest batch for each product
+                LEFT JOIN (
+                    SELECT 
+                        ss.product_id,
+                        ss.batch_id,
+                        bt.batch as batch_reference,
+                        bt.entry_date,
+                        bt.entry_time,
+                        bt.entry_by,
+                        ss.expiration_date,
+                        ss.available_quantity as quantity,
+                        ss.unit_cost,
+                        ROW_NUMBER() OVER (
+                            PARTITION BY ss.product_id 
+                            ORDER BY bt.entry_date ASC, bt.batch_id ASC
+                        ) as batch_rank
+                    FROM tbl_stock_summary ss
+                    INNER JOIN tbl_batch bt ON ss.batch_id = bt.batch_id
+                    WHERE ss.available_quantity > 0
+                ) oldest_batch ON p.product_id = oldest_batch.product_id AND oldest_batch.batch_rank = 1
+                -- Get total quantities
+                LEFT JOIN (
+                    SELECT 
+                        product_id,
+                        SUM(available_quantity) as total_quantity,
+                        COUNT(*) as total_batches
+                    FROM tbl_stock_summary
+                    WHERE available_quantity > 0
+                    GROUP BY product_id
+                ) total_qty ON p.product_id = total_qty.product_id
+                $whereClause
+                ORDER BY p.product_name ASC
+            ");
+            
+            $stmt->execute($params);
+            $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            echo json_encode([
+                "success" => true,
+                "data" => $products
+            ]);
+            
+        } catch (Exception $e) {
+            echo json_encode([
+                "success" => false,
+                "message" => "Database error: " . $e->getMessage(),
+                "data" => []
             ]);
         }
         break;
@@ -2218,6 +2463,7 @@ try {
                     fs.available_quantity,
                     fs.unit_cost,
                     fs.expiration_date,
+                    fs.quantity as total_quantity,
                     b.entry_date as batch_date,
                     b.entry_time as batch_time,
                     ROW_NUMBER() OVER (ORDER BY b.entry_date ASC, fs.fifo_id ASC) as fifo_order,
@@ -3732,6 +3978,67 @@ try {
                 echo json_encode(["success" => true, "message" => "Item permanently deleted"]);
             } catch (Exception $e) {
                 echo json_encode(["success" => false, "message" => "Database error: " . $e->getMessage()]);
+            }
+            break;
+
+        case 'get_transfer_log':
+            try {
+                $stmt = $conn->prepare("
+                    SELECT 
+                        tl.transfer_id,
+                        tl.product_id,
+                        p.product_name,
+                        tl.from_location,
+                        tl.to_location,
+                        tl.quantity,
+                        tl.transfer_date,
+                        tl.created_at
+                    FROM tbl_transfer_log tl
+                    LEFT JOIN tbl_product p ON tl.product_id = p.product_id
+                    ORDER BY tl.created_at DESC
+                ");
+                $stmt->execute();
+                $logs = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                
+                echo json_encode([
+                    "success" => true,
+                    "data" => $logs
+                ]);
+                
+            } catch (Exception $e) {
+                echo json_encode([
+                    "success" => false,
+                    "message" => "Database error: " . $e->getMessage(),
+                    "data" => []
+                ]);
+            }
+            break;
+
+        case 'get_current_user':
+            try {
+                session_start();
+                
+                if (isset($_SESSION['user_id']) && isset($_SESSION['full_name'])) {
+                    echo json_encode([
+                        "success" => true,
+                        "data" => [
+                            "user_id" => $_SESSION['user_id'],
+                            "username" => $_SESSION['username'] ?? '',
+                            "full_name" => $_SESSION['full_name'],
+                            "role" => $_SESSION['role'] ?? ''
+                        ]
+                    ]);
+                } else {
+                    echo json_encode([
+                        "success" => false,
+                        "message" => "No active session found"
+                    ]);
+                }
+            } catch (Exception $e) {
+                echo json_encode([
+                    "success" => false,
+                    "message" => "Session error: " . $e->getMessage()
+                ]);
             }
             break;
          

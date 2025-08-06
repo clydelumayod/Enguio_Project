@@ -239,8 +239,7 @@ function Products(){
 }
 
 //user
-function 
-UserManagement() { 
+function UserManagement() { 
   const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState({
     fname: "",

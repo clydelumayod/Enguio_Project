@@ -1,154 +1,209 @@
 <?php
-require_once 'fifo_transfer_system.php';
+// Test FIFO Transfer System
+// This script tests the FIFO transfer functionality
 
-/**
- * Test the FIFO transfer system with various scenarios
- */
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "enguio2";
+
+$conn = new mysqli($servername, $username, $password, $dbname);
+
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
 
 echo "<h1>FIFO Transfer System Test</h1>\n";
-echo "<pre>\n";
 
-// Test 1: Check available stock before transfer
-echo "=== TEST 1: Checking Available Stock ===\n";
-$stock_check = getAvailableStock(1000000000015, 2); // C2 Apple in warehouse
-echo "Available stock for C2 Apple (barcode: 1000000000015) in warehouse:\n";
-echo json_encode($stock_check, JSON_PRETTY_PRINT) . "\n\n";
+// Step 1: Check current stock summary
+echo "<h2>Step 1: Current Stock Summary</h2>\n";
+$sql = "
+    SELECT 
+        p.product_id,
+        p.product_name,
+        ss.batch_id,
+        ss.batch_reference,
+        ss.available_quantity,
+        b.entry_date,
+        ROW_NUMBER() OVER (PARTITION BY p.product_id ORDER BY b.entry_date ASC, ss.summary_id ASC) as fifo_order
+    FROM tbl_product p
+    INNER JOIN tbl_stock_summary ss ON p.product_id = ss.product_id
+    INNER JOIN tbl_batch b ON ss.batch_id = b.batch_id
+    WHERE p.status = 'active' AND ss.available_quantity > 0
+    ORDER BY p.product_id, fifo_order
+";
 
-// Test 2: Perform a FIFO transfer
-echo "=== TEST 2: Performing FIFO Transfer ===\n";
-$transfer_result = performFifoTransfer(
-    1000000000015,  // C2 Apple barcode
-    2,              // From warehouse (location_id: 2)
-    4,              // To convenience store (location_id: 4)
-    25,             // Transfer 25 units
-    21              // Employee ID 21
-);
-
-echo "Transfer Result:\n";
-echo json_encode($transfer_result, JSON_PRETTY_PRINT) . "\n\n";
-
-// Test 3: Check stock after transfer
-echo "=== TEST 3: Checking Stock After Transfer ===\n";
-echo "Warehouse stock after transfer:\n";
-$warehouse_stock_after = getAvailableStock(1000000000015, 2);
-echo json_encode($warehouse_stock_after, JSON_PRETTY_PRINT) . "\n\n";
-
-echo "Convenience store stock after transfer:\n";
-$convenience_stock_after = getAvailableStock(1000000000015, 4);
-echo json_encode($convenience_stock_after, JSON_PRETTY_PRINT) . "\n\n";
-
-// Test 4: Test insufficient stock scenario
-echo "=== TEST 4: Testing Insufficient Stock Scenario ===\n";
-$insufficient_stock_result = performFifoTransfer(
-    1000000000015,  // C2 Apple barcode
-    2,              // From warehouse
-    4,              // To convenience store
-    1000,           // Try to transfer 1000 units (more than available)
-    21              // Employee ID 21
-);
-
-echo "Insufficient Stock Test Result:\n";
-echo json_encode($insufficient_stock_result, JSON_PRETTY_PRINT) . "\n\n";
-
-// Test 5: Test with different product (Tuna Flakes)
-echo "=== TEST 5: Testing with Different Product (Tuna Flakes) ===\n";
-echo "Available Tuna Flakes stock in warehouse:\n";
-$tuna_stock = getAvailableStock(1000000000004, 2);
-echo json_encode($tuna_stock, JSON_PRETTY_PRINT) . "\n\n";
-
-if ($tuna_stock['success'] && $tuna_stock['total_available'] > 0) {
-    $tuna_transfer = performFifoTransfer(
-        1000000000004,  // Tuna Flakes barcode
-        2,              // From warehouse
-        3,              // To pharmacy
-        10,             // Transfer 10 units
-        20              // Employee ID 20
-    );
-    
-    echo "Tuna Flakes Transfer Result:\n";
-    echo json_encode($tuna_transfer, JSON_PRETTY_PRINT) . "\n\n";
+$result = $conn->query($sql);
+if ($result->num_rows > 0) {
+    echo "<table border='1' style='border-collapse: collapse; width: 100%;'>\n";
+    echo "<tr><th>Product ID</th><th>Product Name</th><th>Batch ID</th><th>Batch Reference</th><th>Available Qty</th><th>Entry Date</th><th>FIFO Order</th></tr>\n";
+    while ($row = $result->fetch_assoc()) {
+        echo "<tr>";
+        echo "<td>" . $row['product_id'] . "</td>";
+        echo "<td>" . $row['product_name'] . "</td>";
+        echo "<td>" . $row['batch_id'] . "</td>";
+        echo "<td>" . $row['batch_reference'] . "</td>";
+        echo "<td>" . $row['available_quantity'] . "</td>";
+        echo "<td>" . $row['entry_date'] . "</td>";
+        echo "<td>" . $row['fifo_order'] . "</td>";
+        echo "</tr>\n";
+    }
+    echo "</table>\n";
+} else {
+    echo "No stock summary records found.\n";
 }
 
-// Test 6: Show transfer history
-echo "=== TEST 6: Recent Transfer History ===\n";
-showRecentTransfers();
+// Step 2: Test FIFO Transfer API
+echo "<h2>Step 2: Test FIFO Transfer API</h2>\n";
 
-echo "</pre>\n";
+// Get a product with multiple batches for testing
+$testProductSql = "
+    SELECT 
+        p.product_id,
+        p.product_name,
+        COUNT(ss.batch_id) as batch_count,
+        SUM(ss.available_quantity) as total_available
+    FROM tbl_product p
+    INNER JOIN tbl_stock_summary ss ON p.product_id = ss.product_id
+    WHERE p.status = 'active' AND ss.available_quantity > 0
+    GROUP BY p.product_id
+    HAVING batch_count > 1
+    ORDER BY total_available DESC
+    LIMIT 1
+";
 
-/**
- * Helper function to show recent transfers
- */
-function showRecentTransfers() {
-    global $conn;
+$testResult = $conn->query($testProductSql);
+if ($testResult->num_rows > 0) {
+    $testProduct = $testResult->fetch_assoc();
+    $product_id = $testProduct['product_id'];
+    $product_name = $testProduct['product_name'];
     
-    try {
-        $stmt = $conn->prepare("
-            SELECT 
-                th.transfer_header_id,
-                th.date,
-                sl.location_name as source_location,
-                dl.location_name as destination_location,
-                CONCAT(e.Fname, ' ', e.Lname) as employee_name,
-                th.status,
-                COUNT(td.transfer_dtl_id) as items_count,
-                SUM(td.qty) as total_quantity
-            FROM tbl_transfer_header th
-            INNER JOIN tbl_location sl ON th.source_location_id = sl.location_id
-            INNER JOIN tbl_location dl ON th.destination_location_id = dl.location_id
-            INNER JOIN tbl_employee e ON th.employee_id = e.emp_id
-            LEFT JOIN tbl_transfer_dtl td ON th.transfer_header_id = td.transfer_header_id
-            GROUP BY th.transfer_header_id
-            ORDER BY th.transfer_header_id DESC
-            LIMIT 10
-        ");
+    echo "<p>Testing FIFO transfer for product: <strong>$product_name</strong> (ID: $product_id)</p>\n";
+    
+    // Get source and destination locations
+    $locationSql = "SELECT location_id, location_name FROM tbl_location WHERE status = 'active' ORDER BY location_id LIMIT 2";
+    $locationResult = $conn->query($locationSql);
+    $locations = [];
+    while ($row = $locationResult->fetch_assoc()) {
+        $locations[] = $row;
+    }
+    
+    if (count($locations) >= 2) {
+        $source_location_id = $locations[0]['location_id'];
+        $destination_location_id = $locations[1]['location_id'];
         
-        $stmt->execute();
-        $transfers = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        echo "<p>Source: " . $locations[0]['location_name'] . " (ID: $source_location_id)</p>\n";
+        echo "<p>Destination: " . $locations[1]['location_name'] . " (ID: $destination_location_id)</p>\n";
         
-        echo "Recent Transfers:\n";
-        foreach ($transfers as $transfer) {
-            echo "Transfer ID: {$transfer['transfer_header_id']}\n";
-            echo "Date: {$transfer['date']}\n";
-            echo "From: {$transfer['source_location']} → To: {$transfer['destination_location']}\n";
-            echo "Employee: {$transfer['employee_name']}\n";
-            echo "Status: {$transfer['status']}\n";
-            echo "Items: {$transfer['items_count']}, Total Qty: {$transfer['total_quantity']}\n";
-            echo "---\n";
+        // Prepare transfer data
+        $transferData = [
+            'action' => 'create_fifo_transfer',
+            'source_location_id' => $source_location_id,
+            'destination_location_id' => $destination_location_id,
+            'employee_id' => 21, // Use existing employee
+            'status' => 'approved',
+            'products' => [
+                [
+                    'product_id' => $product_id,
+                    'quantity' => 10 // Transfer 10 units
+                ]
+            ]
+        ];
+        
+        echo "<p>Transferring 10 units using FIFO method...</p>\n";
+        
+        // Make API call
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, "http://localhost/Enguio_Project/Api/backend_mysqli.php");
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($transferData));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+        
+        echo "<p>API Response (HTTP $httpCode):</p>\n";
+        echo "<pre>" . htmlspecialchars($response) . "</pre>\n";
+        
+        $responseData = json_decode($response, true);
+        if ($responseData && $responseData['success']) {
+            echo "<p style='color: green;'><strong>✅ FIFO Transfer successful!</strong></p>\n";
+            echo "<p>Transfer ID: " . $responseData['transfer_id'] . "</p>\n";
+            echo "<p>Products transferred: " . $responseData['products_transferred'] . "</p>\n";
+        } else {
+            echo "<p style='color: red;'><strong>❌ FIFO Transfer failed!</strong></p>\n";
+            if ($responseData) {
+                echo "<p>Error: " . $responseData['message'] . "</p>\n";
+            }
         }
-        
-    } catch (Exception $e) {
-        echo "Error retrieving transfer history: " . $e->getMessage() . "\n";
+    } else {
+        echo "<p style='color: red;'>Need at least 2 active locations for testing.</p>\n";
     }
+} else {
+    echo "<p style='color: red;'>No products with multiple batches found for testing.</p>\n";
 }
 
-/**
- * Additional helper function to get detailed transfer breakdown
- */
-function getTransferDetails($transfer_header_id) {
-    global $conn;
-    
-    try {
-        $stmt = $conn->prepare("
-            SELECT 
-                p.product_name,
-                p.barcode,
-                td.qty,
-                b.batch_reference,
-                b.entry_date
-            FROM tbl_transfer_dtl td
-            INNER JOIN tbl_product p ON td.product_id = p.product_id
-            INNER JOIN tbl_batch b ON p.batch_id = b.batch_id
-            WHERE td.transfer_header_id = :transfer_header_id
-            ORDER BY b.entry_date ASC
-        ");
-        
-        $stmt->bindParam(':transfer_header_id', $transfer_header_id);
-        $stmt->execute();
-        
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-        
-    } catch (Exception $e) {
-        return null;
+// Step 3: Show updated stock summary
+echo "<h2>Step 3: Updated Stock Summary (After Transfer)</h2>\n";
+$result = $conn->query($sql);
+if ($result->num_rows > 0) {
+    echo "<table border='1' style='border-collapse: collapse; width: 100%;'>\n";
+    echo "<tr><th>Product ID</th><th>Product Name</th><th>Batch ID</th><th>Batch Reference</th><th>Available Qty</th><th>Entry Date</th><th>FIFO Order</th></tr>\n";
+    while ($row = $result->fetch_assoc()) {
+        echo "<tr>";
+        echo "<td>" . $row['product_id'] . "</td>";
+        echo "<td>" . $row['product_name'] . "</td>";
+        echo "<td>" . $row['batch_id'] . "</td>";
+        echo "<td>" . $row['batch_reference'] . "</td>";
+        echo "<td>" . $row['available_quantity'] . "</td>";
+        echo "<td>" . $row['entry_date'] . "</td>";
+        echo "<td>" . $row['fifo_order'] . "</td>";
+        echo "</tr>\n";
     }
+    echo "</table>\n";
+} else {
+    echo "No stock summary records found.\n";
 }
+
+// Step 4: Show transfer logs
+echo "<h2>Step 4: Recent Transfer Logs</h2>\n";
+$logSql = "
+    SELECT 
+        tl.transfer_id,
+        p.product_name,
+        tl.from_location,
+        tl.to_location,
+        tl.quantity,
+        tl.transfer_date,
+        tl.created_at
+    FROM tbl_transfer_log tl
+    JOIN tbl_product p ON tl.product_id = p.product_id
+    ORDER BY tl.created_at DESC
+    LIMIT 10
+";
+
+$logResult = $conn->query($logSql);
+if ($logResult->num_rows > 0) {
+    echo "<table border='1' style='border-collapse: collapse; width: 100%;'>\n";
+    echo "<tr><th>Transfer ID</th><th>Product</th><th>From</th><th>To</th><th>Quantity</th><th>Transfer Date</th><th>Created At</th></tr>\n";
+    while ($row = $logResult->fetch_assoc()) {
+        echo "<tr>";
+        echo "<td>" . $row['transfer_id'] . "</td>";
+        echo "<td>" . $row['product_name'] . "</td>";
+        echo "<td>" . $row['from_location'] . "</td>";
+        echo "<td>" . $row['to_location'] . "</td>";
+        echo "<td>" . $row['quantity'] . "</td>";
+        echo "<td>" . $row['transfer_date'] . "</td>";
+        echo "<td>" . $row['created_at'] . "</td>";
+        echo "</tr>\n";
+    }
+    echo "</table>\n";
+} else {
+    echo "No transfer logs found.\n";
+}
+
+$conn->close();
+echo "<p><strong>Test completed!</strong></p>\n";
 ?> 

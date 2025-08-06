@@ -1,132 +1,53 @@
 <?php
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "enguio2";
+// Simple FIFO Test
+require_once 'Api/conn_mysqli.php';
 
-try {
-    $conn = new mysqli($servername, $username, $password, $dbname);
+echo "<h2>Simple FIFO Test</h2>";
+
+// Find Century Tuna product
+$productStmt = $conn->prepare("
+    SELECT product_id, product_name, quantity, location_id 
+    FROM tbl_product 
+    WHERE product_name LIKE '%Century Tuna%' OR product_name LIKE '%tuna%'
+    LIMIT 5
+");
+$productStmt->execute();
+$productResult = $productStmt->get_result();
+
+echo "<h3>Found Products:</h3>";
+while ($product = $productResult->fetch_assoc()) {
+    echo "<p><strong>Product:</strong> {$product['product_name']} (ID: {$product['product_id']}, Qty: {$product['quantity']}, Location: {$product['location_id']})</p>";
     
-    if ($conn->connect_error) {
-        die("Connection failed: " . $conn->connect_error);
-    }
+    // Check stock summary for this product
+    $stockStmt = $conn->prepare("
+        SELECT COUNT(*) as count, SUM(available_quantity) as total_qty
+        FROM tbl_stock_summary 
+        WHERE product_id = ?
+    ");
+    $stockStmt->bind_param("i", $product['product_id']);
+    $stockStmt->execute();
+    $stockResult = $stockStmt->get_result();
+    $stockData = $stockResult->fetch_assoc();
     
-    echo "<h2>FIFO Oldest Products Test (Simple)</h2>";
+    echo "<p>Stock Summary: {$stockData['count']} entries, Total Qty: {$stockData['total_qty']}</p>";
     
-    // Test the FIFO query for transfer
-    echo "<h3>FIFO Transfer Products (Oldest First)</h3>";
+    // Check FIFO query for this product
+    $fifoStmt = $conn->prepare("
+        SELECT COUNT(*) as count, SUM(ss.available_quantity) as total_qty
+        FROM tbl_stock_summary ss
+        JOIN tbl_batch b ON ss.batch_id = b.batch_id
+        WHERE ss.product_id = ? 
+        AND b.location_id = ?
+        AND ss.available_quantity > 0
+    ");
+    $fifoStmt->bind_param("ii", $product['product_id'], $product['location_id']);
+    $fifoStmt->execute();
+    $fifoResult = $fifoStmt->get_result();
+    $fifoData = $fifoResult->fetch_assoc();
     
-    $sql = "
-        SELECT 
-            p.product_id,
-            p.product_name,
-            p.category,
-            p.barcode,
-            ss.batch_id,
-            ss.batch_reference,
-            b.entry_date,
-            ss.available_quantity as quantity
-        FROM tbl_product p 
-        LEFT JOIN tbl_supplier s ON p.supplier_id = s.supplier_id 
-        LEFT JOIN tbl_brand b ON p.brand_id = b.brand_id 
-        LEFT JOIN tbl_location l ON p.location_id = l.location_id
-        INNER JOIN tbl_stock_summary ss ON p.product_id = ss.product_id
-        INNER JOIN tbl_batch b ON ss.batch_id = b.batch_id
-        WHERE ss.available_quantity > 0
-        AND (p.status IS NULL OR p.status <> 'archived')
-        AND b.entry_date = (
-            SELECT MIN(b2.entry_date) 
-            FROM tbl_batch b2 
-            INNER JOIN tbl_stock_summary ss2 ON b2.batch_id = ss2.batch_id 
-            WHERE ss2.product_id = p.product_id AND ss2.available_quantity > 0
-        )
-        ORDER BY p.product_name ASC
-        LIMIT 10
-    ";
-    
-    $result = $conn->query($sql);
-    
-    if ($result) {
-        echo "<p>FIFO products found: " . $result->num_rows . "</p>";
-        
-        if ($result->num_rows > 0) {
-            echo "<table border='1' style='border-collapse: collapse; width: 100%;'>";
-            echo "<tr><th>Product Name</th><th>Category</th><th>Batch ID</th><th>Entry Date</th><th>Available Qty</th></tr>";
-            
-            while($row = $result->fetch_assoc()) {
-                echo "<tr>";
-                echo "<td>" . htmlspecialchars($row['product_name']) . "</td>";
-                echo "<td>" . htmlspecialchars($row['category']) . "</td>";
-                echo "<td>" . $row['batch_id'] . "</td>";
-                echo "<td>" . $row['entry_date'] . "</td>";
-                echo "<td>" . $row['quantity'] . "</td>";
-                echo "</tr>";
-            }
-            echo "</table>";
-        }
-    } else {
-        echo "Error: " . $conn->error;
-    }
-    
-    // Also test with location filter
-    echo "<h3>FIFO Products for Location ID 2 (Warehouse)</h3>";
-    
-    $sql2 = "
-        SELECT 
-            p.product_id,
-            p.product_name,
-            p.category,
-            p.barcode,
-            ss.batch_id,
-            ss.batch_reference,
-            b.entry_date,
-            ss.available_quantity as quantity
-        FROM tbl_product p 
-        LEFT JOIN tbl_supplier s ON p.supplier_id = s.supplier_id 
-        LEFT JOIN tbl_brand b ON p.brand_id = b.brand_id 
-        LEFT JOIN tbl_location l ON p.location_id = l.location_id
-        INNER JOIN tbl_stock_summary ss ON p.product_id = ss.product_id
-        INNER JOIN tbl_batch b ON ss.batch_id = b.batch_id
-        WHERE ss.available_quantity > 0
-        AND p.location_id = 2
-        AND (p.status IS NULL OR p.status <> 'archived')
-        AND b.entry_date = (
-            SELECT MIN(b2.entry_date) 
-            FROM tbl_batch b2 
-            INNER JOIN tbl_stock_summary ss2 ON b2.batch_id = ss2.batch_id 
-            WHERE ss2.product_id = p.product_id AND ss2.available_quantity > 0
-        )
-        ORDER BY p.product_name ASC
-        LIMIT 10
-    ";
-    
-    $result2 = $conn->query($sql2);
-    
-    if ($result2) {
-        echo "<p>FIFO products in location 2: " . $result2->num_rows . "</p>";
-        
-        if ($result2->num_rows > 0) {
-            echo "<table border='1' style='border-collapse: collapse; width: 100%;'>";
-            echo "<tr><th>Product Name</th><th>Category</th><th>Batch ID</th><th>Entry Date</th><th>Available Qty</th></tr>";
-            
-            while($row = $result2->fetch_assoc()) {
-                echo "<tr>";
-                echo "<td>" . htmlspecialchars($row['product_name']) . "</td>";
-                echo "<td>" . htmlspecialchars($row['category']) . "</td>";
-                echo "<td>" . $row['batch_id'] . "</td>";
-                echo "<td>" . $row['entry_date'] . "</td>";
-                echo "<td>" . $row['quantity'] . "</td>";
-                echo "</tr>";
-            }
-            echo "</table>";
-        }
-    } else {
-        echo "Error: " . $conn->error;
-    }
-    
-    $conn->close();
-    
-} catch (Exception $e) {
-    echo "Error: " . $e->getMessage();
+    echo "<p>FIFO Query: {$fifoData['count']} entries, Total Qty: {$fifoData['total_qty']}</p>";
+    echo "<hr>";
 }
+
+$conn->close();
 ?> 

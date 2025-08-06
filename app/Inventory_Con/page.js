@@ -12,8 +12,7 @@ import PharmacyInventory from "./PharmacyInventory";
 import StockAdjustment from "./StockAdjustment";
 import Reports from "./Reports";
 import Settings from "./Settings";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
 import Archive from "./Archive";
 import CreatePurchaseOrder from "./CreatePurchaseOrder";
 import LogoutConfirm from "./LogoutConfirm";
@@ -112,7 +111,6 @@ export default function Page() {
         />
       )}
       
-      <ToastContainer />
     </>
   );
 } 

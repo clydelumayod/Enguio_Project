@@ -5575,3 +5575,9 @@ Stack trace:
 [15-Jul-2025 09:54:34 Europe/Berlin] Raw input: {"action":"get_movement_history","search":"","movement_type":"all","location":"all","date_range":"all"}
 [15-Jul-2025 09:54:34 Europe/Berlin] Processing action: get_movement_history
 2025-07-25T20:21:51+02:00 Table 'enguio2.tbl_purchase_order_delivery' doesn't exist
+2025-08-02T16:49:08+02:00 Table 'enguio2.tbl_purchase_order_delivery' doesn't exist
+2025-08-02T16:49:09+02:00 Table 'enguio2.tbl_purchase_order_delivery' doesn't exist
+[04-Aug-2025 09:27:26 Europe/Berlin] PHP Warning:  include(Api/index.php): Failed to open stream: No such file or directory in C:\xampp\htdocs\Enguio_Project\backend.php on line 24
+[04-Aug-2025 09:27:26 Europe/Berlin] PHP Warning:  include(): Failed opening 'Api/index.php' for inclusion (include_path='C:\xampp\php\PEAR') in C:\xampp\htdocs\Enguio_Project\backend.php on line 24
+[04-Aug-2025 09:27:26 Europe/Berlin] Raw input: {"action":"get_movement_history","search":"","movement_type":"all","location":"all","date_range":"all"}
+[04-Aug-2025 09:27:26 Europe/Berlin] Processing action: get_movement_history

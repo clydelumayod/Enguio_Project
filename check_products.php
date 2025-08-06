@@ -1,74 +1,103 @@
 <?php
-// Simple script to check where products are located
-try {
-    $pdo = new PDO("mysql:host=localhost;dbname=enguio2", "root", "");
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    
-    echo "🔍 Product Location Check\n";
-    echo "=======================\n\n";
-    
-    // Check all locations
-    $stmt = $pdo->query("SELECT * FROM tbl_location ORDER BY location_name");
-    $locations = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    
-    echo "Available Locations:\n";
-    foreach ($locations as $location) {
-        echo "- {$location['location_name']} (ID: {$location['location_id']})\n";
-    }
-    echo "\n";
-    
-    // Check products in each location
-    foreach ($locations as $location) {
-        $stmt = $pdo->prepare("
-            SELECT 
-                product_id,
-                product_name,
-                barcode,
-                quantity,
-                location_id
-            FROM tbl_product 
-            WHERE location_id = ? AND quantity > 0
-            ORDER BY product_name
-        ");
-        $stmt->execute([$location['location_id']]);
-        $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
+// Check available products in the database
+$url = 'http://localhost/Enguio_Project/Api/backend.php';
+
+// Get products from warehouse (location_id = 2)
+$productData = [
+    'action' => 'get_products_oldest_batch_for_transfer',
+    'location_id' => 2
+];
+
+$context = stream_context_create([
+    'http' => [
+        'method' => 'POST',
+        'header' => 'Content-Type: application/json',
+        'content' => json_encode($productData)
+    ]
+]);
+
+echo "=== Checking Available Products in Warehouse ===\n";
+$response = file_get_contents($url, false, $context);
+
+if ($response !== false) {
+    $decoded = json_decode($response, true);
+    if ($decoded && isset($decoded['data']) && is_array($decoded['data'])) {
+        echo "Available products in warehouse:\n";
+        foreach ($decoded['data'] as $product) {
+            echo "ID: " . $product['product_id'] . " | Name: " . $product['product_name'] . " | Qty: " . ($product['total_quantity'] ?? $product['quantity'] ?? 0) . "\n";
+        }
         
-        echo "Products in {$location['location_name']}:\n";
-        if (count($products) > 0) {
-            foreach ($products as $product) {
-                echo "  - {$product['product_name']} (Qty: {$product['quantity']}, Barcode: {$product['barcode']})\n";
+        // Use the first available product for testing
+        if (count($decoded['data']) > 0) {
+            $testProduct = $decoded['data'][0];
+            $validProductId = $testProduct['product_id'];
+            echo "\nUsing product ID: $validProductId (" . $testProduct['product_name'] . ")\n";
+            
+            // Test enhanced FIFO transfer with valid product ID
+            $testData = [
+                'action' => 'enhanced_fifo_transfer',
+                'source_location_id' => 2, // Warehouse
+                'destination_location_id' => 3, // Convenience Store
+                'employee_id' => 1, // Valid employee ID
+                'products' => [
+                    [
+                        'product_id' => $validProductId,
+                        'quantity' => 1 // Small quantity for testing
+                    ]
+                ]
+            ];
+            
+            echo "\n=== Testing Enhanced FIFO Transfer with Valid Product ===\n";
+            echo "Test Data: " . json_encode($testData, JSON_PRETTY_PRINT) . "\n\n";
+            
+            $context2 = stream_context_create([
+                'http' => [
+                    'method' => 'POST',
+                    'header' => 'Content-Type: application/json',
+                    'content' => json_encode($testData)
+                ]
+            ]);
+            
+            $transferResponse = file_get_contents($url, false, $context2);
+            
+            if ($transferResponse !== false) {
+                echo "✅ API connection successful\n";
+                echo "Response length: " . strlen($transferResponse) . " bytes\n";
+                echo "Raw Response:\n";
+                echo $transferResponse . "\n\n";
+                
+                $transferDecoded = json_decode($transferResponse, true);
+                if ($transferDecoded === null) {
+                    echo "❌ JSON Decode Error: " . json_last_error_msg() . "\n";
+                } else {
+                    echo "✅ JSON Decoded Successfully\n";
+                    print_r($transferDecoded);
+                    
+                    if (isset($transferDecoded['success'])) {
+                        if ($transferDecoded['success']) {
+                            echo "\n🎉 Enhanced FIFO Transfer Successful!\n";
+                            echo "Transfer ID: " . ($transferDecoded['transfer_id'] ?? 'N/A') . "\n";
+                            echo "Products Transferred: " . ($transferDecoded['products_transferred'] ?? 'N/A') . "\n";
+                            echo "Message: " . ($transferDecoded['message'] ?? 'N/A') . "\n";
+                        } else {
+                            echo "\n❌ Enhanced FIFO Transfer Failed:\n";
+                            echo "Error: " . ($transferDecoded['message'] ?? 'Unknown error') . "\n";
+                        }
+                    }
+                }
+            } else {
+                echo "❌ Failed to connect to API for transfer\n";
             }
         } else {
-            echo "  (No products)\n";
+            echo "No products found in warehouse\n";
         }
-        echo "\n";
+    } else {
+        echo "❌ Failed to get products data\n";
+        echo "Response: $response\n";
     }
-    
-    // Check recent transfers
-    echo "Recent Transfers:\n";
-    $stmt = $pdo->query("
-        SELECT 
-            th.transfer_header_id,
-            th.date,
-            sl.location_name as source_name,
-            dl.location_name as dest_name,
-            th.status,
-            COUNT(td.product_id) as product_count
-        FROM tbl_transfer_header th
-        LEFT JOIN tbl_location sl ON th.source_location_id = sl.location_id
-        LEFT JOIN tbl_location dl ON th.destination_location_id = dl.location_id
-        LEFT JOIN tbl_transfer_dtl td ON th.transfer_header_id = td.transfer_header_id
-        GROUP BY th.transfer_header_id
-        ORDER BY th.date DESC
-        LIMIT 5
-    ");
-    $transfers = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    
-    foreach ($transfers as $transfer) {
-        echo "- Transfer {$transfer['transfer_header_id']}: {$transfer['source_name']} → {$transfer['dest_name']} ({$transfer['product_count']} products, {$transfer['status']})\n";
-    }
-    
-} catch (PDOException $e) {
-    echo "❌ Database connection failed: " . $e->getMessage() . "\n";
+} else {
+    echo "❌ Failed to connect to API for products\n";
 }
+
+echo "\n=== Test Complete ===\n";
 ?> 

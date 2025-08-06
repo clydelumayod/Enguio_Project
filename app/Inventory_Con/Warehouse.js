@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import {
   ChevronUp,
@@ -478,54 +479,30 @@ function Warehouse() {
             })
           break
             case "products":
-                console.log("🔄 Loading warehouse products...");
-                // After fixing database, uncomment the line below to only show warehouse products
-                // handleApiCall("get_products", { location_id: 1 }) // Only load warehouse products (location_id = 1)
-                handleApiCall("get_products") // Load all products for now
-              .then((response) => {
-                console.log("📦 Products API response:", response);
-                console.log("📦 Products response.data:", response.data);
-                let productsArray = [];
-  
-                if (Array.isArray(response.data)) {
-                  productsArray = response.data;
-                  console.log("✅ Products loaded from response.data array:", productsArray);
-                } else if (response.data && Array.isArray(response.data.data)) {
-                  productsArray = response.data.data;
-                  console.log("✅ Products loaded from response.data.data array:", productsArray);
-                } else {
-                  console.warn("⚠️ Unexpected products response format:", response);
-                }
-  
-                console.log("🔍 Final productsArray before filtering:", productsArray);
-                console.log("🔍 productsArray.length:", productsArray.length);
-                console.log("🔍 productsArray content:", JSON.stringify(productsArray, null, 2));
-  
-                  const activeProducts = productsArray.filter(
-                    (product) => (product.status || "").toLowerCase() !== "archived"
-                  );
-  
-                  // Show only warehouse products (location_id === 2) and exclude convenience store (location_id === 4)
-                  const warehouseProducts = activeProducts.filter(
-                    (product) => product.location_id === 2 || product.location_id === 1
-                  );
+                console.log("🔄 Loading warehouse products with FIFO oldest batch info...");
+                loadProductsWithOldestBatch()
+                  .then((productsWithBatches) => {
+                    console.log("📦 Products with oldest batch loaded:", productsWithBatches.length);
+                    
+                    // Filter out archived products
+                    const activeProducts = productsWithBatches.filter(
+                      (product) => (product.status || "").toLowerCase() !== "archived"
+                    );
 
-                  console.log("🔍 Active products after filtering:", warehouseProducts);
-                  console.log("🔍 Active products length:", warehouseProducts.length);
-                  console.log("🔍 Location IDs in warehouse products:", warehouseProducts.map(p => p.location_id));
+                    console.log("🔍 Active products after filtering:", activeProducts.length);
+                    console.log("🔍 Products with oldest batch info loaded");
 
-                  setInventoryData(warehouseProducts);
-                  updateStats("totalProducts", warehouseProducts.length);
-                  calculateWarehouseValue(warehouseProducts);
-                  calculateLowStockAndExpiring(warehouseProducts);
-                  console.log("✅ Products loaded successfully:", warehouseProducts.length, "products");
-                  console.log("✅ Inventory data updated:", warehouseProducts.length, "products in state");
-                })
-                .catch((error) => {
-                  console.error("❌ Error loading products:", error);
-                  safeToast("error", "Failed to load products");
-                  setInventoryData([]);
-                });
+                    setInventoryData(activeProducts);
+                    updateStats("totalProducts", activeProducts.length);
+                    calculateWarehouseValue(activeProducts);
+                    calculateLowStockAndExpiring(activeProducts);
+                    console.log("✅ Products with FIFO batch info loaded successfully:", activeProducts.length, "products");
+                  })
+                  .catch((error) => {
+                    console.error("❌ Error loading products with oldest batch:", error);
+                    safeToast("error", "Failed to load products with FIFO batch information");
+                    setInventoryData([]);
+                  });
               break;
   
   
@@ -946,6 +923,96 @@ function Warehouse() {
       }
     }
 
+    // New function to load products with their oldest batch information
+    async function loadProductsWithOldestBatch() {
+      try {
+        console.log("🔄 Loading warehouse products with oldest batch info...");
+        const response = await handleApiCall("get_products_oldest_batch", { location_id: 2 }); // Warehouse location
+        
+        if (response.success && Array.isArray(response.data)) {
+          console.log("✅ Products with oldest batch loaded:", response.data.length, "products");
+          return response.data;
+        } else {
+          console.warn("⚠️ Failed to load products with oldest batch, falling back to regular products");
+          // Fallback to regular product loading
+          const fallbackResponse = await handleApiCall("get_products");
+          let productsArray = [];
+          
+          if (Array.isArray(fallbackResponse.data)) {
+            productsArray = fallbackResponse.data;
+          } else if (fallbackResponse.data && Array.isArray(fallbackResponse.data.data)) {
+            productsArray = fallbackResponse.data.data;
+          }
+          
+          // Filter for warehouse products and enrich with oldest batch info
+          const warehouseProducts = productsArray.filter(
+            (product) => product.location_id === 2 || product.location_id === 1
+          );
+          
+          // Enrich each product with oldest batch info
+          const enrichedProducts = await Promise.all(
+            warehouseProducts.map(async (product) => {
+              try {
+                const fifoResponse = await getFifoStock(product.product_id);
+                if (fifoResponse.success && fifoResponse.data && fifoResponse.data.length > 0) {
+                  const oldestBatch = fifoResponse.data[0]; // First batch is oldest
+                  return {
+                    ...product,
+                    oldest_batch_reference: oldestBatch.batch_reference,
+                    oldest_batch_quantity: oldestBatch.quantity,
+                    oldest_batch_expiration: oldestBatch.expiration,
+                    oldest_batch_entry_date: oldestBatch.entry_date,
+                    oldest_batch_unit_cost: oldestBatch.unit_cost,
+                    total_fifo_batches: fifoResponse.data.length
+                  };
+                } else {
+                  return {
+                    ...product,
+                    oldest_batch_reference: null,
+                    oldest_batch_quantity: 0,
+                    oldest_batch_expiration: null,
+                    oldest_batch_entry_date: null,
+                    oldest_batch_unit_cost: product.unit_price,
+                    total_fifo_batches: 0
+                  };
+                }
+              } catch (error) {
+                console.error("Error enriching product", product.product_id, "with FIFO data:", error);
+                return product;
+              }
+            })
+          );
+          
+          return enrichedProducts;
+        }
+      } catch (error) {
+        console.error("❌ Error loading products with oldest batch:", error);
+        return [];
+      }
+    }
+
+    // Function to refresh oldest batch data after stock changes
+    async function refreshOldestBatchData() {
+      console.log("🔄 Refreshing oldest batch data after stock changes...");
+      try {
+        const refreshedProducts = await loadProductsWithOldestBatch();
+        const activeProducts = refreshedProducts.filter(
+          (product) => (product.status || "").toLowerCase() !== "archived"
+        );
+        
+        setInventoryData(activeProducts);
+        updateStats("totalProducts", activeProducts.length);
+        calculateWarehouseValue(activeProducts);
+        calculateLowStockAndExpiring(activeProducts);
+        console.log("✅ Oldest batch data refreshed successfully");
+        
+        return activeProducts;
+      } catch (error) {
+        console.error("❌ Error refreshing oldest batch data:", error);
+        return [];
+      }
+    }
+
     async function getExpiringProducts(daysThreshold = 30) {
       try {
         const response = await handleApiCall("get_expiring_products", { days_threshold: daysThreshold });
@@ -1055,7 +1122,9 @@ function Warehouse() {
           const srpMsg = editSrpEnabled && newSrp ? ` and updated SRP to ₱${parseFloat(newSrp).toFixed(2)}` : "";
           safeToast("success", `Stock updated successfully with FIFO tracking${expirationMsg}${priceMsg}${srpMsg}`);
           closeUpdateStockModal();
-          loadData("products"); // Reload products to show updated stock
+          
+          // Refresh oldest batch data to show updated batch information
+          await refreshOldestBatchData();
         } else {
           safeToast("error", response.message || "Failed to update stock");
         }
@@ -1089,9 +1158,9 @@ function Warehouse() {
           description: newProductForm.description,
           unit_price: parseFloat(newProductForm.unit_price),
           srp: parseFloat(newProductForm.srp || newProductForm.unit_price), // Use unit_price as default if SRP is empty
-          brand_id: newProductForm.brand_id || 30, // Default brand
+          brand_id: newProductForm.brand_id || 1, // Default brand (Generic)
           quantity: parseInt(newProductForm.quantity),
-          supplier_id: newProductForm.supplier_id || 13, // Default supplier
+          supplier_id: newProductForm.supplier_id || 1, // Default supplier (Default Supplier)
           expiration: newProductForm.expiration || null,
           date_added: newProductForm.date_added, // Auto-set date
           prescription: newProductForm.prescription,
@@ -1391,19 +1460,11 @@ function Warehouse() {
                 <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">BARCODE</th>
                 <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">CATEGORY</th>
                 <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">BRAND</th>
-                <th className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">STOCK</th>
-                <th className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">QTY CHANGE</th>
+                <th className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">TOTAL STOCK</th>
                 <th className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">PRICE</th>
                 <th className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">SRP</th>
                 <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">SUPPLIER</th>
-                <th className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">FIFO ORDER</th>
-                <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">BATCH NO.</th>
-                <th className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">EXPIRY</th>
-                <th className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">BATCH DATE</th>
                 <th className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">DATE ADDED</th>
-                <th className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">BATCH TIME</th>
-                <th className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">DAYS TO EXPIRY</th>
-                <th className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">UNIT COST</th>
                 <th className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">TYPE</th>
                 <th className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">STATUS</th>
                 <th className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">STOCK STATUS</th>
@@ -1413,7 +1474,7 @@ function Warehouse() {
             <tbody className="bg-white divide-y divide-gray-200">
               {inventoryData.length === 0 ? (
                 <tr>
-                  <td colSpan="20" className="px-3 py-6 text-center">
+                  <td colSpan="13" className="px-3 py-6 text-center">
                     <div className="flex flex-col items-center space-y-3">
                       <Package className="h-12 w-12 text-gray-300" />
                       <div className="text-gray-500">
@@ -1443,32 +1504,8 @@ function Warehouse() {
                       {product.brand || 'N/A'}
                     </td>
                     <td className="px-3 py-2 text-center">
-                      <div>
-                        <div className="font-semibold">{product.quantity || 0}</div>
-                        <div className="text-xs text-gray-500">total units</div>
-                        {product.current_quantity !== undefined && product.current_quantity > 0 && (
-                          <div className="text-xs text-blue-600 font-medium">
-                            {product.current_quantity} current
-                          </div>
-                        )}
-                      </div>
-                    </td>
-                    <td className="px-3 py-2 text-center text-sm text-gray-900">
-                      <div className="flex flex-col items-center">
-                        {product.quantity_change ? (
-                          <>
-                            <span className={`text-xs font-medium ${
-                              product.quantity_change > 0 ? 'text-green-600' : 'text-red-600'
-                            }`}>
-                              {product.quantity_change > 0 ? '+' : ''}{product.quantity_change}
-                            </span>
-                            <span className="text-xs text-gray-500">
-                              {product.last_updated ? new Date(product.last_updated).toLocaleDateString() : 'N/A'}
-                            </span>
-                          </>
-                        ) : (
-                          <span className="text-xs text-gray-400">No change</span>
-                        )}
+                      <div className="font-semibold text-gray-900">
+                        {product.total_quantity || product.quantity || 0}
                       </div>
                     </td>
                     <td className="px-3 py-2 text-center text-sm text-gray-900">
@@ -1481,48 +1518,7 @@ function Warehouse() {
                       {product.supplier_name || "N/A"}
                     </td>
                     <td className="px-3 py-2 text-center text-sm text-gray-900">
-                      <span className="inline-flex px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">
-                        #{product.fifo_order || 1}
-                      </span>
-                    </td>
-                    <td className="px-3 py-2 text-sm text-gray-900">
-                      <div>
-                        <div className="font-medium">{product.batch_reference || <span className="text-gray-400 italic">None</span>}</div>
-                        {product.entry_by && (
-                          <div className="text-xs text-gray-500">by {product.entry_by}</div>
-                        )}
-                      </div>
-                    </td>
-                    <td className="px-3 py-2 text-center text-sm text-gray-900">
-                      {product.expiration ? new Date(product.expiration).toLocaleDateString() : <span className="text-gray-400 italic">None</span>}
-                    </td>
-                    <td className="px-3 py-2 text-center text-sm text-gray-900">
-                      {product.entry_date ? new Date(product.entry_date).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: '2-digit' }) : <span className="text-gray-400 italic">N/A</span>}
-                    </td>
-                    <td className="px-3 py-2 text-center text-sm text-gray-900">
                       {product.date_added ? new Date(product.date_added).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: '2-digit' }) : <span className="text-gray-400 italic">N/A</span>}
-                    </td>
-                    <td className="px-3 py-2 text-center text-sm text-gray-900">
-                      {product.entry_time ? new Date(`2000-01-01T${product.entry_time}`).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }) : <span className="text-gray-400 italic">N/A</span>}
-                    </td>
-                    <td className="px-3 py-2 text-center text-sm text-gray-900">
-                      {product.expiration ? (
-                        (() => {
-                          const daysUntilExpiry = Math.ceil((new Date(product.expiration) - new Date()) / (1000 * 60 * 60 * 24));
-                          return (
-                            <span className={`inline-block px-2 py-1 text-xs font-medium rounded-full ${
-                              daysUntilExpiry <= 7 ? 'bg-red-100 text-red-700' :
-                              daysUntilExpiry <= 30 ? 'bg-yellow-100 text-yellow-700' :
-                              'bg-green-100 text-green-700'
-                            }`}>
-                              {daysUntilExpiry} days
-                            </span>
-                          );
-                        })()
-                      ) : <span className="text-gray-400 italic">N/A</span>}
-                    </td>
-                    <td className="px-3 py-2 text-center text-sm text-gray-900">
-                      ₱{Number.parseFloat(product.unit_cost || product.unit_price || 0).toFixed(2)}
                     </td>
                     <td className="px-3 py-2 text-center">
                       {(() => {
@@ -2685,6 +2681,9 @@ function Warehouse() {
                       <h4 className="font-semibold text-yellow-900">FIFO Summary</h4>
                       <p className="text-sm text-yellow-700">Batches: {fifoStockData.length}</p>
                       <p className="text-sm text-yellow-700">Available: {fifoStockData.reduce((sum, batch) => sum + parseInt(batch.available_quantity), 0)}</p>
+                      <p className="text-sm text-yellow-700">Total Value: ₱{fifoStockData.reduce((sum, batch) => sum + (Number.parseFloat(batch.unit_cost || 0) * Number.parseFloat(batch.available_quantity || 0)), 0).toFixed(2)}</p>
+                      <p className="text-sm text-yellow-700">Oldest Batch: {fifoStockData.length > 0 ? new Date(fifoStockData[0].batch_date).toLocaleDateString() : 'N/A'}</p>
+                      <p className="text-sm text-yellow-700">Newest Batch: {fifoStockData.length > 0 ? new Date(fifoStockData[fifoStockData.length - 1].batch_date).toLocaleDateString() : 'N/A'}</p>
                     </div>
                   </div>
                 </div>
@@ -2695,11 +2694,14 @@ function Warehouse() {
                       <tr className="bg-gray-100">
                         <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold">FIFO Order</th>
                         <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold">Batch Number</th>
+                        <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold">Batch Reference</th>
                         <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold">Available Qty</th>
                         <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold">Unit Cost</th>
+                        <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold">Total Value</th>
                         <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold">Expiration Date</th>
                         <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold">Days Until Expiry</th>
-                        <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold">Batch Date</th>
+                        <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold">Date Added</th>
+                        <th className="border border-gray-300 px-3 py-2 text-left text-sm font-semibold">Time Added</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -2710,6 +2712,9 @@ function Warehouse() {
                           </td>
                           <td className="border border-gray-300 px-3 py-2 font-mono text-sm">
                             {batch.batch_number || batch.batch_id}
+                          </td>
+                          <td className="border border-gray-300 px-3 py-2 font-mono text-xs">
+                            {batch.batch_reference || 'N/A'}
                           </td>
                           <td className="border border-gray-300 px-3 py-2 text-center">
                             <span className={`inline-block px-2 py-1 text-xs font-medium rounded-full ${
@@ -2722,6 +2727,9 @@ function Warehouse() {
                           </td>
                           <td className="border border-gray-300 px-3 py-2">
                             ₱{Number.parseFloat(batch.unit_cost || 0).toFixed(2)}
+                          </td>
+                          <td className="border border-gray-300 px-3 py-2 font-medium">
+                            ₱{(Number.parseFloat(batch.unit_cost || 0) * Number.parseFloat(batch.available_quantity || 0)).toFixed(2)}
                           </td>
                           <td className="border border-gray-300 px-3 py-2 text-center">
                             {batch.expiration_date ? new Date(batch.expiration_date).toLocaleDateString() : 'N/A'}
@@ -2739,6 +2747,9 @@ function Warehouse() {
                           </td>
                           <td className="border border-gray-300 px-3 py-2 text-center text-sm">
                             {batch.batch_date ? new Date(batch.batch_date).toLocaleDateString() : 'N/A'}
+                          </td>
+                          <td className="border border-gray-300 px-3 py-2 text-center text-sm">
+                            {batch.batch_time ? batch.batch_time : 'N/A'}
                           </td>
                         </tr>
                       ))}

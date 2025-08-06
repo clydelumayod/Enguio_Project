@@ -1,5 +1,5 @@
 -- ============================================================================
--- CREATE tbl_fifo_stock TABLE
+-- CREATE tbl_fifo_stock TABLE (Simplified Version)
 -- This table tracks FIFO (First-In, First-Out) stock per batch
 -- ============================================================================
 
@@ -32,12 +32,5 @@ CREATE TABLE IF NOT EXISTS `tbl_fifo_stock` (
 -- Re-enable foreign key checks
 SET FOREIGN_KEY_CHECKS = 1;
 
--- Verify the table was created successfully
-SELECT 
-    'tbl_fifo_stock table created successfully' as status,
-    TABLE_NAME,
-    TABLE_ROWS,
-    CREATE_TIME
-FROM information_schema.TABLES 
-WHERE TABLE_SCHEMA = 'enguio2' 
-AND TABLE_NAME = 'tbl_fifo_stock'; 
+-- Simple verification query
+SHOW TABLES LIKE 'tbl_fifo_stock'; 

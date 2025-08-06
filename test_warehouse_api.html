@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Warehouse Products API</title>
+</head>
+<body>
+    <h1>Test Warehouse Products API</h1>
+    <button onclick="testWarehouseProducts()">Test Warehouse Products</button>
+    <button onclick="testLocations()">Test Locations</button>
+    <div id="result"></div>
+
+    <script>
+        async function testWarehouseProducts() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = 'Testing warehouse products from tbl_product...';
+            
+            try {
+                const response = await fetch('Api/backend.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        action: 'get_products_oldest_batch_for_transfer',
+                        location_id: 2
+                    })
+                });
+                
+                const data = await response.json();
+                resultDiv.innerHTML = '<h3>Warehouse Products Result:</h3><pre>' + JSON.stringify(data, null, 2) + '</pre>';
+                
+                if (data.success && data.data && data.data.length > 0) {
+                    resultDiv.innerHTML += '<h4>✅ Success! Found ' + data.data.length + ' products</h4>';
+                    resultDiv.innerHTML += '<h4>Sample Product:</h4><pre>' + JSON.stringify(data.data[0], null, 2) + '</pre>';
+                } else {
+                    resultDiv.innerHTML += '<h4>⚠️ No products found or error occurred</h4>';
+                }
+            } catch (error) {
+                resultDiv.innerHTML = '<h3>Error:</h3><pre>' + error.message + '</pre>';
+            }
+        }
+        
+        async function testLocations() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = 'Testing locations...';
+            
+            try {
+                const response = await fetch('Api/backend.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        action: 'get_locations'
+                    })
+                });
+                
+                const data = await response.json();
+                resultDiv.innerHTML = '<h3>Locations Result:</h3><pre>' + JSON.stringify(data, null, 2) + '</pre>';
+            } catch (error) {
+                resultDiv.innerHTML = '<h3>Error:</h3><pre>' + error.message + '</pre>';
+            }
+        }
+    </script>
+</body>
+</html> 
