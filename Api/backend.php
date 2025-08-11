@@ -79,7 +79,7 @@ try {
             $email = isset($data['email']) ? trim($data['email']) : '';
             $contact = isset($data['contact_num']) ? trim($data['contact_num']) : '';
             $role_id = isset($data['role_id']) ? trim($data['role_id']) : '';
-            $shift_id = isset($data['shift_id']) ? trim($data['shift_id']) : null;
+            $shift_id = isset($data['shift_id']) && $data['shift_id'] !== null && $data['shift_id'] !== '' ? (int)$data['shift_id'] : null;
             $username = isset($data['username']) ? trim($data['username']) : '';
             $password = isset($data['password']) ? trim($data['password']) : '';
             $age = isset($data['age']) ? trim($data['age']) : '';
@@ -115,7 +115,11 @@ try {
             $stmt->bindParam(":email", $email, PDO::PARAM_STR);
             $stmt->bindParam(":contact_num", $contact, PDO::PARAM_STR);
             $stmt->bindParam(":role_id", $role_id, PDO::PARAM_INT);
-            $stmt->bindValue(":shift_id", $shift_id, PDO::PARAM_NULL);
+            if ($shift_id !== null) {
+                $stmt->bindValue(":shift_id", $shift_id, PDO::PARAM_INT);
+            } else {
+                $stmt->bindValue(":shift_id", null, PDO::PARAM_NULL);
+            }
             $stmt->bindParam(":username", $username, PDO::PARAM_STR);
             $stmt->bindParam(":password", $hashedPassword, PDO::PARAM_STR);
             $stmt->bindParam(":age", $age, PDO::PARAM_INT);
@@ -155,16 +159,22 @@ try {
                 exit;
             }
 
-            // Check if user exists and is active
+            // Check if user exists (regardless of status)
             $stmt = $conn->prepare("
-                SELECT e.emp_id, e.username, e.password, e.status, e.Fname, e.Lname, r.role 
+                SELECT e.emp_id, e.username, e.password, e.status, e.Fname, e.Lname, e.role_id, e.shift_id, r.role 
                 FROM tbl_employee e 
                 JOIN tbl_role r ON e.role_id = r.role_id 
-                WHERE e.username = :username AND e.status = 'Active'
+                WHERE e.username = :username
             ");
             $stmt->bindParam(":username", $username, PDO::PARAM_STR);
             $stmt->execute();
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            // If user exists but is inactive, return a specific message
+            if ($user && strcasecmp($user['status'] ?? '', 'Active') !== 0) {
+                echo json_encode(["success" => false, "message" => "User is inactive. Please contact the administrator."]);
+                break;
+            }
 
             // Check password - handle both hashed and plain text passwords
             $passwordValid = false;
@@ -187,12 +197,99 @@ try {
                 $_SESSION['role'] = $user['role'];
                 $_SESSION['full_name'] = $user['Fname'] . ' ' . $user['Lname'];
 
+                // Log login activity to tbl_login
+                try {
+                    $loginStmt = $conn->prepare("
+                        INSERT INTO tbl_login (emp_id, role_id, username, login_time, login_date, ip_address) 
+                        VALUES (:emp_id, :role_id, :username, NOW(), CURDATE(), :ip_address)
+                    ");
+                    
+                    $ip_address = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+                    
+                    $loginStmt->bindParam(':emp_id', $user['emp_id'], PDO::PARAM_INT);
+                    $loginStmt->bindParam(':role_id', $user['role_id'], PDO::PARAM_INT);
+                    $loginStmt->bindParam(':username', $user['username'], PDO::PARAM_STR);
+                    $loginStmt->bindParam(':ip_address', $ip_address, PDO::PARAM_STR);
+                    
+                    $loginStmt->execute();
+                    
+                    // Store login_id in session for logout tracking
+                    $_SESSION['login_id'] = $conn->lastInsertId();
+                    $login_id_inserted = $_SESSION['login_id'];
+                    
+                } catch (Exception $loginLogError) {
+                    error_log("Login logging error: " . $loginLogError->getMessage());
+                    // Continue with login even if logging fails
+                }
+
+                // Terminal/location handling: prefer explicit route, else infer from role
+                $route = strtolower(trim($data['route'] ?? ''));
+                $location_label = null;
+                $terminal_name = null;
+                if ($route !== '') {
+                    if (strpos($route, 'pos_convenience') !== false) { $location_label = 'convenience'; $terminal_name = 'Convenience POS'; }
+                    elseif (strpos($route, 'pos_pharmacy') !== false) { $location_label = 'pharmacy'; $terminal_name = 'Pharmacy POS'; }
+                    elseif (strpos($route, 'inventory_con') !== false) { $location_label = 'inventory'; $terminal_name = 'Inventory Terminal'; }
+                    elseif (strpos($route, 'admin') !== false) { $location_label = 'admin'; $terminal_name = 'Admin Terminal'; }
+                }
+                if (!$terminal_name) {
+                    $roleLower = strtolower((string)($user['role'] ?? ''));
+                    if (strpos($roleLower, 'cashier') !== false || strpos($roleLower, 'pos') !== false) { $location_label = 'convenience'; $terminal_name = 'Convenience POS'; }
+                    elseif (strpos($roleLower, 'pharmacist') !== false) { $location_label = 'pharmacy'; $terminal_name = 'Pharmacy POS'; }
+                    elseif (strpos($roleLower, 'inventory') !== false) { $location_label = 'inventory'; $terminal_name = 'Inventory Terminal'; }
+                    else { $location_label = 'admin'; $terminal_name = 'Admin Terminal'; }
+                }
+
+                $terminal_id = null;
+                if ($terminal_name) {
+                    try {
+                        // Ensure terminal exists and update shift
+                        $termSel = $conn->prepare("SELECT terminal_id, shift_id FROM tbl_pos_terminal WHERE terminal_name = :name LIMIT 1");
+                        $termSel->execute([':name' => $terminal_name]);
+                        $term = $termSel->fetch(PDO::FETCH_ASSOC);
+                        $user_shift_id = $user['shift_id'] ?? null;
+                        if ($term) {
+                            $terminal_id = (int)$term['terminal_id'];
+                            if ($user_shift_id && (int)$term['shift_id'] !== (int)$user_shift_id) {
+                                $upd = $conn->prepare("UPDATE tbl_pos_terminal SET shift_id = :shift WHERE terminal_id = :tid");
+                                $upd->execute([':shift' => $user_shift_id, ':tid' => $terminal_id]);
+                            }
+                        } else {
+                            $ins = $conn->prepare("INSERT INTO tbl_pos_terminal (terminal_name, shift_id) VALUES (:name, :shift)");
+                            $ins->execute([':name' => $terminal_name, ':shift' => $user_shift_id]);
+                            $terminal_id = (int)$conn->lastInsertId();
+                        }
+
+                        // Optionally annotate login row with location/terminal if columns exist
+                        if (!empty($login_id_inserted)) {
+                            try {
+                                $tryUpd = $conn->prepare("UPDATE tbl_login SET location = :loc WHERE login_id = :lid");
+                                $tryUpd->execute([':loc' => $location_label, ':lid' => $login_id_inserted]);
+                            } catch (Exception $ignore) {}
+                            try {
+                                $tryUpd2 = $conn->prepare("UPDATE tbl_login SET terminal_id = :tid WHERE login_id = :lid");
+                                $tryUpd2->execute([':tid' => $terminal_id, ':lid' => $login_id_inserted]);
+                            } catch (Exception $ignore) {}
+                            try {
+                                $tryUpd3 = $conn->prepare("UPDATE tbl_login SET shift_id = :sid WHERE login_id = :lid");
+                                $tryUpd3->execute([':sid' => $user_shift_id, ':lid' => $login_id_inserted]);
+                            } catch (Exception $ignore) {}
+                        }
+                    } catch (Exception $terminalError) {
+                        error_log('Terminal handling error: ' . $terminalError->getMessage());
+                    }
+                }
+
                 echo json_encode([
                     "success" => true,
                     "message" => "Login successful",
                     "role" => $user['role'],
                     "user_id" => $user['emp_id'],
-                    "full_name" => $user['Fname'] . ' ' . $user['Lname']
+                    "full_name" => $user['Fname'] . ' ' . $user['Lname'],
+                    "terminal_id" => $terminal_id,
+                    "terminal_name" => $terminal_name,
+                    "location" => $location_label,
+                    "shift_id" => $user['shift_id'] ?? null
                 ]);
             } else {
                 echo json_encode(["success" => false, "message" => "Invalid username or password"]);
@@ -200,6 +297,224 @@ try {
 
         } catch (Exception $e) {
             echo json_encode(["success" => false, "message" => "An error occurred: " . $e->getMessage()]);
+        }
+        break;
+
+    case 'logout':
+        try {
+            if (session_status() !== PHP_SESSION_ACTIVE) {
+            session_start();
+            }
+
+            $empId = $_SESSION['user_id'] ?? null;
+            $loginId = $_SESSION['login_id'] ?? null;
+            // Fallback to client-provided emp_id when session cookies aren't present (CORS, different port, etc.)
+            if (!$empId && isset($data['emp_id'])) {
+                $empId = intval($data['emp_id']);
+            }
+
+            try {
+                $updated = 0;
+                if ($loginId && $empId) {
+                    // Update the known session login row
+                    $logoutStmt = $conn->prepare("UPDATE tbl_login SET logout_time = CURTIME(), logout_date = CURDATE() WHERE login_id = :login_id AND emp_id = :emp_id");
+                    $logoutStmt->bindParam(':login_id', $loginId, PDO::PARAM_INT);
+                    $logoutStmt->bindParam(':emp_id', $empId, PDO::PARAM_INT);
+                    $logoutStmt->execute();
+                    $updated = $logoutStmt->rowCount();
+                    error_log('[logout] update by session login_id='.$loginId.' emp_id='.$empId.' affected='.$updated);
+                }
+                if ($updated === 0 && $empId) {
+                    // Fallback: find the most recent OPEN login record for this employee
+                    $findStmt = $conn->prepare("SELECT login_id FROM tbl_login WHERE emp_id = :emp_id AND (logout_time IS NULL OR logout_time = '00:00:00') ORDER BY login_id DESC LIMIT 1");
+                    $findStmt->bindParam(':emp_id', $empId, PDO::PARAM_INT);
+                    $findStmt->execute();
+                    $row = $findStmt->fetch(PDO::FETCH_ASSOC);
+                    if ($row && isset($row['login_id'])) {
+                        $fallbackLogout = $conn->prepare("UPDATE tbl_login SET logout_time = CURTIME(), logout_date = CURDATE() WHERE login_id = :login_id");
+                        $fallbackLogout->bindParam(':login_id', $row['login_id'], PDO::PARAM_INT);
+                        $fallbackLogout->execute();
+                        $updated = $fallbackLogout->rowCount();
+                        error_log('[logout] update by open row login_id='.$row['login_id'].' affected='.$updated);
+                    }
+                }
+                if ($updated === 0 && $empId) {
+                    // Final fallback: update the most recent row for this employee
+                    $findAny = $conn->prepare("SELECT login_id FROM tbl_login WHERE emp_id = :emp_id ORDER BY login_id DESC LIMIT 1");
+                    $findAny->bindParam(':emp_id', $empId, PDO::PARAM_INT);
+                    $findAny->execute();
+                    $last = $findAny->fetch(PDO::FETCH_ASSOC);
+                    if ($last && isset($last['login_id'])) {
+                        $updAny = $conn->prepare("UPDATE tbl_login SET logout_time = CURTIME(), logout_date = CURDATE() WHERE login_id = :login_id");
+                        $updAny->bindParam(':login_id', $last['login_id'], PDO::PARAM_INT);
+                        $updAny->execute();
+                        error_log('[logout] forced update latest login_id='.$last['login_id'].' affected='.$updAny->rowCount());
+                    }
+                }
+                } catch (Exception $logoutLogError) {
+                    error_log("Logout logging error: " . $logoutLogError->getMessage());
+            }
+
+            // Clear session only after writing logout record
+            $_SESSION = [];
+            if (ini_get("session.use_cookies")) {
+                $params = session_get_cookie_params();
+                setcookie(session_name(), '', time() - 42000, $params['path'], $params['domain'], $params['secure'], $params['httponly']);
+            }
+            session_destroy();
+            
+            echo json_encode([
+                'success' => true,
+                'message' => 'Logout successful'
+            ]);
+            
+        } catch (Exception $e) {
+            echo json_encode(['success' => false, 'message' => 'An error occurred during logout: ' . $e->getMessage()]);
+        }
+        break;
+
+    case 'register_terminal_route':
+        try {
+            if (session_status() !== PHP_SESSION_ACTIVE) { session_start(); }
+            $empId = $_SESSION['user_id'] ?? ($data['emp_id'] ?? null);
+            $route = strtolower(trim($data['route'] ?? ''));
+            if (!$empId || $route === '') {
+                echo json_encode(['success' => false, 'message' => 'Missing emp_id or route']);
+                break;
+            }
+
+            // Get employee shift
+            $emp = null;
+            try {
+                $st = $conn->prepare("SELECT shift_id, role_id FROM tbl_employee WHERE emp_id = :id LIMIT 1");
+                $st->execute([':id' => $empId]);
+                $emp = $st->fetch(PDO::FETCH_ASSOC);
+            } catch (Exception $e) {}
+            $user_shift_id = $emp['shift_id'] ?? null;
+
+            // Map route → terminal/location
+            $location_label = 'admin';
+            $terminal_name = 'Admin Terminal';
+            if (strpos($route, 'pos_convenience') !== false) { $location_label = 'convenience'; $terminal_name = 'Convenience POS'; }
+            elseif (strpos($route, 'pos_pharmacy') !== false) { $location_label = 'pharmacy'; $terminal_name = 'Pharmacy POS'; }
+            elseif (strpos($route, 'inventory_con') !== false) { $location_label = 'inventory'; $terminal_name = 'Inventory Terminal'; }
+            elseif (strpos($route, 'admin') !== false) { $location_label = 'admin'; $terminal_name = 'Admin Terminal'; }
+
+            // Ensure terminal exists and update shift
+            $termSel = $conn->prepare("SELECT terminal_id, shift_id FROM tbl_pos_terminal WHERE terminal_name = :name LIMIT 1");
+            $termSel->execute([':name' => $terminal_name]);
+            $term = $termSel->fetch(PDO::FETCH_ASSOC);
+            if ($term) {
+                $terminal_id = (int)$term['terminal_id'];
+                if ($user_shift_id && (int)$term['shift_id'] !== (int)$user_shift_id) {
+                    $upd = $conn->prepare("UPDATE tbl_pos_terminal SET shift_id = :shift WHERE terminal_id = :tid");
+                    $upd->execute([':shift' => $user_shift_id, ':tid' => $terminal_id]);
+                }
+            } else {
+                $ins = $conn->prepare("INSERT INTO tbl_pos_terminal (terminal_name, shift_id) VALUES (:name, :shift)");
+                $ins->execute([':name' => $terminal_name, ':shift' => $user_shift_id]);
+                $terminal_id = (int)$conn->lastInsertId();
+            }
+
+            // Annotate most recent open login row
+            try {
+                $findStmt = $conn->prepare("SELECT login_id FROM tbl_login WHERE emp_id = :emp AND (logout_time IS NULL OR logout_time = '00:00:00') ORDER BY login_id DESC LIMIT 1");
+                $findStmt->execute([':emp' => $empId]);
+                $row = $findStmt->fetch(PDO::FETCH_ASSOC);
+                if ($row && isset($row['login_id'])) {
+                    try { $upd1 = $conn->prepare("UPDATE tbl_login SET terminal_id = :tid WHERE login_id = :lid"); $upd1->execute([':tid' => $terminal_id, ':lid' => $row['login_id']]); } catch (Exception $e) {}
+                    try { $upd2 = $conn->prepare("UPDATE tbl_login SET location = :loc WHERE login_id = :lid"); $upd2->execute([':loc' => $location_label, ':lid' => $row['login_id']]); } catch (Exception $e) {}
+                    try { if ($user_shift_id) { $upd3 = $conn->prepare("UPDATE tbl_login SET shift_id = :sid WHERE login_id = :lid"); $upd3->execute([':sid' => $user_shift_id, ':lid' => $row['login_id']]); } } catch (Exception $e) {}
+                }
+            } catch (Exception $e) {}
+
+            echo json_encode(['success' => true, 'data' => [
+                'terminal_id' => $terminal_id,
+                'terminal_name' => $terminal_name,
+                'location' => $location_label,
+                'shift_id' => $user_shift_id
+            ]]);
+        } catch (Exception $e) {
+            echo json_encode(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
+        }
+        break;
+    case 'get_login_activity':
+        try {
+            $limit = isset($data['limit']) ? intval($data['limit']) : 200;
+            $search = isset($data['search']) ? trim($data['search']) : '';
+            $date_from = isset($data['date_from']) ? trim($data['date_from']) : '';
+            $date_to = isset($data['date_to']) ? trim($data['date_to']) : '';
+
+            $clauses = [];
+            $params = [];
+
+            if ($search !== '') {
+                $clauses[] = '(l.username LIKE ? OR e.Fname LIKE ? OR e.Lname LIKE ?)';
+                $term = "%$search%";
+                $params[] = $term; $params[] = $term; $params[] = $term;
+            }
+            if ($date_from !== '') { $clauses[] = 'l.login_date >= ?'; $params[] = $date_from; }
+            if ($date_to !== '') { $clauses[] = 'l.login_date <= ?'; $params[] = $date_to; }
+
+            $whereSql = count($clauses) ? ('WHERE ' . implode(' AND ', $clauses)) : '';
+
+            $sql = "
+                SELECT 
+                    l.login_id, l.emp_id, l.role_id, l.username,
+                    l.login_time, l.login_date, l.logout_time, l.logout_date,
+                    l.ip_address,
+                    e.Fname, e.Lname, r.role,
+                    -- Compute terminal/location label without requiring extra columns
+                    CASE 
+                        WHEN LOWER(r.role) LIKE '%admin%' THEN 'Admin Terminal'
+                        WHEN LOWER(r.role) LIKE '%cashier%' OR LOWER(r.role) LIKE '%pos%' THEN 'Convenience POS'
+                        WHEN LOWER(r.role) LIKE '%pharmacist%' THEN 'Pharmacy POS'
+                        WHEN LOWER(r.role) LIKE '%inventory%' THEN 'Inventory Terminal'
+                        ELSE 'Admin Terminal'
+                    END AS terminal_name
+                FROM tbl_login l
+                LEFT JOIN tbl_employee e ON l.emp_id = e.emp_id
+                LEFT JOIN tbl_role r ON l.role_id = r.role_id
+                $whereSql
+                ORDER BY l.login_id DESC
+                LIMIT $limit
+            ";
+
+            $stmt = $conn->prepare($sql);
+            $stmt->execute($params);
+            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $rowCount = is_array($rows) ? count($rows) : 0;
+            
+            // If no rows, try a fallback simple query (helps diagnose join/data issues)
+            $fallback = [];
+            if ($rowCount === 0) {
+                $fb = $conn->prepare("SELECT * FROM tbl_login ORDER BY login_id DESC LIMIT 5");
+                $fb->execute();
+                $fallback = $fb->fetchAll(PDO::FETCH_ASSOC);
+            }
+
+            // Debug: log how many rows were found
+            error_log('[get_login_activity] rows=' . $rowCount . ', fallback=' . count($fallback));
+
+            echo json_encode(['success' => true, 'data' => $rows, 'fallback' => $fallback]);
+        } catch (Exception $e) {
+            echo json_encode(['success' => false, 'message' => 'Database error: ' . $e->getMessage(), 'data' => []]);
+        }
+        break;
+
+    case 'get_login_activity_count':
+        try {
+            // Count today's logins and logouts (each recorded row counts once; rows with today's logout but older login also counted)
+            $stmt = $conn->prepare("SELECT 
+                    SUM(CASE WHEN login_date = CURDATE() THEN 1 ELSE 0 END) AS logins_today,
+                    SUM(CASE WHEN logout_date = CURDATE() THEN 1 ELSE 0 END) AS logouts_today
+                FROM tbl_login");
+            $stmt->execute();
+            $row = $stmt->fetch(PDO::FETCH_ASSOC) ?: ['logins_today' => 0, 'logouts_today' => 0];
+            $total = (int)$row['logins_today'] + (int)$row['logouts_today'];
+            echo json_encode(['success' => true, 'data' => ['logins_today' => (int)$row['logins_today'], 'logouts_today' => (int)$row['logouts_today'], 'total' => $total]]);
+        } catch (Exception $e) {
+            echo json_encode(['success' => false, 'message' => 'Database error: ' . $e->getMessage(), 'data' => ['logins_today' => 0, 'logouts_today' => 0, 'total' => 0]]);
         }
         break;
 
@@ -3762,6 +4077,55 @@ case 'get_products_oldest_batch_for_transfer':
         }
         break;
 
+    case 'reset_password':
+        try {
+            $emp_id = isset($data['emp_id']) ? (int)$data['emp_id'] : 0;
+            $new_password = isset($data['new_password']) ? trim($data['new_password']) : '';
+
+            // Validation
+            if (empty($emp_id) || $emp_id <= 0) {
+                echo json_encode(["success" => false, "message" => "Invalid employee ID."]);
+                exit;
+            }
+
+            if (empty($new_password) || strlen($new_password) < 3) {
+                echo json_encode(["success" => false, "message" => "Password must be at least 3 characters long."]);
+                exit;
+            }
+
+            // Check if employee exists
+            $checkStmt = $conn->prepare("SELECT emp_id FROM tbl_employee WHERE emp_id = :emp_id");
+            $checkStmt->bindParam(":emp_id", $emp_id, PDO::PARAM_INT);
+            $checkStmt->execute();
+
+            if ($checkStmt->rowCount() === 0) {
+                echo json_encode(["success" => false, "message" => "Employee not found."]);
+                exit;
+            }
+
+            // Hash the new password
+            $hashedPassword = password_hash($new_password, PASSWORD_BCRYPT);
+
+            // Update the password
+            $updateStmt = $conn->prepare("UPDATE tbl_employee SET password = :password WHERE emp_id = :emp_id");
+            $updateStmt->bindParam(":password", $hashedPassword, PDO::PARAM_STR);
+            $updateStmt->bindParam(":emp_id", $emp_id, PDO::PARAM_INT);
+
+            if ($updateStmt->execute()) {
+                echo json_encode([
+                    "success" => true, 
+                    "message" => "Password reset successfully.",
+                    "emp_id" => $emp_id
+                ]);
+            } else {
+                echo json_encode(["success" => false, "message" => "Failed to update password."]);
+            }
+
+        } catch (Exception $e) {
+            echo json_encode(["success" => false, "message" => "An error occurred: " . $e->getMessage()]);
+        }
+        break;
+
     default:
         echo json_encode(["success" => false, "message" => "Invalid action: " . $action]);
         break;
@@ -3818,6 +4182,117 @@ case 'get_products_oldest_batch_for_transfer':
                     "success" => false,
                     "message" => "An error occurred: " . $e->getMessage()
                 ]);
+            }
+            break;
+
+        case 'get_discounts':
+            try {
+                $stmt = $conn->prepare("SELECT discount_id, discount_rate, discount_type FROM tbl_discount ORDER BY discount_id ASC");
+                $stmt->execute();
+                $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                // Normalize numeric rate
+                foreach ($rows as &$r) {
+                    $r['discount_rate'] = (float)$r['discount_rate'];
+                }
+                echo json_encode([ 'success' => true, 'data' => $rows ]);
+            } catch (Exception $e) {
+                echo json_encode([ 'success' => false, 'message' => 'Database error: ' . $e->getMessage(), 'data' => [] ]);
+            }
+            break;
+
+        case 'save_pos_sale':
+            try {
+                // Expected payload: transactionId, totalAmount, referenceNumber, terminalName, items:[{product_id, quantity, price}]
+                $transactionId = $data['transactionId'] ?? null;
+                $totalAmount = isset($data['totalAmount']) ? (float)$data['totalAmount'] : 0.0;
+                $referenceNumber = $data['referenceNumber'] ?? null;
+                $terminalName = trim($data['terminalName'] ?? 'Convenience POS');
+                $items = $data['items'] ?? [];
+
+                if (!$transactionId || $totalAmount <= 0 || !is_array($items) || count($items) === 0) {
+                    echo json_encode([ 'success' => false, 'message' => 'Invalid sale payload' ]);
+                    break;
+                }
+
+                $conn->beginTransaction();
+
+                // Ensure terminal exists or create it
+                $stmt = $conn->prepare("SELECT terminal_id FROM tbl_pos_terminal WHERE terminal_name = :name LIMIT 1");
+                $stmt->execute([ ':name' => $terminalName ]);
+                $terminalId = $stmt->fetchColumn();
+                if (!$terminalId) {
+                    $ins = $conn->prepare("INSERT INTO tbl_pos_terminal (terminal_name, shift_id) VALUES (:name, NULL)");
+                    $ins->execute([ ':name' => $terminalName ]);
+                    $terminalId = (int)$conn->lastInsertId();
+                }
+
+                // Insert sales header
+                $hdr = $conn->prepare("INSERT INTO tbl_pos_sales_header (transaction_id, total_amount, reference_number, terminal_id) VALUES (:txn, :total, :ref, :terminal)");
+                $hdr->execute([
+                    ':txn' => $transactionId,
+                    ':total' => $totalAmount,
+                    ':ref' => $referenceNumber,
+                    ':terminal' => $terminalId,
+                ]);
+                $salesHeaderId = (int)$conn->lastInsertId();
+
+                // Insert details
+                $dtl = $conn->prepare("INSERT INTO tbl_pos_sales_details (sales_header_id, product_id, quantity, price) VALUES (:hdr, :pid, :qty, :price)");
+                foreach ($items as $it) {
+                    $pid = isset($it['product_id']) ? (int)$it['product_id'] : (isset($it['id']) ? (int)$it['id'] : 0);
+                    $qty = (int)($it['quantity'] ?? 0);
+                    $price = (float)($it['price'] ?? 0);
+                    if ($pid > 0 && $qty > 0) {
+                        $dtl->execute([
+                            ':hdr' => $salesHeaderId,
+                            ':pid' => $pid,
+                            ':qty' => $qty,
+                            ':price' => $price,
+                        ]);
+                    }
+                }
+
+                $conn->commit();
+                echo json_encode([ 'success' => true, 'message' => 'Sale saved', 'data' => [ 'sales_header_id' => $salesHeaderId, 'terminal_id' => $terminalId ] ]);
+            } catch (Exception $e) {
+                if ($conn->inTransaction()) {
+                    $conn->rollBack();
+                }
+                echo json_encode([ 'success' => false, 'message' => 'Database error: ' . $e->getMessage() ]);
+            }
+            break;
+
+        case 'save_pos_transaction':
+            try {
+                $transactionId = $data['transactionId'] ?? null;
+                $paymentTypeRaw = trim((string)($data['paymentType'] ?? ''));
+                $paymentType = '';
+                $pt = strtolower($paymentTypeRaw);
+                if ($pt === 'cash') $paymentType = 'Cash';
+                elseif ($pt === 'gcash' || $pt === 'g-cash' || $pt === 'g cash') $paymentType = 'GCash';
+                else $paymentType = $paymentTypeRaw;
+
+                // Prefer session user_id; fall back to provided empId
+                if (session_status() !== PHP_SESSION_ACTIVE) { session_start(); }
+                $empId = $_SESSION['user_id'] ?? ($data['empId'] ?? null);
+                $customerId = $data['customerId'] ?? null;
+
+                if (!$transactionId || !$paymentType) {
+                    echo json_encode([ 'success' => false, 'message' => 'Invalid transaction payload' ]);
+                    break;
+                }
+
+                $stmt = $conn->prepare("INSERT INTO tbl_pos_transaction (transaction_id, date, time, emp_id, customer_id, payment_type) VALUES (:txn, CURDATE(), CURTIME(), :emp, :cust, :ptype)");
+                $stmt->execute([
+                    ':txn' => $transactionId,
+                    ':emp' => $empId,
+                    ':cust' => $customerId,
+                    ':ptype' => $paymentType,
+                ]);
+
+                echo json_encode([ 'success' => true ]);
+            } catch (Exception $e) {
+                echo json_encode([ 'success' => false, 'message' => 'Database error: ' . $e->getMessage() ]);
             }
             break;
         
